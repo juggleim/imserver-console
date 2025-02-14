@@ -1,0 +1,247 @@
+@font-face {
+  font-family: 'cicon';  /* Project id 3778079 */
+  src: url('//at.alicdn.com/t/c/font_4368833_aolpalcad2t.woff2?t=1735815022426') format('woff2'),
+  url('//at.alicdn.com/t/c/font_4368833_aolpalcad2t.woff?t=1735815022426') format('woff'),
+  url('//at.alicdn.com/t/c/font_4368833_aolpalcad2t.ttf?t=1735815022426') format('truetype');
+}
+
+.cicon {
+  font-family: 'cicon' !important;
+  font-size: 12px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  cursor: pointer;
+}
+
+.cicon-home::before{
+  content: '\e6bd';
+}
+.cicon-app::before{
+  content: '\e6d9';
+}
+.cicon-finance::before{
+  content: '\e7b5';
+}
+.cicon-set::before{
+  content: '\e7b2';
+}
+.cicon-ticket::before{
+  content: '\e7a0';
+}
+.cicon-user::before{
+  content: '\e6da';
+}
+.cicon-setting::before{
+  content: '\e650';
+}
+.cicon-notify::before{
+  content: '\e7b4';
+}
+.cicon-logout::before{
+  content: '\e659';
+}
+.cicon-doc::before{
+  content: '\e630';
+}
+.cicon-down::after{
+  content: '\e618';
+}
+
+.cicon-safe::before{
+  content: '\e62a';
+}
+.cicon-money::before{
+  content: '\e632';
+}
+.cicon-money1::before{
+  content: '\e62c';
+}
+.cicon-money2::before{
+  content: '\e62e';
+}
+.cicon-rokcet::before{
+  content: '\e69e';
+}
+.cicon-book::before{
+  content: '\e6c0';
+}
+.cicon-product::before{
+  content: '\e7b1';
+}
+.cicon-reliable::before{
+  content: '\e7b3';
+}
+.cicon-close::before{
+  content: '\e62b';
+}
+.cicon-close-c::before{
+  content: '\e638';
+}
+.cicon-add::before{
+  content: '\e631';
+}
+.cicon-list::before{
+  content: '\e633';
+}
+.cicon-matrix::before{
+  content: '\e637';
+}
+.cicon-fold::before{
+  content: '\e68f';
+}
+.cicon-copy::after{
+  content: '\e8b0';
+}
+.cicon-copy-bofore::before{
+  content: '\e8b0';
+}
+.cicon-free::before{
+  content: '\e645';
+}
+.cicon-pay::before{
+  content: '\e639';
+}
+.cicon-api::before{
+  content: '\e622';
+}
+.cicon-analysis::before{
+  content: '\e66d';
+}
+.cicon-dev::before{
+  content: '\e690';
+}
+.cicon-logs::before{
+  content: '\e685';
+}
+.cicon-ac-up::before{
+  content: '\e636';
+}
+.cicon-ac-down::before{
+  content: '\e63a';
+}
+.cicon-date::before{
+  content: '\e647';
+}
+
+.cicon-require::after{
+  content: '*';
+  color: #ee2f2f;
+  margin-left: 4px;
+}
+
+.cicon-success::before{
+  content: '\e601';
+  color: #4caf50;
+}
+.cicon-error::before{
+  content: '\e600';
+  color: #df1717df;
+}
+.cicon-warn::before{
+  content: '\e602';
+  color: #fb8c00;
+}
+.cicon-hide::after{
+  content: '\e646';
+}
+
+.cicon-alipay::before{
+  content: '\e68a';
+  color: rgb(2, 169, 241);
+}
+.cicon-wechatpay::before{
+  content: '\e689';
+  color: rgb(9, 187, 7);
+}
+.cicon-dot::before{
+  content: '\e7a5';
+}
+.cicon-circel::before{
+  content: '\e856';
+}
+.cicon-circel-dui::before{
+  content: '\e85b';
+  color: rgb(9, 187, 7);
+}
+.cicon-must::after{
+  content: "*"
+}
+.cicon-right::after{
+  content: "\e63b"
+}
+
+/* 成功 */
+.cicon-status-1::before{
+  content: '\e739';
+  color: rgb(9, 187, 7);
+}
+
+/* 失败 */
+.cicon-status-2::before{
+  content: '\e738';
+  color: #df1717df;
+}
+
+/* 完成 */
+.cicon-status-3::before{
+  content: '\e73a';
+  color: #fb8c00;
+}
+
+/* 失败 */
+.cicon-status-4::before{
+  content: '\e738';
+  color: #df1717df;
+}
+
+/* 日志为空 */
+.cicon-status-5::before{
+  content: '\e67d';
+  color: #0076fb;
+  margin-bottom: 1px;
+}
+
+/* 连接成功 */
+.cicon-conn-1::before{
+  content: '\e60d';
+  color: rgb(9, 187, 7);
+}
+
+/* 断开连接 */
+.cicon-conn-2::before{
+  content: '\e60e';
+  color: #df1717df;
+}
+
+/* 用户操作 */
+.cicon-conn-3::before{
+  content: '\e608';
+  color: rgb(2, 169, 241);
+}
+
+/* 服务端通知 */
+.cicon-conn-4::before{
+  content: '\e613';
+  color: #8600fb;
+}
+
+/* reply */
+.cicon-conn-5::before{
+  content: '\e6d5';
+  color: #fb580078;
+}
+
+.wr-update::before{
+  content: '\e63c';
+}
+.wr-remove::before{
+  content: '\e638';
+  color: rgb(186, 6, 6);
+}
+.wr-disable::before{
+  content: '\e66b';
+}
+.wr-enable::before{
+  content: '\e66c';
+}

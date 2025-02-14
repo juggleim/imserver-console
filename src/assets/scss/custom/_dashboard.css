@@ -1,0 +1,120 @@
+.db-layout{
+  display: flex;
+}
+
+.db-contanier{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.db-banner-box{
+  background-color: rebeccapurple;
+  width: 30%;
+}
+.db-header{
+  padding: 10px;
+}
+.db-apps{
+  overflow-y: auto;
+  display: flex;
+  flex-wrap: wrap;
+}
+.db-app{
+  width: 22%;
+  margin: 20px;
+  background-color: #F5f5f5c9;
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+.db-app::before{
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  border: 3px solid #ccc;
+  border-image: linear-gradient(90deg,#2149dc 2.34%,#a7baff 96.79%) 1;
+}
+
+.db-app-body{
+  flex: 1 1;
+  font-size: 12px;
+  padding: 10px 0;
+}
+.db-app-name{
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 0;
+}
+.db-app-footer{
+  justify-content: center;
+  display: flex;
+}
+.db-apps .btn{
+  font-size: 14px;
+  color: #2049dc;
+}
+.db-left{
+  text-align: left;
+  color: #a6a6a6;
+  letter-spacing: 1px;
+}
+.db-right{
+  text-align: right;
+}
+.db-right::after{
+  margin-left: 4px;
+  cursor: pointer;
+}
+.db-row{
+  margin-top: 6px;
+}
+.db-row:first-child{
+  margin-top: 0;
+}
+.db-create-body{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.db-app-create::before{
+  font-size: 50px;
+  color: #CCC;
+  cursor: pointer;
+}
+.db-finance{
+  width: 45%;
+}
+.db-finance::before{
+  border: none;
+}
+.db-row .amount{
+  font-size: 14px;
+  font-weight: 400;
+}
+.db-fn-row{
+}
+@media (max-width: 992px){
+  .db-layout{
+    display: block;
+  }
+  .db-contanier{
+    width: 100%;
+  }
+  .db-banner-box{
+    width: 100%;
+  }
+  .db-app{
+    width: 80%;
+  }
+  .db-finance{
+    width: 88%;
+  }
+  .db-finances{
+    display: block
+  }
+}

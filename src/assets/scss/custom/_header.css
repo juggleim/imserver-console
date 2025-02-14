@@ -1,0 +1,126 @@
+.header{
+  --cui-header-bg: none;
+  user-select: none;
+}
+.cim-header-container{
+  margin: 0.5rem 1rem;
+  box-shadow: 0 2px 5px #00000014;
+  background-color: #2149dc;
+  border-radius: 10px;
+}
+.header.header-sticky{
+  border: 0;
+}
+.header-nav .cim-nav-item{
+  border-radius: 4px;
+  margin-left: 10px;
+  transition: all .1s cubic-bezier(0,0,1,1);
+  display: flex;
+  align-items: center;
+  background-color: rgb(88, 124, 252, 0.6);
+  color: #FFF;
+}
+.header-nav .cim-nav-link{
+  padding: 2px 6px;
+  font-weight: 400;
+}
+.header-nav .cim-nav-link::before{
+  margin-right: 6px;
+}
+.cim-avatar{
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.cim-hrow{
+  display: flex;
+  font-size: 12px;
+  padding: 5px 10px;
+  width: 14rem;
+  overflow: hidden;
+  word-wrap: break-word;
+}
+.cim-hcol{
+  margin: 0 0.1rem;
+  max-width: 5rem;
+  min-width: 5rem;
+}
+.cim-happs{
+  display: flex;
+  justify-content: end;
+}
+
+.cim-happ-col{
+  border-radius: 0.2rem;
+  padding: 0 4px;
+}
+.cim-item-app-label{
+  border-radius: 0.1rem;
+  padding: 1px 6px;
+  border: 1px solid #3761ef;
+  color: #3761ef;
+}
+.cim-dropdown-item{
+  border-bottom: 1px solid #eeebeb;
+}
+.cim-dropdown-item:last-child{
+  border-color: transparent;
+}
+.cim-dpapp-row{
+  padding: 6px 0;
+}
+.cim-item-app-label-bg{
+  background-color: #3761ef;
+  color: #FFF;
+}
+.cim-happ-state{
+  background-color: #3761ef;
+  color: #FFF;
+}
+.cim-hrow .cim-hdpm-appname{
+  font-weight: 500;
+  word-wrap: break-word;
+  white-space: nowrap;
+}
+.cim-nav-item-apps::before{
+  color: #FFF;
+}
+.nav-item{
+  cursor: pointer;
+}
+.cim-header-nav-app{
+  padding: 8px 10px;
+  font-size: 12px;
+  display: flex;
+  font-weight: 500;
+}
+.cim-header-nav-app:hover{
+  background-color: #f3f4f7;
+}
+.cim-header-nav-appname{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 75%;
+}
+.cim-header-nav-apptype{
+  width: 25%;
+ 
+}
+.cim-app-public{
+  background-color: #0741d1;
+  color: #FFF;
+  text-align: center;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cim-app-private{
+  background-color: #25a12f;
+}
+.cim-header-avatar{
+  background: #eeeef0;
+}

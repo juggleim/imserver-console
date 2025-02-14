@@ -1,0 +1,15 @@
+.cim-wait-list{
+  height: 300px;
+  overflow-y: auto;
+}
+
+.cim-row{
+  margin-bottom: 10px;
+  width: 100%;
+}
+.cim-invoice-label{
+  font-weight: 600;
+}
+.cim-invoice-amount{
+  color: red;
+}

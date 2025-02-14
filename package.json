@@ -1,0 +1,35 @@
+{
+  "name": "im-admin",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "serve dist"
+  },
+  "dependencies": {
+    "@coreui/chartjs": "^4.0.0-rc.0",
+    "@coreui/coreui": "^5.0.0-rc.1",
+    "@coreui/icons": "^3.0.1",
+    "@coreui/icons-vue": "^2.0.0",
+    "@coreui/utils": "^2.0.2",
+    "@popperjs/core": "^2.11.8",
+    "chart.js": "^4.4.0",
+    "clipboard.js": "^1.0.1",
+    "echarts": "^5.5.0",
+    "simplebar": "^6.2.5",
+    "v-calendar": "^3.1.2",
+    "vue": "^3.4.21",
+    "vue-router": "^4.2.5",
+    "vue3-ts-jsoneditor": "^2.11.2"
+  },
+  "devDependencies": {
+    "@coreui/vendors-injector": "^1.1.4",
+    "@vitejs/plugin-vue": "^4.5.2",
+    "@vitejs/plugin-vue-jsx": "^3.1.0",
+    "naive-ui": "^2.38.2",
+    "prettier": "3.1.0",
+    "sass": "^1.69.5",
+    "serve": "^14.2.1",
+    "vite": "^4.1.4"
+  }
+}
