@@ -121,6 +121,48 @@
         },
       ],
     },
+    {
+      type: 'minio',
+      name: 'MinIO',
+      state: ref({
+        access_key: '',
+        secret_key: '',
+        endpoint: '',
+        bucket: '',
+        use_ssl: false,
+      }),
+      fields: [
+        {
+          name: 'access_key',
+          label: 'Access Key',
+          type: 'input_text',
+        },
+        {
+          name: 'secret_key',
+          label: 'Secret Key',
+          type: 'input_text',
+        },
+        {
+          name: 'endpoint',
+          label: 'Endpoint',
+          type: 'input_text',
+        },
+        {
+          name: 'use_ssl',
+          label: '启用 HTTPS',
+          type: 'radios',
+          radios: [
+            { name: 'type', value: false, label: '禁用' },
+            { name: 'type', value: true, label: '启用' },
+          ]
+        },
+        {
+          name: 'bucket',
+          label: 'Buket Name',
+          type: 'input_text',
+        },
+      ],
+    },
   ];
 
   let state = reactive({
@@ -129,7 +171,8 @@
     channels: {
       oss: { name: '阿里云', },
       aws: { name: 'AWS', },
-      qiniu: { name: '七牛云', }
+      qiniu: { name: '七牛云', },
+      minio: { name: 'MinIO', }
     },
     fileConfs: [],
     formTitle: '添加配置',
