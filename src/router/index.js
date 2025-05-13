@@ -87,15 +87,15 @@ let routes = [{
         showHeaderApps: true
       }
     },
-    {
-      path: '/argument_audit/:app_key',
-      name: 'ArguAudit',
-      component:  () => import('@/views/argument/audit.vue'),
-      meta: {
-        titles: ['应用配置', '内容审核'],
-        showHeaderApps: true
-      }
-    },
+    // {
+    //   path: '/argument_audit/:app_key',
+    //   name: 'ArguAudit',
+    //   component:  () => import('@/views/argument/audit.vue'),
+    //   meta: {
+    //     titles: ['应用配置', '内容审核'],
+    //     showHeaderApps: true
+    //   }
+    // },
     {
       path: '/argument_rtc/:app_key',
       name: 'ArguRTC',
@@ -105,24 +105,24 @@ let routes = [{
         showHeaderApps: true
       }
     },
-    {
-      path: '/argument_sms/:app_key',
-      name: 'ArguSMS',
-      component:  () => import('@/views/argument/sms.vue'),
-      meta: {
-        titles: ['应用配置', '短信配置'],
-        showHeaderApps: true
-      }
-    },
-    {
-      path: '/argument_ai/:app_key',
-      name: 'ArguAI',
-      component:  () => import('@/views/argument/ai.vue'),
-      meta: {
-        titles: ['应用配置', 'AIGC'],
-        showHeaderApps: true
-      }
-    },
+    // {
+    //   path: '/argument_sms/:app_key',
+    //   name: 'ArguSMS',
+    //   component:  () => import('@/views/argument/sms.vue'),
+    //   meta: {
+    //     titles: ['应用配置', '短信配置'],
+    //     showHeaderApps: true
+    //   }
+    // },
+    // {
+    //   path: '/argument_ai/:app_key',
+    //   name: 'ArguAI',
+    //   component:  () => import('@/views/argument/ai.vue'),
+    //   meta: {
+    //     titles: ['应用配置', 'AIGC'],
+    //     showHeaderApps: true
+    //   }
+    // },
     {
       path: '/sensitive/:app_key',
       name: 'sensitiveConfig',
