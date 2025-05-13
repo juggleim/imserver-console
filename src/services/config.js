@@ -1,3 +1,3 @@
 export const CONFIG = {
-  API: '/adminapigateway/',
+  API: '/admingateway/',
 };
