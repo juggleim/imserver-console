@@ -65,9 +65,17 @@ function formatDauChat(result){
  
   return { dates, daus };
 }
+function isValidateUrl(url) {
+  if (typeof url !== 'string'){
+    return false;
+  };
+  let strictUrlRegex = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/;
+  return strictUrlRegex.test(url);
+}
 export default {
   getRangeDate,
   calcYesterday,
   formatDauChat,
   formatChatData,
+  isValidateUrl,
 }

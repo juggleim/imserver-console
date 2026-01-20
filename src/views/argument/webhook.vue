@@ -3,6 +3,8 @@ import { reactive, getCurrentInstance } from 'vue';
 import { useRouter } from "vue-router";
 import utils from '../../common/utils';
 import { Application } from "../../services";
+import common from '../../common/common';
+
 let router = useRouter();
 let { currentRoute: { _rawValue: { params: { app_key } } } } = router;
 const context = getCurrentInstance();
@@ -30,6 +32,10 @@ function onHookChanged(e){
 }
 function onSaveConfig(){
   let { config, hooks } = state;
+  let { event_sub_url } = config;
+  if(!common.isValidateUrl(event_sub_url) && event_sub_url !== ''){
+    return context.proxy.$toast({ icon: 'error', text: '回调地址格式不正确，检查是否包含协议头' });
+  }
   Application.setEventHook({ app_key,  config, hooks }).then(() => {
     context.proxy.$toast({ icon: 'success', text: '保存成功' });
   });
@@ -44,7 +50,7 @@ function onSaveConfig(){
           <div class="cim-cb-input-item">设置鉴权凭证</div>
         </label>
         <div class="col-sm-7">
-          <input class="form-control cim-cb-input-item" type="text" v-model="state.config.event_sub_url" placeholder="请输入事件地址">
+          <input class="form-control cim-cb-input-item" type="text" v-model="state.config.event_sub_url" placeholder="请输入事件地址,示例 http[s]://example.com/submsg">
           <input class="form-control cim-cb-input-item" type="text" v-model="state.config.event_sub_auth" placeholder="请输入鉴权凭证，凭证会与事件一起回调给业务服务器">
         </div>
         <div class="col-sm-3 cim-cb-btns">
