@@ -34,7 +34,7 @@ function onSaveConfig(){
   let { config, hooks } = state;
   let { event_sub_url } = config;
   if(!common.isValidateUrl(event_sub_url) && event_sub_url !== ''){
-    return context.proxy.$toast({ icon: 'error', text: '回调地址格式不正确，检查是否包含协议头' });
+    return context.proxy.$toast({ icon: 'error', text: '抄送地址格式不正确，检查是否包含协议头' });
   }
   Application.setEventHook({ app_key,  config, hooks }).then(() => {
     context.proxy.$toast({ icon: 'success', text: '保存成功' });
@@ -46,7 +46,7 @@ function onSaveConfig(){
     <div class="row cim-cb-row cim-cb-header">
       <div class="cim-cb-form">
         <label class="col-sm-1 col-form-label">
-          <div class="cim-cb-input-item">设置事件地址</div>
+          <div class="cim-cb-input-item">设置抄送地址</div>
           <div class="cim-cb-input-item">设置鉴权凭证</div>
         </label>
         <div class="col-sm-7">
