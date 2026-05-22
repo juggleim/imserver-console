@@ -1,0 +1,1 @@
+import{c as n,b as r,o as a}from"./index-0f723060.js";const _=(e,t)=>{const o=e.__vccOpts||e;for(const[c,s]of t)o[c]=s;return o},l={},i={class:"cim-404-box"};function d(e,t){return a(),n("div",i,t[0]||(t[0]=[r("div",{class:"cim-404-content"},null,-1)]))}const m=_(l,[["render",d]]);export{m as default};
