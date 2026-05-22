@@ -31,7 +31,7 @@ func GetImSdk(appkey string) *juggleimsdk.JuggleIMSdk {
 			return val.(*juggleimsdk.JuggleIMSdk)
 		} else {
 			dao := dbs.AppInfoDao{}
-			appinfo, _ := dao.FindByAppkey(appkey)
+			appinfo := dao.FindByAppkey(appkey)
 			if appinfo != nil {
 				sdk := juggleimsdk.NewJuggleIMSdk(appkey, appinfo.AppSecret, configures.Config.ImApiDomain)
 				imsdkMap.Store(appkey, sdk)
