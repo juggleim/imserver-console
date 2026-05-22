@@ -52,6 +52,7 @@ func QryApps(ctx *gin.Context) {
 	code, apps := services.QryApps(ctxs.ToCtx(ctx), account, limit, offsetStr)
 	if code != errs.AdminErrorCode_Success {
 		ctxs.FailHttpResp(ctx, code)
+		return
 	}
 	ctxs.SuccessHttpResp(ctx, apps)
 }

@@ -10,6 +10,7 @@ import (
 func Route(eng *gin.Engine, prefix string) *gin.RouterGroup {
 	eng.Use(corsHandler())
 	group := eng.Group("/" + prefix)
+	group.Use(apis.Validate)
 	group.POST("/imapiagent", apis.ApiAgent)
 	group.GET("/common/address", apis.GetAccessAddress)
 

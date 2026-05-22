@@ -2,11 +2,15 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/gin-gonic/gin"
 	"github.com/juggleim/imserver-console/commons/configures"
 	"github.com/juggleim/imserver-console/commons/dbcommons"
 	"github.com/juggleim/imserver-console/commons/logs"
+	"github.com/juggleim/imserver-console/routers"
 )
 
 func main() {
@@ -26,5 +30,18 @@ func main() {
 	dbcommons.Upgrade()
 
 	httpServer := gin.Default()
-	httpServer.Run(fmt.Sprintf(":%d", configures.Config.Port))
+	routers.Route(httpServer, "admingateway")
+	routers.LoadJuggleChatAdminWeb(httpServer)
+	go httpServer.Run(fmt.Sprintf(":%d", configures.Config.Port))
+
+	closeChan := make(chan struct{})
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+	go func() {
+		<-sigChan
+		signal.Stop(sigChan)
+		close(closeChan)
+	}()
+
+	<-closeChan
 }
