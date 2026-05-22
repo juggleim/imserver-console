@@ -1,0 +1,54 @@
+package dbs
+
+import (
+	"fmt"
+
+	"github.com/juggleim/imserver-console/commons/dbcommons"
+)
+
+type AccountAppRelDao struct {
+	ID      int64  `gorm:"primary_key"`
+	AppKey  string `gorm:"app_key"`
+	Account string `gorm:"account"`
+}
+
+func (rel AccountAppRelDao) TableName() string {
+	return "accountapprels"
+}
+
+func (rel AccountAppRelDao) Create(item AccountAppRelDao) error {
+	return dbcommons.GetDb().Create(&item).Error
+}
+
+func (rel AccountAppRelDao) CheckExist(appkey string, account string) bool {
+	var item AccountAppRelDao
+	err := dbcommons.GetDb().Where("account=? and app_key=?", account, appkey).Take(&item).Error
+	return err == nil
+}
+
+func (rel AccountAppRelDao) BatchDelete(account string, appkeys []string) error {
+	return dbcommons.GetDb().Where("account=? and app_key in (?)", account, appkeys).Delete(&rel).Error
+}
+
+func (rel AccountAppRelDao) FindByAppkey(account string, appkey string) *AppInfoDao {
+	var appItem AppInfoDao
+	sql := fmt.Sprintf("select app.* from %s as rel left join %s as app on rel.app_key=app.app_key where rel.account=? and rel.app_key=? LIMIT 1", rel.TableName(), AppInfoDao{}.TableName())
+	err := dbcommons.GetDb().Raw(sql, account, appkey).Take(&appItem).Error
+	if err != nil {
+		return nil
+	}
+	return &appItem
+}
+
+func (rel AccountAppRelDao) QryApps(account string, limit int64, offset int64) ([]*AppInfoDao, error) {
+	var list []*AppInfoDao
+	sql := fmt.Sprintf("select app.* from %s as rel left join %s as app on rel.app_key=app.app_key where rel.account=? and app.id<?", rel.TableName(), AppInfoDao{}.TableName())
+	sql = sql + " ORDER BY app.id DESC"
+	params := []interface{}{account, offset}
+	if limit > 0 {
+		sql = sql + " LIMIT ?"
+		params = append(params, limit)
+	}
+	err := dbcommons.GetDb().Raw(sql, params...).Find(&list).Error
+	return list, err
+}

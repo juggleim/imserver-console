@@ -1,0 +1,13 @@
+port: 8090
+
+log:
+  logPath: ./logs
+  logName: imserver-console
+
+mysql:
+  user: root
+  password: Abc123456
+  address: 127.0.0.1:3306
+  name: im_db
+
+imApiDomain: http://127.0.0.1:9001
