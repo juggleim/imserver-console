@@ -2,6 +2,7 @@ package apis
 
 import (
 	"errors"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/juggleim/imserver-console/commons/ctxs"
@@ -52,6 +53,8 @@ func AddInterceptor(ctx *gin.Context) {
 		IsAsync:         req.IsAsync,
 		Conf:            req.Conf,
 		InterceptType:   req.InterceptType,
+		CreatedTime:     time.Now(),
+		UpdatedTime:     time.Now(),
 	})
 	if err != nil {
 		logs.NewLogEntity().Error(err.Error())
