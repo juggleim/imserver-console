@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"time"
 
 	"github.com/juggleim/imserver-console/commons/ctxs"
 	"github.com/juggleim/imserver-console/commons/errs"
@@ -25,6 +26,44 @@ func init() {
 	appFieldsMap["event_sub_switch"] = true
 	appFieldsMap["his_msg_save_day"] = true
 	appFieldsMap["kick_mode"] = true
+}
+
+func CreateApp(appInfo models.AppInfo) (errs.AdminErrorCode, *models.AppInfo) {
+	dao := dbs.AppInfoDao{}
+	if appInfo.AppKey == "" {
+		appInfo.AppKey = tools.RandStr(16)
+	}
+	dbAppInfo := dao.FindByAppkey(appInfo.AppKey)
+	if dbAppInfo != nil && dbAppInfo.AppKey == appInfo.AppKey {
+		return errs.AdminErrorCode_AppHasExisted, &models.AppInfo{
+			AppName:     dbAppInfo.AppName,
+			AppKey:      dbAppInfo.AppKey,
+			AppSecret:   dbAppInfo.AppSecret,
+			CreatedTime: dbAppInfo.CreatedTime.UnixMilli(),
+		}
+	}
+	if len(appInfo.AppSecret) != 16 {
+		appInfo.AppSecret = tools.RandStr(16)
+	}
+	newApp := dbs.AppInfoDao{
+		AppName:      appInfo.AppName,
+		AppKey:       appInfo.AppKey,
+		AppSecret:    appInfo.AppSecret,
+		AppSecureKey: tools.RandStr(16),
+		AppType:      appInfo.AppType,
+		CreatedTime:  time.Now(),
+		UpdatedTime:  time.Now(),
+	}
+	err := dao.Upsert(newApp)
+	if err != nil {
+		return errs.AdminErrorCode_AddAppFail, nil
+	}
+	return errs.AdminErrorCode_Success, &models.AppInfo{
+		AppType:   newApp.AppType,
+		AppName:   newApp.AppName,
+		AppKey:    newApp.AppKey,
+		AppSecret: newApp.AppSecret,
+	}
 }
 
 func QryApps(ctx context.Context, account string, limit int64, offset string) (errs.AdminErrorCode, *models.Apps) {
@@ -119,7 +158,7 @@ func QryApps(ctx context.Context, account string, limit int64, offset string) (e
 
 func QryApp(appkey string) *models.AppInfo {
 	dao := dbs.AppInfoDao{}
-	dbApp, _ := dao.FindByAppkey(appkey)
+	dbApp := dao.FindByAppkey(appkey)
 	if dbApp == nil {
 		return nil
 	}

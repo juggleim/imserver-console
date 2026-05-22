@@ -1,12 +1,10 @@
 package dbs
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
 	"github.com/juggleim/imserver-console/commons/dbcommons"
-	"gorm.io/gorm"
 )
 
 type AppStatus int
@@ -51,16 +49,13 @@ func (app AppInfoDao) Upsert(item AppInfoDao) error {
 	return dbcommons.GetDb().Exec(sql, item.AppName, item.AppKey, item.AppSecret, item.AppSecureKey, item.AppType, item.LicConf, item.LicConf).Error
 }
 
-func (app AppInfoDao) FindByAppkey(appkey string) (*AppInfoDao, error) {
+func (app AppInfoDao) FindByAppkey(appkey string) *AppInfoDao {
 	var appItem AppInfoDao
 	err := dbcommons.GetDb().Where("app_key=?", appkey).Take(&appItem).Error
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		return nil, err
+		return nil
 	}
-	return &appItem, nil
+	return &appItem
 }
 
 func (app AppInfoDao) FindById(id int64) *AppInfoDao {

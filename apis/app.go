@@ -9,6 +9,7 @@ import (
 	"github.com/juggleim/imserver-console/commons/errs"
 	"github.com/juggleim/imserver-console/commons/tools"
 	"github.com/juggleim/imserver-console/services"
+	"github.com/juggleim/imserver-console/services/models"
 	juggleimsdk "github.com/juggleim/imserver-sdk-go"
 )
 
@@ -32,6 +33,26 @@ func ActiveApp(ctx *gin.Context) {
 		return
 	}
 	ctxs.SuccessHttpResp(ctx, appinfo)
+}
+
+func CreateApp(ctx *gin.Context) {
+	var req models.AppInfo
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, &ctxs.ApiErrorMsg{
+			Code: errs.AdminErrorCode_ParamError,
+			Msg:  "param illegal",
+		})
+		return
+	}
+	code, appinfo := services.CreateApp(req)
+	if code != errs.AdminErrorCode_Success {
+		ctx.JSON(http.StatusOK, &ctxs.ApiErrorMsg{
+			Code: code,
+			Msg:  "",
+		})
+	} else {
+		ctxs.SuccessHttpResp(ctx, appinfo)
+	}
 }
 
 type CreateAppReq struct {

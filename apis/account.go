@@ -3,6 +3,7 @@ package apis
 import (
 	"net/http"
 
+	"github.com/juggleim/imserver-console/commons/configures"
 	"github.com/juggleim/imserver-console/commons/ctxs"
 	"github.com/juggleim/imserver-console/commons/errs"
 	"github.com/juggleim/imserver-console/commons/tools"
@@ -36,7 +37,7 @@ func Login(ctx *gin.Context) {
 			Env:           "private", //public
 			// RoleId:        account.RoleId,
 			RoleType:     account.RoleType,
-			IsCommercial: true,
+			IsCommercial: configures.Config.IsCommercial,
 		})
 	} else {
 		ctx.JSON(http.StatusOK, &ctxs.ApiErrorMsg{

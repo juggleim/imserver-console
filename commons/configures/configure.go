@@ -24,6 +24,8 @@ type ConsoleConfig struct {
 	} `yaml:"mysql"`
 
 	ImApiDomain string `yaml:"imApiDomain"`
+
+	IsCommercial bool
 }
 
 var Config ConsoleConfig
