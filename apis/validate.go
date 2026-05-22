@@ -30,7 +30,7 @@ func Validate(ctx *gin.Context) {
 	ctx.Set(string(ctxs.CtxKey_Session), session)
 
 	urlPath := ctx.Request.URL.Path
-	if strings.HasSuffix(urlPath, "/login") || strings.HasSuffix(urlPath, "/apps/active") {
+	if strings.HasSuffix(urlPath, "/login") {
 		return
 	}
 
