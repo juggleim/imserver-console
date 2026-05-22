@@ -114,9 +114,6 @@ func CheckLogin(account, password string) (errs.AdminErrorCode, *models.Account)
 }
 
 func CheckAccountState(account string) errs.AdminErrorCode {
-	if account == "jugglechat" {
-		return errs.AdminErrorCode_Success
-	}
 	dao := dbs.AccountDao{}
 	admin, err := dao.FindByAccount(account)
 	if err != nil || admin == nil {
