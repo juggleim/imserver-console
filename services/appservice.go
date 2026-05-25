@@ -266,7 +266,7 @@ func fillAppInfoQuotaFromApi(appInfo *models.AppInfo) {
 }
 
 func qryRemoteAppInfo(appKey string) *models.AppInfo {
-	url := fmt.Sprintf("%s/console/apps/info", configures.Config.ImAdminDomain)
+	url := fmt.Sprintf("%s/console/apps/info?app_key=%s", configures.Config.ImAdminDomain, appKey)
 	respBs, code, err := tools.HttpDoBytes(http.MethodGet, url, GetImConsoleHeaders(), "")
 	if err != nil || code != 200 {
 		return nil
