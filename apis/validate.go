@@ -20,7 +20,7 @@ const (
 	Header_RequestId     string = "request-id"
 	Header_Authorization string = "Authorization"
 	Header_Timestamp     string = "timestamp"
-	Header_Nonce         string = "timestamp"
+	Header_Nonce         string = "nonce"
 	Header_Signature     string = "signature"
 )
 
