@@ -23,7 +23,8 @@ type ConsoleConfig struct {
 		Debug    bool   `yaml:"debug"`
 	} `yaml:"mysql"`
 
-	ImApiDomain string `yaml:"imApiDomain"`
+	ImApiDomain   string `yaml:"imApiDomain"`
+	ImAdminDomain string `yaml:"imAdminDomain"`
 
 	IsCommercial bool
 }

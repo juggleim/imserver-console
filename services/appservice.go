@@ -4,16 +4,16 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"net/http"
 	"time"
 
+	"github.com/juggleim/imserver-console/commons/configures"
 	"github.com/juggleim/imserver-console/commons/ctxs"
 	"github.com/juggleim/imserver-console/commons/errs"
-	"github.com/juggleim/imserver-console/commons/imsdk"
 	"github.com/juggleim/imserver-console/commons/logs"
 	"github.com/juggleim/imserver-console/commons/tools"
 	"github.com/juggleim/imserver-console/dbs"
 	"github.com/juggleim/imserver-console/services/models"
-	juggleimsdk "github.com/juggleim/imserver-sdk-go"
 )
 
 var appFieldsMap map[string]bool
@@ -265,14 +265,52 @@ func fillAppInfoQuotaFromApi(appInfo *models.AppInfo) {
 	}
 }
 
-func qryRemoteAppInfo(appKey string) *juggleimsdk.AppInfo {
-	sdk := imsdk.GetImSdk(appKey)
-	if sdk == nil {
+func qryRemoteAppInfo(appKey string) *models.AppInfo {
+	url := fmt.Sprintf("%s/console/apps/info", configures.Config.ImAdminDomain)
+	respBs, code, err := tools.HttpDoBytes(http.MethodGet, url, GetImConsoleHeaders(), "")
+	if err != nil || code != 200 {
 		return nil
 	}
-	info, code, _, err := sdk.QryAppInfo()
-	if err != nil || code != juggleimsdk.ApiCode_Success || info == nil {
-		return nil
+	resp := &models.AppInfoResp{}
+	if len(respBs) > 0 {
+		err = tools.JsonUnMarshal(respBs, resp)
+		if err != nil {
+			return nil
+		}
 	}
-	return info
+	return resp.Data
+}
+
+type ActiveAppReq struct {
+	License string `json:"license"`
+}
+
+func ActiveApp(req models.ActiveAppReq) (errs.AdminErrorCode, *models.AppInfo) {
+	url := fmt.Sprintf("%s/console/apps/active", configures.Config.ImAdminDomain)
+	respBs, code, err := tools.HttpDoBytes(http.MethodPost, url, GetImConsoleHeaders(), tools.ToJson(req))
+	if err != nil || code != 200 {
+		return errs.AdminErrorCode_AddAppFail, nil
+	}
+	resp := &models.AppInfoResp{}
+	if len(respBs) > 0 {
+		err = tools.JsonUnMarshal(respBs, resp)
+		if err != nil {
+			return errs.AdminErrorCode_AddAppFail, nil
+		}
+	}
+	return errs.AdminErrorCode_Success, resp.Data
+}
+
+func GetImConsoleHeaders() map[string]string {
+	headers := map[string]string{}
+	timestamp := tools.Int2String(time.Now().Unix())
+	nonce := tools.RandStr(5)
+	headers["timestamp"] = timestamp
+	headers["nonce"] = nonce
+	secret := configures.Config.AdminSecret
+	str := fmt.Sprintf("%s%s%s", secret, nonce, timestamp)
+	fmt.Println("console:", secret, nonce, timestamp)
+	sig := tools.SHA1(str)
+	headers["signature"] = sig
+	return headers
 }

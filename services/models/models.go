@@ -55,6 +55,13 @@ type AppInfo struct {
 
 	LicenseConf string `json:"license_conf,omitempty"`
 }
+
+type AppInfoResp struct {
+	Code int      `json:"code"`
+	Msg  string   `json:"msg"`
+	Data *AppInfo `json:"data,omitempty"`
+}
+
 type RestrictedFields struct {
 	MaxUserCount int32 `json:"max_user_count"`
 }
@@ -92,4 +99,8 @@ type LivekitConfigObj struct {
 	AppKey     string `json:"app_key"`
 	AppSecret  string `json:"app_secret"`
 	ServiceUrl string `json:"service_url"`
+}
+
+type ActiveAppReq struct {
+	License string `json:"license"`
 }

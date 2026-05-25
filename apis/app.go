@@ -4,13 +4,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/juggleim/imserver-console/commons/configures"
 	"github.com/juggleim/imserver-console/commons/ctxs"
 	"github.com/juggleim/imserver-console/commons/errs"
 	"github.com/juggleim/imserver-console/commons/tools"
 	"github.com/juggleim/imserver-console/services"
 	"github.com/juggleim/imserver-console/services/models"
-	juggleimsdk "github.com/juggleim/imserver-sdk-go"
 )
 
 func QryAppInfo(ctx *gin.Context) {
@@ -20,7 +18,7 @@ func QryAppInfo(ctx *gin.Context) {
 }
 
 func ActiveApp(ctx *gin.Context) {
-	var req CreateAppReq
+	var req models.ActiveAppReq
 	if err := ctx.ShouldBindJSON(&req); err != nil || req.License == "" {
 		ctx.JSON(http.StatusBadRequest, &ctxs.ApiErrorMsg{
 			Code: errs.AdminErrorCode_ParamError,
@@ -28,8 +26,9 @@ func ActiveApp(ctx *gin.Context) {
 		})
 		return
 	}
-	appinfo, code, _, err := juggleimsdk.ActiveApp(configures.Config.ImApiDomain, req.License)
-	if handleSdkErr(ctx, code, err) {
+	code, appinfo := services.ActiveApp(req)
+	if code != errs.AdminErrorCode_Success {
+		ctxs.FailHttpResp(ctx, code)
 		return
 	}
 	ctxs.SuccessHttpResp(ctx, appinfo)
@@ -53,10 +52,6 @@ func CreateApp(ctx *gin.Context) {
 	} else {
 		ctxs.SuccessHttpResp(ctx, appinfo)
 	}
-}
-
-type CreateAppReq struct {
-	License string `json:"license"`
 }
 
 func QryApps(ctx *gin.Context) {

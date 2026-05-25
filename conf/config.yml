@@ -11,3 +11,4 @@ mysql:
   name: im_db
 
 imApiDomain: http://127.0.0.1:9001
+imAdminDomain: http://127.0.0.1:8090
