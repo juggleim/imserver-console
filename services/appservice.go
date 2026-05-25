@@ -234,7 +234,7 @@ type AppConfigs struct {
 }
 
 func fillSimpleAppQuotaFromApi(app *models.SimpleApp) {
-	if app == nil || app.AppKey == "" {
+	if app == nil || app.AppKey == "" || !configures.Config.IsCommercial {
 		return
 	}
 	info := qryRemoteAppInfo(app.AppKey)
