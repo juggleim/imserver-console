@@ -67,6 +67,8 @@ func ClientLogNtf(ctx *gin.Context) {
 			MsgType:    "jg:logcmd",
 			MsgContent: tools.ToJson(logCmd),
 			IsCmd:      tools.BoolPtr(true),
+			IsStorage:  tools.BoolPtr(false),
+			IsCount:    tools.BoolPtr(false),
 		})
 		if code != juggleimsdk.ApiCode_Success || err != nil {
 			item.State = dbs.ClientLogState_SendFail
