@@ -1,9 +1,11 @@
 package dbs
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/juggleim/imserver-console/commons/dbcommons"
+	"gorm.io/gorm"
 )
 
 type IosCertificateDao struct {
@@ -56,6 +58,9 @@ func (cer IosCertificateDao) Find(appkey string) (*IosCertificateDao, error) {
 	var item IosCertificateDao
 	err := dbcommons.GetDb().Where("app_key=?", appkey).Take(&item).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return &item, nil

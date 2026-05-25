@@ -309,7 +309,6 @@ func GetImConsoleHeaders() map[string]string {
 	headers["nonce"] = nonce
 	secret := configures.Config.AdminSecret
 	str := fmt.Sprintf("%s%s%s", secret, nonce, timestamp)
-	fmt.Println("console:", secret, nonce, timestamp)
 	sig := tools.SHA1(str)
 	headers["signature"] = sig
 	return headers
