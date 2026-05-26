@@ -48,3 +48,7 @@ func (appExt AppExtDao) FindByItemKeys(appkey string, itemKeys []string) ([]*App
 func (appExt AppExtDao) CreateOrUpdate(appkey string, fieldKey, fieldValue string) error {
 	return dbcommons.GetDb().Exec(fmt.Sprintf("INSERT INTO %s (app_key,app_item_key,app_item_value)VALUES(?,?,?) ON DUPLICATE KEY UPDATE app_item_value=?", appExt.TableName()), appkey, fieldKey, fieldValue, fieldValue).Error
 }
+
+func (appExt AppExtDao) Upsert(appkey string, fieldKey, fieldValue string) error {
+	return appExt.CreateOrUpdate(appkey, fieldKey, fieldValue)
+}

@@ -91,6 +91,36 @@ func Route(eng *gin.Engine, prefix string) *gin.RouterGroup {
 	group.POST("/apps/interceptors/conditions/delete", apis.DeleteInterceptorConditions)
 	group.POST("/apps/interceptors/conditions/update", apis.UpdateInterceptorConditions)
 	group.GET("/apps/interceptors/conditions/list", apis.ListInterceptorConditions)
+
+	group.POST("/apps/file_cred", apis.GetFileCred)
+	//users
+	group.GET("/apps/users/list", apis.QryUsers)
+	group.POST("/apps/users/add")
+	group.POST("/apps/users/update")
+	group.POST("/apps/users/ban", apis.BanUsers)
+	group.POST("/apps/users/unban", apis.UnBanUsers)
+
+	//groups
+	group.GET("/apps/groups/list", apis.QryGroups)
+	group.POST("/apps/groups/dissolve", apis.DissolveGroup)
+
+	//convers
+	group.GET("/apps/convers/list", apis.QryConversations)
+	//history msgs
+	group.GET("/apps/historymsgs/list", apis.QryHistoryMsgs)
+	group.POST("/apps/historymsgs/recall", apis.RecallHistoryMsg)
+	group.POST("/apps/historymsgs/del", apis.DelHistoryMsg)
+
+	//applications
+	group.POST("/apps/applications/add", apis.AddApplication)
+	group.POST("/apps/applications/update", apis.UpdApplication)
+	group.POST("/apps/applications/delete", apis.DelApplications)
+	group.GET("/apps/applications/list", apis.QryApplications)
+
+	//email setting
+	group.POST("/apps/email/set", apis.SetEmailConf)
+	group.GET("/apps/email/get", apis.GetEmailConf)
+
 	return group
 }
 

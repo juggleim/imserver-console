@@ -8,6 +8,13 @@ import (
 	"gorm.io/gorm"
 )
 
+type UserStatus int
+
+const (
+	UserStatus_Normal UserStatus = 0
+	UserStatus_Ban    UserStatus = 1
+)
+
 type UserDao struct {
 	ID           int64     `gorm:"primary_key"`
 	UserType     int       `gorm:"user_type"`
@@ -19,6 +26,7 @@ type UserDao struct {
 	Email        string    `gorm:"email"`
 	LoginAccount string    `gorm:"login_account"`
 	LoginPass    string    `gorm:"login_pass"`
+	Status       int       `gorm:"status"`
 	CreatedTime  time.Time `gorm:"created_time"`
 	UpdatedTime  time.Time `gorm:"updated_time"`
 	AppKey       string    `gorm:"app_key"`
@@ -74,4 +82,29 @@ func (user UserDao) CountByTime(appkey string, start, end int64) int64 {
 		return count
 	}
 	return count
+}
+
+func (user UserDao) UpdateStatus(appkey, userId string, status UserStatus) error {
+	return dbcommons.GetDb().Model(&UserDao{}).Where("app_key=? and user_id=?", appkey, userId).Update("status", status).Error
+}
+
+func (user UserDao) QryUsers(appkey, name string, startId, limit int64, isPositiveOrder bool) ([]*UserDao, error) {
+	var items []*UserDao
+	whereStr := "app_key=?"
+	params := []interface{}{appkey}
+	orderBy := "id desc"
+	if isPositiveOrder {
+		orderBy = "id asc"
+		whereStr = whereStr + " and id>?"
+		params = append(params, startId)
+	} else if startId > 0 {
+		whereStr = whereStr + " and id<?"
+		params = append(params, startId)
+	}
+	if name != "" {
+		whereStr = whereStr + " and nickname like ?"
+		params = append(params, "%"+name+"%")
+	}
+	err := dbcommons.GetDb().Where(whereStr, params...).Order(orderBy).Limit(int(limit)).Find(&items).Error
+	return items, err
 }
