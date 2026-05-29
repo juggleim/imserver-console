@@ -3,6 +3,8 @@ package routers
 import (
 	"embed"
 	"fmt"
+	"net/http"
+	"path"
 	"strings"
 	"sync"
 
@@ -24,8 +26,9 @@ func LoadJuggleChatAdminWeb(httpServer *gin.Engine) {
 		}
 	}
 	httpServer.GET("/", dashboardPage)
-	httpServer.GET("login", dashboardPage)
+	httpServer.GET("/login", dashboardPage)
 	httpServer.GET("/dashboard", dashboardPage)
+	httpServer.NoRoute(spaFallback)
 }
 
 func dashboardPage(ctx *gin.Context) {
@@ -63,6 +66,15 @@ func assetsFile(ctx *gin.Context) {
 		htmlCache.Store(filePath, body)
 	}
 	ctx.String(200, body)
+}
+
+func spaFallback(ctx *gin.Context) {
+	requestPath := ctx.Request.URL.Path
+	if strings.HasPrefix(requestPath, "/admingateway") || strings.HasPrefix(requestPath, "/assets/") || path.Ext(requestPath) != "" {
+		ctx.AbortWithStatus(http.StatusNotFound)
+		return
+	}
+	dashboardPage(ctx)
 }
 
 func ReadFromFile(path string) string {
