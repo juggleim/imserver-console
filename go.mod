@@ -73,7 +73,7 @@ require (
 	github.com/hashicorp/golang-lru v1.0.2
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	github.com/juggleim/imserver-sdk-go v1.0.14
+	github.com/juggleim/imserver-sdk-go v1.0.15
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/sirupsen/logrus v1.9.4
 	golang.org/x/text v0.34.0 // indirect

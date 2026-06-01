@@ -3,7 +3,6 @@ package services
 import (
 	"context"
 	"encoding/json"
-	"net/http"
 	"time"
 
 	apimodels "github.com/juggleim/imserver-console/apis/models"
@@ -101,7 +100,7 @@ func UpdateBot(req *apimodels.BotReq) (errs.AdminErrorCode, *apimodels.Bot) {
 		return errs.AdminErrorCode_ParamError, nil
 	}
 	botInfo := botReqToSdk(req)
-	code, _, err := sdk.HttpCall(http.MethodPost, "/apigateway/bots/update", botInfo, nil)
+	code, _, err := sdk.UpdateBot(botInfo)
 	if ec := botSdkErrCode(code, err); ec != errs.AdminErrorCode_Success {
 		return ec, nil
 	}
@@ -236,12 +235,12 @@ func loadBot(appkey, botId string, req *apimodels.BotReq) *apimodels.Bot {
 		return userDaoToBot(appkey, user)
 	}
 	bot := &apimodels.Bot{
-		BotId:    botId,
-		Nickname: req.Nickname,
-		Avatar:   req.Avatar,
-		Pinyin:   req.Pinyin,
-		UserType: int(dbs.UserType_Bot),
-		BotConf:  req.BotConf,
+		BotId:       botId,
+		Nickname:    req.Nickname,
+		Avatar:      req.Avatar,
+		Pinyin:      req.Pinyin,
+		UserType:    int(dbs.UserType_Bot),
+		BotConf:     req.BotConf,
 		BotSettings: req.BotSettings,
 	}
 	if bot.BotConf != nil && bot.BotConf.BotId == "" {
