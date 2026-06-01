@@ -100,6 +100,11 @@ func Route(eng *gin.Engine, prefix string) *gin.RouterGroup {
 	group.POST("/apps/users/ban", apis.BanUsers)
 	group.POST("/apps/users/unban", apis.UnBanUsers)
 
+	//bots
+	group.GET("/apps/bots/list", apis.QryBots)
+	group.POST("/apps/bots/add", apis.AddBot)
+	group.POST("/apps/bots/update", apis.UpdateBot)
+
 	//groups
 	group.GET("/apps/groups/list", apis.QryGroups)
 	group.POST("/apps/groups/dissolve", apis.DissolveGroup)

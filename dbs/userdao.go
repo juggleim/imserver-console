@@ -15,6 +15,13 @@ const (
 	UserStatus_Ban    UserStatus = 1
 )
 
+type UserType int
+
+const (
+	UserType_User UserType = 0
+	UserType_Bot  UserType = 1
+)
+
 type UserDao struct {
 	ID           int64     `gorm:"primary_key"`
 	UserType     int       `gorm:"user_type"`
@@ -88,10 +95,32 @@ func (user UserDao) UpdateStatus(appkey, userId string, status UserStatus) error
 	return dbcommons.GetDb().Model(&UserDao{}).Where("app_key=? and user_id=?", appkey, userId).Update("status", status).Error
 }
 
+func (user UserDao) UpdateBotProfile(appkey, userId, nickname, portrait, pinyin string) error {
+	updates := map[string]interface{}{
+		"nickname":      nickname,
+		"user_portrait": portrait,
+		"updated_time":  time.Now(),
+	}
+	if pinyin != "" {
+		updates["pinyin"] = pinyin
+	}
+	return dbcommons.GetDb().Model(&UserDao{}).
+		Where("app_key=? and user_id=? and user_type=?", appkey, userId, UserType_Bot).
+		Updates(updates).Error
+}
+
 func (user UserDao) QryUsers(appkey, name string, startId, limit int64, isPositiveOrder bool) ([]*UserDao, error) {
+	return user.qryByUserType(int(UserType_User), appkey, name, startId, limit, isPositiveOrder)
+}
+
+func (user UserDao) QryBots(appkey, name string, startId, limit int64, isPositiveOrder bool) ([]*UserDao, error) {
+	return user.qryByUserType(int(UserType_Bot), appkey, name, startId, limit, isPositiveOrder)
+}
+
+func (user UserDao) qryByUserType(userType int, appkey, name string, startId, limit int64, isPositiveOrder bool) ([]*UserDao, error) {
 	var items []*UserDao
-	whereStr := "app_key=?"
-	params := []interface{}{appkey}
+	whereStr := "app_key=? and user_type=?"
+	params := []interface{}{appkey, userType}
 	orderBy := "id desc"
 	if isPositiveOrder {
 		orderBy = "id asc"
