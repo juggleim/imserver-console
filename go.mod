@@ -9,8 +9,6 @@ require (
 	gorm.io/driver/mysql v1.6.0
 )
 
-replace github.com/juggleim/commons => ../commons
-
 require (
 	github.com/BurntSushi/toml v1.3.2 // indirect
 	github.com/alex-ant/gomath v0.0.0-20160516115720-89013a210a82 // indirect
