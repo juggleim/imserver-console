@@ -124,7 +124,10 @@ func userDaoToAPI(user *dbs.UserDao) *apimodels.User {
 		Avatar:      user.UserPortrait,
 		Pinyin:      user.Pinyin,
 		UserType:    user.UserType,
+		Phone:       user.Phone,
+		Email:       user.Email,
 		Status:      int32(user.Status),
+		Account:     user.LoginAccount,
 		CreatedTime: user.CreatedTime.UnixMilli(),
 	}
 }
