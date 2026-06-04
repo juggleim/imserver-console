@@ -2,15 +2,18 @@ package routers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/juggleim/imserver-console/apis"
 )
 
 func Route(eng *gin.Engine, prefix string) *gin.RouterGroup {
-	eng.Use(corsHandler())
 	group := eng.Group("/" + prefix)
+	group.Use(corsHandler())
 	group.Use(apis.Validate)
+	group.OPTIONS("", optionsHandler())
+	group.OPTIONS("/*path", optionsHandler())
 	group.POST("/imapiagent", apis.ApiAgent)
 	group.GET("/common/address", apis.GetAccessAddress)
 
@@ -131,16 +134,36 @@ func Route(eng *gin.Engine, prefix string) *gin.RouterGroup {
 
 func corsHandler() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		method := context.Request.Method
-		context.Writer.Header().Add("Access-Control-Allow-Origin", "*")
-		context.Writer.Header().Add("Access-Control-Allow-Headers", "*")
-		context.Writer.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PATCH, PUT")
-		context.Writer.Header().Add("Access-Control-Expose-Headers", "Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type")
-		context.Writer.Header().Add("Access-Control-Allow-Credentials", "true")
+		origin := strings.TrimSpace(context.GetHeader("Origin"))
+		if origin != "" {
+			context.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+			context.Writer.Header().Set("Vary", "Origin")
+		}
+		context.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		context.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+		context.Writer.Header().Set("Access-Control-Allow-Headers", allowHeaders(context.GetHeader("Access-Control-Request-Headers")))
+		context.Writer.Header().Set("Access-Control-Expose-Headers", "Content-Length, Content-Type, X-Token, X-Appid")
+		context.Writer.Header().Set("Access-Control-Max-Age", "86400")
 
-		if method == "OPTIONS" {
+		if context.Request.Method == http.MethodOptions {
 			context.AbortWithStatus(http.StatusNoContent)
+			return
 		}
 		context.Next()
 	}
+}
+
+func optionsHandler() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		context.Status(http.StatusNoContent)
+	}
+}
+
+func allowHeaders(requestHeaders string) string {
+	requestHeaders = strings.TrimSpace(requestHeaders)
+	if requestHeaders != "" {
+		return requestHeaders
+	}
+
+	return "Content-Type, Content-Length, Authorization, X-Requested-With, X-CSRF-Token, X-Token, X-Appid"
 }
