@@ -21,11 +21,27 @@ var appFieldsMap map[string]bool
 func init() {
 	appFieldsMap = make(map[string]bool)
 	appFieldsMap["is_hide_msg_before_join_group"] = true
+	appFieldsMap["msg_friend_check"] = true
 	appFieldsMap["file_config"] = true
 	appFieldsMap["event_sub_config"] = true
 	appFieldsMap["event_sub_switch"] = true
 	appFieldsMap["his_msg_save_day"] = true
 	appFieldsMap["kick_mode"] = true
+	appFieldsMap["record_global_convers"] = true
+	appFieldsMap["open_conver_tags"] = true
+	appFieldsMap["max_user_conver_tags"] = true
+	appFieldsMap["is_open_push"] = true
+	appFieldsMap["push_language"] = true
+	appFieldsMap["record_msg_logs"] = true
+	appFieldsMap["open_remark"] = true
+	appFieldsMap["global_private_mute"] = true
+	appFieldsMap["global_group_mute"] = true
+	appFieldsMap["open_status_sub"] = true
+	appFieldsMap["open_griend_status_sub"] = true
+	appFieldsMap["record_connect_logs"] = true
+	appFieldsMap["check_user_device"] = true
+	appFieldsMap["open_public_channel"] = true
+	appFieldsMap["moment_mode"] = true
 }
 
 func CreateApp(appInfo models.AppInfo) (errs.AdminErrorCode, *models.AppInfo) {
