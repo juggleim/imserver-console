@@ -3,6 +3,7 @@ package routers
 import (
 	"embed"
 	"fmt"
+	"mime"
 	"net/http"
 	"path"
 	"strings"
@@ -11,20 +12,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//go:embed admin/*
+// Vite 会产出以 "_" 开头的 chunk（如 _plugin-vue_export-helper-*.js），
+// 需使用 all: 前缀，否则 go:embed 默认会排除这类文件。
+//
+//go:embed all:admin
 var adminFiles embed.FS
 
 func LoadJuggleChatAdminWeb(httpServer *gin.Engine) {
-	files, err := adminFiles.ReadDir("admin/assets")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	for _, f := range files {
-		if !f.IsDir() {
-			httpServer.GET("/assets/"+f.Name(), assetsFile)
-		}
-	}
+	httpServer.GET("/assets/*filepath", serveAsset)
 	httpServer.GET("/", dashboardPage)
 	httpServer.GET("/login", dashboardPage)
 	httpServer.GET("/dashboard", dashboardPage)
@@ -32,57 +27,68 @@ func LoadJuggleChatAdminWeb(httpServer *gin.Engine) {
 }
 
 func dashboardPage(ctx *gin.Context) {
-	ctx.Writer.Header().Add("Content-Type", "text/html; charset=utf-8")
-
-	var body string
-	cacheBody, ok := htmlCache.Load("index.html")
-	if ok {
-		body = cacheBody.(string)
-	} else {
-		body = ReadFromFile("admin/index.html")
-		htmlCache.Store("index.html", body)
-	}
-	ctx.String(200, body)
+	ctx.Header("Content-Type", "text/html; charset=utf-8")
+	ctx.String(http.StatusOK, readTextFile("admin/index.html"))
 }
 
 var htmlCache sync.Map
 
-func assetsFile(ctx *gin.Context) {
-	filePath := ctx.Request.URL.Path
-	if strings.HasSuffix(filePath, ".js") {
-		ctx.Writer.Header().Add("Content-Type", "application/javascript")
-	} else if strings.HasSuffix(filePath, ".css") {
-		ctx.Writer.Header().Add("Content-Type", "text/css")
-	} else if strings.HasSuffix(filePath, ".png") {
-		ctx.Writer.Header().Add("Content-Type", "image/png")
-	} else if strings.HasSuffix(filePath, ".ico") {
-		ctx.Writer.Header().Add("Content-Type", "image/x-icon")
+var assetCache sync.Map
+
+type assetCacheItem struct {
+	contentType string
+	body        []byte
+}
+
+func serveAsset(ctx *gin.Context) {
+	filePath := strings.TrimPrefix(ctx.Param("filepath"), "/")
+	if filePath == "" || strings.Contains(filePath, "..") {
+		ctx.Status(http.StatusNotFound)
+		return
 	}
-	var body string
-	if cacheBody, ok := htmlCache.Load(filePath); ok {
-		body = cacheBody.(string)
-	} else {
-		body = ReadFromFile("admin" + filePath)
-		htmlCache.Store(filePath, body)
+
+	cacheKey := "/assets/" + filePath
+	if cached, ok := assetCache.Load(cacheKey); ok {
+		item := cached.(assetCacheItem)
+		ctx.Data(http.StatusOK, item.contentType, item.body)
+		return
 	}
-	ctx.String(200, body)
+
+	embedPath := "admin/assets/" + filePath
+	body, err := adminFiles.ReadFile(embedPath)
+	if err != nil {
+		ctx.Status(http.StatusNotFound)
+		return
+	}
+
+	contentType := mime.TypeByExtension(path.Ext(filePath))
+	if contentType == "" {
+		contentType = "application/octet-stream"
+	}
+	item := assetCacheItem{contentType: contentType, body: body}
+	assetCache.Store(cacheKey, item)
+	ctx.Data(http.StatusOK, contentType, body)
 }
 
 func spaFallback(ctx *gin.Context) {
 	requestPath := ctx.Request.URL.Path
 	if strings.HasPrefix(requestPath, "/admingateway") || strings.HasPrefix(requestPath, "/assets/") || path.Ext(requestPath) != "" {
-		ctx.AbortWithStatus(http.StatusNotFound)
+		ctx.Status(http.StatusNotFound)
 		return
 	}
 	dashboardPage(ctx)
 }
 
-func ReadFromFile(path string) string {
-	// bs, err := os.ReadFile(path)
-	bs, err := adminFiles.ReadFile(path)
+func readTextFile(embedPath string) string {
+	if cached, ok := htmlCache.Load(embedPath); ok {
+		return cached.(string)
+	}
+	bs, err := adminFiles.ReadFile(embedPath)
 	if err != nil {
-		fmt.Println("read file failed:", err)
+		fmt.Println("read file failed:", embedPath, err)
 		return ""
 	}
-	return string(bs)
+	body := string(bs)
+	htmlCache.Store(embedPath, body)
+	return body
 }
