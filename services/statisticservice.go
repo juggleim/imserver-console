@@ -81,18 +81,12 @@ func QryUserActivities(appkey string, start, end int64) *Statistics {
 	ret := &Statistics{
 		Items: []interface{}{},
 	}
-	timeMarks := []int64{}
-	for s := start / oneDay * oneDay; s <= end; {
-		if s >= start {
-			timeMarks = append(timeMarks, s)
-		}
-		s = s + oneDay
-	}
-	dao := dbs.UserActivityDao{}
-	for _, timemark := range timeMarks {
+	dao := dbs.DailyActivityDao{}
+	list := dao.QryStats(appkey, start, end)
+	for _, item := range list {
 		ret.Items = append(ret.Items, &UserActivityItem{
-			TimeMark: timemark,
-			Count:    dao.CountUserActivities(appkey, timemark),
+			TimeMark: item.TimeMark,
+			Count:    item.Count,
 		})
 	}
 	return ret
