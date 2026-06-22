@@ -42,6 +42,7 @@ func init() {
 	appFieldsMap["check_user_device"] = true
 	appFieldsMap["open_public_channel"] = true
 	appFieldsMap["moment_mode"] = true
+	appFieldsMap["open_real_time_msg_statistic"] = true
 }
 
 func CreateApp(appInfo models.AppInfo) (errs.AdminErrorCode, *models.AppInfo) {

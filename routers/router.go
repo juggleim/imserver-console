@@ -72,6 +72,7 @@ func Route(eng *gin.Engine, prefix string) *gin.RouterGroup {
 
 	//statistic
 	group.GET("/apps/statistic/msg", apis.QryMsgStatistic)
+	group.GET("/apps/statistic/msgrealtime", apis.QryMsgRealtimeStatistic)
 	group.GET("/apps/statistic/useractivity", apis.QryUserActivities)
 	group.GET("/apps/statistic/userreg", apis.QryUserRegiste)
 	group.GET("/apps/statistic/connectcount", apis.QryConnectCount)
