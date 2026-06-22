@@ -81,6 +81,10 @@ func Route(eng *gin.Engine, prefix string) *gin.RouterGroup {
 	group.GET("/apps/statistic/maxchrmconnectcount", apis.QryMaxChrmConnectCount)
 	group.GET("/apps/statistic/maxchrmconnectcount_v2", apis.QryMaxChrmConnectCountV2)
 
+	group.GET("/apps/monitor/performance/nodes", apis.QryPerformanceNodes)
+	group.GET("/apps/monitor/performance/catalog", apis.QryPerformanceCatalog)
+	group.GET("/apps/monitor/performance/metrics", apis.QryPerformanceMetric)
+
 	group.GET("/apps/sensitivewords/list", apis.SensitiveWords)
 	group.POST("/apps/sensitivewords/import", apis.ImportSensitiveWords)
 	group.POST("/apps/sensitivewords/add", apis.AddSensitiveWord)
