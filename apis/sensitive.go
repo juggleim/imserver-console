@@ -3,6 +3,7 @@ package apis
 import (
 	"bufio"
 	"io"
+	"math"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -17,6 +18,8 @@ type QrySensitiveWordsResp struct {
 	Items      []*SensitiveWord `json:"items"`
 	IsFinished bool             `json:"is_finished"`
 	Total      int32            `json:"total"`
+	Page       int64            `json:"page"`
+	TotalPage  int32            `json:"total_page"`
 }
 
 type SensitiveWord struct {
@@ -53,7 +56,7 @@ func handleSdkErr(ctx *gin.Context, code juggleimsdk.ApiCode, err error) bool {
 
 func SensitiveWords(ctx *gin.Context) {
 	sizeStr := ctx.Query("size")
-	var size int64 = 50
+	var size int64 = 20
 	if sizeStr != "" {
 		intVal, err := tools.String2Int64(sizeStr)
 		if err == nil && intVal > 0 && intVal <= 100 {
@@ -89,10 +92,16 @@ func SensitiveWords(ctx *gin.Context) {
 		return
 	}
 
+	totalPage := int32(1)
+	if resp.Total > 0 {
+		totalPage = int32(math.Ceil(float64(resp.Total) / float64(size)))
+	}
 	res := &QrySensitiveWordsResp{
 		Items:      []*SensitiveWord{},
 		IsFinished: resp.IsFinished,
 		Total:      resp.Total,
+		Page:       page,
+		TotalPage:  totalPage,
 	}
 	for _, senWord := range resp.Items {
 		res.Items = append(res.Items, &SensitiveWord{
