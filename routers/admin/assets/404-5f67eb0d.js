@@ -1,1 +1,0 @@
-import{_ as c}from"./_plugin-vue_export-helper-c27b6911.js";import{c as e,o,b as s}from"./index-09a567a8.js";const t={},n={class:"cim-404-box"},_=s("div",{class:"cim-404-content"},null,-1),r=[_];function a(i,d){return o(),e("div",n,r)}const f=c(t,[["render",a]]);export{f as default};
