@@ -1,4 +1,4 @@
-package routers
+package webconsole
 
 import (
 	"embed"
@@ -12,13 +12,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Vite 会产出以 "_" 开头的 chunk（如 _plugin-vue_export-helper-*.js），
-// 需使用 all: 前缀，否则 go:embed 默认会排除这类文件。
-//
-//go:embed all:admin
+//go:embed all:web/dist
 var adminFiles embed.FS
 
-func LoadJuggleChatAdminWeb(httpServer *gin.Engine) {
+func LoadAdminWeb(httpServer *gin.Engine) {
 	httpServer.GET("/assets/*filepath", serveAsset)
 	httpServer.GET("/", dashboardPage)
 	httpServer.GET("/login", dashboardPage)
@@ -28,7 +25,7 @@ func LoadJuggleChatAdminWeb(httpServer *gin.Engine) {
 
 func dashboardPage(ctx *gin.Context) {
 	ctx.Header("Content-Type", "text/html; charset=utf-8")
-	ctx.String(http.StatusOK, readTextFile("admin/index.html"))
+	ctx.String(http.StatusOK, readTextFile("web/dist/index.html"))
 }
 
 var htmlCache sync.Map
@@ -54,7 +51,7 @@ func serveAsset(ctx *gin.Context) {
 		return
 	}
 
-	embedPath := "admin/assets/" + filePath
+	embedPath := "web/dist/assets/" + filePath
 	body, err := adminFiles.ReadFile(embedPath)
 	if err != nil {
 		ctx.Status(http.StatusNotFound)

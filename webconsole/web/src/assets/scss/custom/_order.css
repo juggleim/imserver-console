@@ -1,0 +1,46 @@
+.cim-form-files{
+  display: flex;
+  flex-wrap: wrap;
+}
+.cim-form-file{
+  height: 80px;
+  width: 80px;
+  border: 1px solid #CCC;
+  border-radius: 4px;
+  margin: 10px;
+  cursor: pointer;
+  position: relative;
+  background-image: url('../images/res/file.png');
+  background-repeat: no-repeat;
+  background-size: 44%;
+  background-position: center;
+}
+.cim-form-image{
+  background-image: url('../images/res/image.png');
+}
+.cim-form-add{
+  position: relative;
+  background: none;
+}
+.cim-form-add::before{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 30px;
+  color: #CCC;
+}
+.cim-from-file-close{
+  text-align: right;
+  padding-right: 4px;
+}
+.cim-form-filename{
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

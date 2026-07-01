@@ -11,6 +11,7 @@ import (
 	"github.com/juggleim/imserver-console/commons/dbcommons"
 	"github.com/juggleim/imserver-console/commons/logs"
 	"github.com/juggleim/imserver-console/routers"
+	"github.com/juggleim/imserver-console/webconsole"
 )
 
 func main() {
@@ -31,7 +32,7 @@ func main() {
 
 	httpServer := gin.Default()
 	routers.Route(httpServer, "admingateway")
-	routers.LoadJuggleChatAdminWeb(httpServer)
+	webconsole.LoadAdminWeb(httpServer)
 	go httpServer.Run(fmt.Sprintf(":%d", configures.Config.Port))
 
 	closeChan := make(chan struct{})
