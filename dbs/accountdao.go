@@ -34,6 +34,9 @@ func (admin AccountDao) FindByAccountPassword(account, password string) (*Accoun
 	var item AccountDao
 	err := dbcommons.GetDb().Where("account=? and password=?", account, password).Take(&item).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return &item, nil
