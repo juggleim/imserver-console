@@ -395,6 +395,9 @@ function formatTime(time, fmt = 'yyyy-MM-dd hh:mm:ss') {
     if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
   return fmt;
 }
+function isPermanentExpireTime(time) {
+  return Number(time) === 0 || Number(time) === -1;
+}
 function numberWithCommas(x) {
   x = x.toString();
   var pattern = /(-?\d+)(\d{3})/;
@@ -501,6 +504,7 @@ export default {
   quickSort,
   isMobile,
   formatTime,
+  isPermanentExpireTime,
   numberWithCommas,
   formatProps,
   isJSON,

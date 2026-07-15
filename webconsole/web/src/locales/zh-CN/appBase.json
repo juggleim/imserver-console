@@ -3,6 +3,7 @@
   "field": {
     "appName": "App 名称",
     "appKey": "App Key",
+    "alias": "别名",
     "appSecret": "App Secret",
     "expireTime": "App 到期时间",
     "licenseCount": "授权数量",
@@ -10,5 +11,14 @@
   },
   "status": {
     "online": "已上线"
+  },
+  "validation": {
+    "aliasRequired": "别名不能为空",
+    "aliasTooLong": "别名不能超过 50 个字符"
+  },
+  "feedback": {
+    "aliasSaved": "别名更新成功",
+    "aliasSaveFailed": "别名更新失败：{code} {msg}",
+    "aliasRequestFailed": "请求失败，请稍后重试"
   }
 }

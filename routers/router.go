@@ -30,6 +30,7 @@ func Route(eng *gin.Engine, prefix string) *gin.RouterGroup {
 	group.POST("/apps/create", apis.CreateApp)
 	group.GET("/apps/list", apis.QryApps)
 	group.GET("/apps/info", apis.QryAppInfo)
+	group.POST("/apps/alias/set", apis.UpdateAppAlias)
 	group.POST("/apps/configs/set", apis.UpdateAppConfigs)
 	group.POST("/apps/configs/get", apis.QryAppConfigs)
 	group.POST("/apps/eventsubconfig/set", apis.SetEventSubConfig)

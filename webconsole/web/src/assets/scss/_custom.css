@@ -3431,7 +3431,7 @@ em.cim-num{
   grid-template-columns: 150px minmax(0, 1fr);
   column-gap: 12px;
   row-gap: 32px;
-  max-width: 350px;
+  max-width: 480px;
 }
 
 .cim-app-base-item{
@@ -3460,6 +3460,59 @@ em.cim-num{
   width: 100%;
   justify-content: space-between;
   gap: 12px;
+}
+
+.cim-app-base-alias{
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) auto;
+  gap: 8px 12px;
+  width: 100%;
+}
+
+.cim-app-base-alias-input.form-control{
+  min-width: 0;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid #e6e7ea;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 22px;
+  color: #212121;
+}
+
+.cim-app-base-alias-input.form-control:focus{
+  border-color: rgba(36, 101, 255, 0.5);
+  box-shadow: 0 0 0 3px rgba(36, 101, 255, 0.12);
+}
+
+.cim-app-base-alias-save.cim-button{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  height: 36px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 8px;
+  background: #2465ff;
+  color: #fff;
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 400;
+}
+
+.cim-app-base-alias-save.cim-button:hover{
+  background: #1f58e3;
+}
+
+.cim-app-base-alias-save.cim-button:disabled{
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.cim-app-base-alias-error{
+  grid-column: 1 / -1;
+  margin: 0;
 }
 
 .cim-secret-text{

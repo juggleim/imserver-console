@@ -1,10 +1,12 @@
 <script setup>
-import { reactive } from 'vue';
+import { getCurrentInstance, reactive } from 'vue';
 import utils from '../../common/utils';
 import { Application } from "../../services";
 import { useRouter } from "vue-router";
 import { t } from '@/i18n';
+import { ErrorType } from '../../common/enum';
 
+const context = getCurrentInstance();
 let router = useRouter();
 let { currentRoute: { _rawValue: { params: { app_key } } } } = router;
 
@@ -13,6 +15,9 @@ let state = reactive({
     restricted_fields: {}
   },
   isShowSecret: false,
+  isSavingAlias: false,
+  editingAlias: '0',
+  aliasErrorMsg: '',
 });
 
 function fetchApp() {
@@ -21,9 +26,10 @@ function fetchApp() {
     utils.formatProps(data, { count: 'num', time: 'date' })
     data.use_percent = Math.floor(cur_user_count / max_user_count) * 100;
     data.raw_expired_time = data.expired_time;
-    data.expired_time = data.expired_time == -1 ? '' : utils.formatTime(data.expired_time);
+    data.expired_time = utils.isPermanentExpireTime(data.expired_time) ? '' : utils.formatTime(data.expired_time);
     data.n_app_secret = '********************';
     utils.extend(state.appInfo, data);
+    state.editingAlias = data.alias || '0';
   });
 }
 fetchApp();
@@ -34,7 +40,46 @@ function onShowSecret() {
 }
 
 function getExpireTimeLabel() {
-  return state.appInfo.raw_expired_time == -1 ? t('common.label.unlimited') : state.appInfo.expired_time;
+  return utils.isPermanentExpireTime(state.appInfo.raw_expired_time)
+    ? t('common.label.permanentValidity')
+    : state.appInfo.expired_time;
+}
+
+function onAliasInput() {
+  state.aliasErrorMsg = '';
+}
+
+function onSaveAlias() {
+  if (state.isSavingAlias) {
+    return;
+  }
+  const alias = String(state.editingAlias || '').trim();
+  if (!alias) {
+    state.aliasErrorMsg = t('appBase.validation.aliasRequired');
+    return;
+  }
+  if ([...alias].length > 50) {
+    state.aliasErrorMsg = t('appBase.validation.aliasTooLong');
+    return;
+  }
+
+  state.isSavingAlias = true;
+  Application.updateAlias({ app_key, alias }).then(({ code, msg }) => {
+    if (utils.isEqual(code, ErrorType.SUCCESS_0.code)) {
+      state.appInfo.alias = alias;
+      state.editingAlias = alias;
+      context.proxy.$toast({ icon: 'success', text: t('appBase.feedback.aliasSaved') });
+      return;
+    }
+    context.proxy.$toast({
+      icon: 'error',
+      text: t('appBase.feedback.aliasSaveFailed', { code, msg }),
+    });
+  }).catch(() => {
+    context.proxy.$toast({ icon: 'error', text: t('appBase.feedback.aliasRequestFailed') });
+  }).finally(() => {
+    state.isSavingAlias = false;
+  });
 }
 
 </script>
@@ -53,6 +98,31 @@ function getExpireTimeLabel() {
         <div class="cim-app-base-item">
           <div class="cim-app-base-label">{{ t('appBase.field.appKey') }}</div>
           <div class="cim-app-base-value">{{ state.appInfo.app_key }}</div>
+        </div>
+        <div class="cim-app-base-item">
+          <div class="cim-app-base-label">{{ t('appBase.field.alias') }}</div>
+          <div class="cim-app-base-value cim-app-base-alias">
+            <input
+              class="form-control cim-app-base-alias-input"
+              type="text"
+              maxlength="50"
+              :placeholder="t('appBase.field.alias')"
+              v-model="state.editingAlias"
+              @input="onAliasInput"
+              @keydown.enter="onSaveAlias"
+            >
+            <button
+              type="button"
+              class="cim-button cim-app-base-alias-save"
+              :disabled="state.isSavingAlias"
+              @click="onSaveAlias"
+            >
+              {{ t('common.dialog.save') }}
+            </button>
+            <div class="invalid-feedback feedback cim-app-base-alias-error" v-if="state.aliasErrorMsg">
+              {{ state.aliasErrorMsg }}
+            </div>
+          </div>
         </div>
         <div class="cim-app-base-item">
           <div class="cim-app-base-label">{{ t('appBase.field.appSecret') }}</div>

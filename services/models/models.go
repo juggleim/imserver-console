@@ -44,6 +44,7 @@ type AppInfo struct {
 	AppKey    string `json:"app_key"`
 	AppSecret string `json:"app_secret"`
 	AppStatus int    `json:"app_status"`
+	Alias     string `json:"alias"`
 
 	MaxUserCount int   `json:"max_user_count"`
 	CurUserCount int64 `json:"cur_user_count"`

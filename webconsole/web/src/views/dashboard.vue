@@ -77,7 +77,7 @@ function getApps(isFirst, callback = utils.noop){
     let apps = items.map((item) => {
       item.raw_ended_time = item.ended_time;
       item.created_time = utils.formatTime(item.created_time);
-      item.ended_time = item.ended_time == -1 ? '' : utils.formatTime(item.ended_time);
+      item.ended_time = utils.isPermanentExpireTime(item.ended_time) ? '' : utils.formatTime(item.ended_time);
       item.cur_user_count = utils.numberWithCommas(item.cur_user_count);
       item.max_user_count = utils.numberWithCommas(item.max_user_count);
       item.kind_key = utils.isEqual(item.app_type, APP_TYPE.PRIVATE) ? 'common.appType.private' : 'common.appType.public';
@@ -100,7 +100,9 @@ function getCreateActionLabel() {
 }
 
 function getExpireTimeLabel(app) {
-  return app.raw_ended_time == -1 ? t('common.label.unlimited') : app.ended_time;
+  return utils.isPermanentExpireTime(app.raw_ended_time)
+    ? t('common.label.permanentValidity')
+    : app.ended_time;
 }
 
 function onViewDetail(app){

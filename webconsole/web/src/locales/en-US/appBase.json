@@ -3,6 +3,7 @@
   "field": {
     "appName": "App Name",
     "appKey": "App Key",
+    "alias": "Alias",
     "appSecret": "App Secret",
     "expireTime": "App Expiration",
     "licenseCount": "Licensed Users",
@@ -10,5 +11,14 @@
   },
   "status": {
     "online": "Online"
+  },
+  "validation": {
+    "aliasRequired": "Alias is required",
+    "aliasTooLong": "Alias cannot exceed 50 characters"
+  },
+  "feedback": {
+    "aliasSaved": "Alias updated successfully",
+    "aliasSaveFailed": "Failed to update alias: {code} {msg}",
+    "aliasRequestFailed": "Request failed. Please try again later"
   }
 }

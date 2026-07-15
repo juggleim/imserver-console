@@ -60,7 +60,8 @@
     "maxUsers": "Licensed Users",
     "deploymentType": "Deployment",
     "expireTime": "Expires At",
-    "unlimited": "Unlimited"
+    "unlimited": "Unlimited",
+    "permanentValidity": "Never expires"
   },
   "form": {
     "addCertificate": "Add Certificate",

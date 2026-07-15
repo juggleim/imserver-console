@@ -60,7 +60,8 @@
     "maxUsers": "授权用户总数",
     "deploymentType": "部署方式",
     "expireTime": "到期时间",
-    "unlimited": "无限制"
+    "unlimited": "无限制",
+    "permanentValidity": "永久有效"
   },
   "form": {
     "addCertificate": "添加证书",

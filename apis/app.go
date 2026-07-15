@@ -31,6 +31,16 @@ func ActiveApp(ctx *gin.Context) {
 		ctxs.FailHttpResp(ctx, code)
 		return
 	}
+	if appinfo == nil || appinfo.AppKey == "" {
+		ctxs.FailHttpResp(ctx, errs.AdminErrorCode_UpdAppFail)
+		return
+	}
+	aliasCode, alias := services.EnsureAppAlias(appinfo.AppKey)
+	if aliasCode != errs.AdminErrorCode_Success {
+		ctxs.FailHttpResp(ctx, aliasCode)
+		return
+	}
+	appinfo.Alias = alias
 	ctxs.SuccessHttpResp(ctx, appinfo)
 }
 
@@ -50,6 +60,16 @@ func CreateApp(ctx *gin.Context) {
 			Msg:  "",
 		})
 	} else {
+		if appinfo == nil || appinfo.AppKey == "" {
+			ctxs.FailHttpResp(ctx, errs.AdminErrorCode_UpdAppFail)
+			return
+		}
+		aliasCode, alias := services.EnsureAppAlias(appinfo.AppKey)
+		if aliasCode != errs.AdminErrorCode_Success {
+			ctxs.FailHttpResp(ctx, aliasCode)
+			return
+		}
+		appinfo.Alias = alias
 		ctxs.SuccessHttpResp(ctx, appinfo)
 	}
 }
@@ -71,6 +91,28 @@ func QryApps(ctx *gin.Context) {
 		return
 	}
 	ctxs.SuccessHttpResp(ctx, apps)
+}
+
+func UpdateAppAlias(ctx *gin.Context) {
+	var req UpdateAppAliasReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, &ctxs.ApiErrorMsg{
+			Code: errs.AdminErrorCode_ParamError,
+			Msg:  "param illegal",
+		})
+		return
+	}
+	code := services.UpdateAppAlias(req.AppKey, req.Alias)
+	if code != errs.AdminErrorCode_Success {
+		ctxs.FailHttpResp(ctx, code)
+		return
+	}
+	ctxs.SuccessHttpResp(ctx, nil)
+}
+
+type UpdateAppAliasReq struct {
+	AppKey string `json:"app_key"`
+	Alias  string `json:"alias"`
 }
 
 func UpdateAppConfigs(ctx *gin.Context) {

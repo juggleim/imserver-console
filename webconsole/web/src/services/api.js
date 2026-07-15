@@ -18,6 +18,7 @@ let SERVER_PATH = {
   APP_SETTING_GET: 'apps/configs/get',
   APP_GET_LIST: 'apps/list',
   APP_GET_ONE: 'apps/info',
+  APP_ALIAS_SET: 'apps/alias/set',
   
   APP_EVENT_SET: 'apps/eventsubconfig/set',
   APP_EVENT_GET: 'apps/eventsubconfig/get',

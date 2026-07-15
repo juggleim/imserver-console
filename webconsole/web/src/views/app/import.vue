@@ -54,7 +54,9 @@ function getApps(){
   Application.getList().then(({ data: { items } }) => {
     let apps = items.map((item) => {
       item.created_time = utils.formatTime(item.created_time);
-      item.ended_time = utils.formatTime(item.ended_time);
+      item.ended_time = utils.isPermanentExpireTime(item.ended_time)
+        ? t('common.label.permanentValidity')
+        : utils.formatTime(item.ended_time);
       item.cur_user_count = utils.numberWithCommas(item.cur_user_count)
       item.max_user_count = utils.numberWithCommas(item.max_user_count)
       return item;

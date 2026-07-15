@@ -56,6 +56,13 @@ function getOne({ app_key }) {
   });
 }
 
+function updateAlias({ app_key, alias }) {
+  return request(SERVER_PATH.APP_ALIAS_SET, {
+    method: 'POST',
+    body: utils.toJSON({ app_key, alias }),
+  });
+}
+
 function setEventHook({ app_key, config, hooks }) {
   let sw = {};
   utils.forEach(hooks, (hook) => {
@@ -282,6 +289,7 @@ export default {
   getSetting,
   getList,
   getOne,
+  updateAlias,
   setEventHook,
   getEventHook,
   getInterceptorList,

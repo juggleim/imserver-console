@@ -2,10 +2,13 @@ package services
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math"
 	"net/http"
+	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/juggleim/imserver-console/commons/configures"
 	"github.com/juggleim/imserver-console/commons/ctxs"
@@ -14,7 +17,21 @@ import (
 	"github.com/juggleim/imserver-console/commons/tools"
 	"github.com/juggleim/imserver-console/dbs"
 	"github.com/juggleim/imserver-console/services/models"
+	"gorm.io/gorm"
 )
+
+const MaxAppAliasLength = 50
+
+type appInfoFinder interface {
+	FindByAppkey(appkey string) *dbs.AppInfoDao
+}
+
+type appNavStore interface {
+	FindByAppkey(appkey string) (*dbs.AppNavDao, error)
+	FindByAliasNo(aliasNo string) (*dbs.AppNavDao, error)
+	UpsertAlias(appkey string, aliasNo string) error
+	EnsureNextAlias(appkey string) (string, error)
+}
 
 var appFieldsMap map[string]bool
 
@@ -187,6 +204,7 @@ func QryApp(appkey string) *models.AppInfo {
 		CreatedTime:  dbApp.CreatedTime.UnixMilli(),
 		UpdateTime:   dbApp.UpdatedTime.UnixMilli(),
 		AppStatus:    dbApp.AppStatus,
+		Alias:        queryAppAlias(appkey, dbs.AppNavDao{}),
 		ConfigFields: make(map[string]string),
 		MaxUserCount: 100,
 	}
@@ -201,6 +219,75 @@ func QryApp(appkey string) *models.AppInfo {
 	}
 
 	return appInfo
+}
+
+func queryAppAlias(appkey string, navStore appNavStore) string {
+	const defaultAlias = "0"
+	appNav, err := navStore.FindByAppkey(appkey)
+	if err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			logs.NewLogEntity().Error(err.Error())
+		}
+		return defaultAlias
+	}
+	if appNav == nil || strings.TrimSpace(appNav.AliasNo) == "" {
+		return defaultAlias
+	}
+	return appNav.AliasNo
+}
+
+func UpdateAppAlias(appkey string, alias string) errs.AdminErrorCode {
+	return updateAppAlias(appkey, alias, dbs.AppInfoDao{}, dbs.AppNavDao{})
+}
+
+func EnsureAppAlias(appkey string) (errs.AdminErrorCode, string) {
+	return ensureAppAlias(appkey, dbs.AppNavDao{})
+}
+
+func ensureAppAlias(appkey string, navStore appNavStore) (errs.AdminErrorCode, string) {
+	appkey = strings.TrimSpace(appkey)
+	if appkey == "" {
+		return errs.AdminErrorCode_ParamError, ""
+	}
+	alias, err := navStore.EnsureNextAlias(appkey)
+	if err != nil {
+		logs.NewLogEntity().Error(err.Error())
+		return errs.AdminErrorCode_UpdAppFail, ""
+	}
+	return errs.AdminErrorCode_Success, alias
+}
+
+func updateAppAlias(appkey string, alias string, appFinder appInfoFinder, navStore appNavStore) errs.AdminErrorCode {
+	appkey = strings.TrimSpace(appkey)
+	alias = strings.TrimSpace(alias)
+	if appkey == "" || alias == "" || utf8.RuneCountInString(alias) > MaxAppAliasLength {
+		return errs.AdminErrorCode_ParamError
+	}
+	if appFinder.FindByAppkey(appkey) == nil {
+		return errs.AdminErrorCode_AppNotExist
+	}
+
+	existing, err := navStore.FindByAliasNo(alias)
+	if err == nil && existing != nil && existing.AppKey != appkey {
+		return errs.AdminErrorCode_UpdAppFail
+	}
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		logs.NewLogEntity().Error(err.Error())
+		return errs.AdminErrorCode_ServerErr
+	}
+	if err := navStore.UpsertAlias(appkey, alias); err != nil {
+		logs.NewLogEntity().Error(err.Error())
+		return errs.AdminErrorCode_UpdAppFail
+	}
+
+	saved, err := navStore.FindByAppkey(appkey)
+	if err != nil || saved == nil || saved.AliasNo != alias {
+		if err != nil {
+			logs.NewLogEntity().Error(err.Error())
+		}
+		return errs.AdminErrorCode_UpdAppFail
+	}
+	return errs.AdminErrorCode_Success
 }
 
 func UpdateAppConfigs(appkey string, configFields map[string]interface{}) errs.AdminErrorCode {
