@@ -18,10 +18,12 @@
       "appSecret": "AppSecret",
       "masterSecret": "MasterSecret",
       "certFile": "证书文件",
+      "configFile": "配置文件",
       "certPassword": "证书密码",
       "voipCertPassword": "VoIP 证书密码",
       "voipCertFile": "VoIP 证书文件",
-      "certEnv": "证书环境"
+      "certEnv": "证书环境",
+      "channelId": "Channel ID"
     },
     "option": {
       "dev": "开发环境",
@@ -29,7 +31,33 @@
     },
     "feedback": {
       "saveSuccess": "保存成功",
+      "saveFailed": "保存失败：{code} {msg}",
       "queryFailed": "查询异常，请刷新重试"
+    },
+    "action": {
+      "add": "新增配置",
+      "settings": "设置",
+      "retry": "重试"
+    },
+    "dialog": {
+      "addTitle": "新增{channel}推送配置",
+      "editTitle": "设置{channel}推送配置"
+    },
+    "placeholder": {
+      "input": "请输入{name}"
+    },
+    "hint": {
+      "secretUnchanged": "留空则保留原值"
+    },
+    "validation": {
+      "required": "请输入或选择{name}",
+      "packageDuplicate": "该包名已在当前渠道配置"
+    },
+    "status": {
+      "loading": "正在加载推送配置…",
+      "saving": "正在保存…",
+      "unset": "未配置",
+      "noFile": "未选择文件"
     }
   },
   "webhook": {

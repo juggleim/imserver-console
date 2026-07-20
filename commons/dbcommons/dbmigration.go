@@ -89,10 +89,18 @@ func executeSqlFile(fileName string) error {
 			if query != "" {
 				if err := GetDb().Exec(query).Error; err != nil {
 					fmt.Println("[DbMigration_Err]Execute sql error:", err, query)
+					return err
 				}
 			}
 			queryBuilder.Reset()
 		}
+	}
+	if err := scanner.Err(); err != nil {
+		fmt.Println("[DbMigration_Err]Scan sql file err:", err, "file_name:", fileName)
+		return err
+	}
+	if strings.TrimSpace(queryBuilder.String()) != "" {
+		return fmt.Errorf("sql file contains an unterminated statement: %s", fileName)
 	}
 	return nil
 }

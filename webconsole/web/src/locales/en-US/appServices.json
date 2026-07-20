@@ -18,10 +18,12 @@
       "appSecret": "AppSecret",
       "masterSecret": "MasterSecret",
       "certFile": "Certificate File",
+      "configFile": "Configuration File",
       "certPassword": "Certificate Password",
       "voipCertPassword": "VoIP Certificate Password",
       "voipCertFile": "VoIP Certificate File",
-      "certEnv": "Certificate Environment"
+      "certEnv": "Certificate Environment",
+      "channelId": "Channel ID"
     },
     "option": {
       "dev": "Development",
@@ -29,7 +31,33 @@
     },
     "feedback": {
       "saveSuccess": "Saved successfully",
+      "saveFailed": "Save failed: {code} {msg}",
       "queryFailed": "Query failed. Refresh and try again."
+    },
+    "action": {
+      "add": "Add Configuration",
+      "settings": "Settings",
+      "retry": "Retry"
+    },
+    "dialog": {
+      "addTitle": "Add {channel} Push Configuration",
+      "editTitle": "Configure {channel} Push"
+    },
+    "placeholder": {
+      "input": "Enter {name}"
+    },
+    "hint": {
+      "secretUnchanged": "Leave blank to keep the current value"
+    },
+    "validation": {
+      "required": "Enter or select {name}",
+      "packageDuplicate": "This package is already configured for the channel"
+    },
+    "status": {
+      "loading": "Loading push configurations…",
+      "saving": "Saving…",
+      "unset": "Not configured",
+      "noFile": "No file selected"
     }
   },
   "webhook": {

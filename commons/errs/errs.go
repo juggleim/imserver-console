@@ -23,4 +23,6 @@ var (
 	AdminErrorCode_AccountForbidden  AdminErrorCode = 1016
 	AdminErrorCode_AccountNotExist   AdminErrorCode = 1017
 	AdminErrorCode_NotPermission     AdminErrorCode = 1018
+	AdminErrorCode_PushConfExisted   AdminErrorCode = 1019
+	AdminErrorCode_PushConfNotExist  AdminErrorCode = 1020
 )

@@ -25,10 +25,31 @@ const (
 )
 
 type AndroidPushConf struct {
+	AppKey          string         `json:"app_key"`
+	PushChannel     string         `json:"push_channel,omitempty"`
+	Package         string         `json:"package"`
+	OriginalPackage string         `json:"original_package,omitempty"`
+	Extra           map[string]any `json:"extra"`
+}
+
+const PushSecretMask = "********"
+
+type PushConfListItem struct {
 	AppKey      string         `json:"app_key"`
-	PushChannel string         `json:"push_channel,omitempty"`
+	PushChannel string         `json:"push_channel"`
 	Package     string         `json:"package"`
-	Extra       map[string]any `json:"extra"`
+	ConfPath    string         `json:"conf_path,omitempty"`
+	Extra       map[string]any `json:"extra,omitempty"`
+}
+
+type IosPushConfListItem struct {
+	AppKey       string `json:"app_key"`
+	Package      string `json:"package"`
+	IsProduct    int    `json:"is_product"`
+	CertPath     string `json:"cert_path,omitempty"`
+	CertPwd      string `json:"cert_pwd,omitempty"`
+	VoipCertPwd  string `json:"voip_cert_pwd,omitempty"`
+	VoipCertPath string `json:"voip_cert_path,omitempty"`
 }
 
 type HuaweiPushConf struct {

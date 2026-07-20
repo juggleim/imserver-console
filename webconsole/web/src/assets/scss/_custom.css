@@ -4761,6 +4761,259 @@ em.cim-num{
   font-weight: 400;
 }
 
+.cim-push-card-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+.cim-push-card,
+.cim-push-add-card{
+  min-height: 244px;
+  border: 1px solid #e8eaf0;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(31, 43, 72, 0.06);
+}
+
+.cim-push-card{
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cim-push-card-header{
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid #f0f1f4;
+}
+
+.cim-push-card-title{
+  overflow: hidden;
+  margin: 0;
+  color: #20232a;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cim-push-card-body{
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 20px;
+}
+
+.cim-push-card-row{
+  display: grid;
+  grid-template-columns: minmax(92px, 0.8fr) minmax(0, 1.2fr);
+  align-items: start;
+  gap: 12px;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.cim-push-card-label{
+  color: #777b86;
+}
+
+.cim-push-card-value{
+  overflow-wrap: anywhere;
+  color: #252932;
+  text-align: right;
+}
+
+.cim-push-card-value.is-unset{
+  color: #a2a5ad;
+}
+
+.cim-push-card-footer{
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 20px;
+  border-top: 1px solid #f0f1f4;
+}
+
+.cim-push-settings-button,
+.cim-push-upload-button{
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #2465ff;
+  font-size: 14px;
+  line-height: 22px;
+  cursor: pointer;
+}
+
+.cim-push-settings-button:hover,
+.cim-push-upload-button:hover{
+  color: #174bc9;
+}
+
+.cim-push-add-card{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  border-style: dashed;
+  color: #707581;
+  cursor: pointer;
+  transition: border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.cim-push-add-card:hover,
+.cim-push-add-card:focus-visible{
+  border-color: #2465ff;
+  outline: none;
+  color: #2465ff;
+  box-shadow: 0 8px 28px rgba(36, 101, 255, 0.12);
+}
+
+.cim-push-add-icon{
+  font-size: 38px;
+  font-weight: 300;
+  line-height: 38px;
+}
+
+.cim-push-state{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  color: #777b86;
+}
+
+.cim-push-state-error{
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cim-push-dialog .modal-dialog{
+  max-width: 620px;
+}
+
+.cim-push-dialog .modal-content{
+  min-height: auto;
+}
+
+.cim-push-dialog .modal-header{
+  padding: 20px 5%;
+}
+
+.cim-push-dialog .modal-body{
+  align-items: stretch;
+  padding: 24px 0 28px;
+}
+
+.cim-push-dialog .modal-footer{
+  padding: 16px 5% 20px;
+}
+
+.cim-push-dialog-fields{
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 90%;
+  margin: 0 auto;
+}
+
+.cim-push-dialog-field{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cim-push-dialog-label{
+  margin: 0;
+  color: #4c515c;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.cim-push-required{
+  margin-left: 2px;
+  color: #e34d59;
+}
+
+.cim-push-dialog-input.form-control,
+.cim-push-dialog-upload{
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid #dfe2e8;
+  border-radius: 8px;
+  background: #f8f9fb;
+}
+
+.cim-push-dialog-input.form-control{
+  padding: 8px 12px;
+  box-shadow: none;
+}
+
+.cim-push-dialog-input.form-control:focus{
+  border-color: rgba(36, 101, 255, 0.55);
+  box-shadow: 0 0 0 3px rgba(36, 101, 255, 0.1);
+}
+
+.cim-push-dialog-upload{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 12px;
+}
+
+.cim-push-dialog-input.is-invalid,
+.cim-push-dialog-upload.is-invalid{
+  border-color: #e34d59;
+}
+
+.cim-push-dialog-file-name{
+  overflow: hidden;
+  flex: 1;
+  color: #777b86;
+  font-size: 13px;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cim-push-dialog-radios{
+  display: flex;
+  gap: 24px;
+  min-height: 40px;
+  align-items: center;
+}
+
+.cim-push-dialog-radio{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.cim-push-field-error,
+.cim-push-field-hint,
+.cim-push-saving{
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.cim-push-field-error{
+  color: #d83a47;
+}
+
+.cim-push-field-hint,
+.cim-push-saving{
+  color: #8b8f98;
+}
+
+.cim-push-saving{
+  text-align: right;
+}
+
 @media (max-width: 990px){
   .app-base.cim-page-shell{
     padding: 20px 18px 28px;
@@ -4875,6 +5128,35 @@ em.cim-num{
   }
 
   .cim-push-upload-name{
+    flex-basis: 100%;
+  }
+
+  .cim-push-card-grid{
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 640px){
+  .cim-push-page .cim-push-tabs{
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+
+  .cim-push-card-grid{
+    grid-template-columns: 1fr;
+  }
+
+  .cim-push-card,
+  .cim-push-add-card{
+    min-height: 220px;
+  }
+
+  .cim-push-dialog-upload{
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .cim-push-dialog-file-name{
     flex-basis: 100%;
   }
 }

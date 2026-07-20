@@ -1,349 +1,49 @@
 <script setup>
-  import { getCurrentInstance, reactive, ref } from 'vue';
-  import utils from '../../common/utils.js';
-  import { Application } from '../../services';
+  import { computed, getCurrentInstance, reactive, ref } from 'vue';
   import { useRouter } from 'vue-router';
-import { RESPONSE } from '../../common/enum';
-import { t } from '@/i18n';
-import PageSection from '@/components/page-section.vue';
+  import { Application } from '../../services';
+  import { RESPONSE } from '../../common/enum';
+  import { t } from '@/i18n';
+  import PageSection from '@/components/page-section.vue';
+  import PushConfigDialog from '@/components/push-config-dialog.vue';
+  import {
+    PUSH_CHANNELS,
+    createPushDraft,
+    getPushCardValue,
+    hasPushErrors,
+    validatePushDraft,
+  } from './push-config.mjs';
 
-  let router = useRouter();
-  let {
-    currentRoute: {
-      _rawValue: {
-        params: { app_key },
-      },
-    },
-  } = router;
-
+  const router = useRouter();
+  const appKey = router.currentRoute.value.params.app_key;
   const context = getCurrentInstance();
-
-  let settings = [
-    {
-      type: 'Huawei',
-      name: 'Huawei',
-      nameKey: 'appServices.push.channel.Huawei',
-      state: ref({
-        package: '',
-        app_id: '',
-        app_secret: '',
-      }),
-      fields: [
-        {
-          name: 'package',
-          label: 'Package Name',
-          labelKey: 'appServices.push.field.package',
-          type: 'input_text',
-        },
-        {
-          name: 'app_id',
-          label: 'App Id',
-          type: 'input_text',
-        },
-        {
-          name: 'app_secret',
-          label: 'App Secret',
-          type: 'input_text',
-        },
-      ],
-    },
-    {
-      type: 'Xiaomi',
-      name: 'Xiaomi',
-      nameKey: 'appServices.push.channel.Xiaomi',
-      state: ref({
-        package: '',
-        app_secret: '',
-      }),
-      fields: [
-        {
-          name: 'package',
-          label: 'Package Name',
-          labelKey: 'appServices.push.field.package',
-          type: 'input_text',
-        },
-        {
-          name: 'app_secret',
-          label: 'App Secret',
-          type: 'input_text',
-        },
-        {
-          name: 'channel_id',
-          label: 'ChannelId',
-          type: 'input_text',
-        },
-      ],
-    },
-    {
-      type: 'Oppo',
-      name: 'OPPO',
-      nameKey: 'appServices.push.channel.Oppo',
-      state: ref({
-        package: '',
-        app_key: '',
-        master_secret: '',
-      }),
-      fields: [
-        {
-          name: 'package',
-          label: 'Package Name',
-          labelKey: 'appServices.push.field.package',
-          type: 'input_text',
-        },
-        {
-          name: 'app_key',
-          label: 'App Key',
-          type: 'input_text',
-        },
-        {
-          name: 'master_secret',
-          label: 'Master Secret',
-          type: 'input_text',
-        },
-        {
-          name: 'channel_id',
-          label: 'ChannelId',
-          type: 'input_text',
-        },
-      ],
-    },
-    {
-      type: 'Vivo',
-      name: 'VIVO',
-      nameKey: 'appServices.push.channel.Vivo',
-      state: ref({
-        package: '',
-        app_id: '',
-        app_key: '',
-        app_secret: '',
-      }),
-      fields: [
-        {
-          name: 'package',
-          label: 'Package Name',
-          labelKey: 'appServices.push.field.package',
-          type: 'input_text',
-        },
-        {
-          name: 'app_id',
-          label: 'App Id',
-          type: 'input_text',
-        },
-        {
-          name: 'app_key',
-          label: 'App Key',
-          type: 'input_text',
-        },
-        {
-          name: 'app_secret',
-          label: 'App Secret',
-          type: 'input_text',
-        },
-      ],
-    },
-    {
-      type: 'ios',
-      name: 'iOS',
-      nameKey: 'appServices.push.channel.ios',
-      state: ref({
-        package: '',
-        cert_path: '',
-        cert_pwd: '',
-        voip_ioscer: '',
-        voip_cert_path: '',
-        voip_cert_pwd: '',
-        is_product: 0,
-      }),
-      fields: [
-        {
-          name: 'package',
-          label: 'Package Name',
-          labelKey: 'appServices.push.field.package',
-          type: 'input_text',
-        },
-        {
-          name: 'cert_path',
-          label: 'Certificate File',
-          labelKey: 'appServices.push.field.certFile',
-          type: 'file',
-        },
-        {
-          name: 'cert_pwd',
-          label: 'Certificate Password',
-          labelKey: 'appServices.push.field.certPassword',
-          type: 'input_text',
-        },
-        {
-          name: 'voip_cert_pwd',
-          label: 'VoIP Certificate Password',
-          labelKey: 'appServices.push.field.voipCertPassword',
-          type: 'input_text',
-        },
-        {
-          name: 'voip_cert_path',
-          label: 'VoIP Certificate File',
-          labelKey: 'appServices.push.field.voipCertFile',
-          type: 'voipfile',
-        },
-        {
-          name: 'is_product',
-          label: 'Certificate Environment',
-          labelKey: 'appServices.push.field.certEnv',
-          type: 'radios',
-          radios: [
-          { name: 'type', value: 0, label: 'Development', labelKey: 'appServices.push.option.dev' },
-          { name: 'type', value: 1, label: 'Production', labelKey: 'appServices.push.option.prod' },
-          ]
-        },
-      ],
-    },
-    {
-      type: 'fcm',
-      name: 'FCM',
-      nameKey: 'appServices.push.channel.fcm',
-      state: ref({
-        package: '',
-        conf_path: '',
-        app_key: '',
-        fcm_conf: '',
-      }),
-      fields: [
-        {
-          name: 'package',
-          label: 'Package Name',
-          labelKey: 'appServices.push.field.package',
-          type: 'input_text',
-        },
-        {
-          name: 'fcm_conf',
-          label: 'Certificate File',
-          labelKey: 'appServices.push.field.certFile',
-          type: 'file',
-        },
-      ],
-    },
-    {
-      type: 'Jpush',
-      name: 'Jpush',
-      nameKey: 'appServices.push.channel.Jpush',
-      state: ref({
-        package: '',
-        app_key: '',
-        master_secret: '',
-      }),
-      fields: [
-        {
-          name: 'package',
-          label: 'Package Name',
-          labelKey: 'appServices.push.field.package',
-          type: 'input_text',
-        },
-        {
-          name: 'app_key',
-          label: 'AppKey',
-          labelKey: 'appServices.push.field.appKey',
-          type: 'input_text',
-        },
-        {
-          name: 'master_secret',
-          label: 'MasterSecret',
-          labelKey: 'appServices.push.field.masterSecret',
-          type: 'input_text',
-        },
-      ],
-    },
-    {
-      type: 'Honor',
-      name: 'Honor',
-      nameKey: 'appServices.push.channel.Honor',
-      state: ref({
-        package: '',
-        app_id: '',
-        app_key: '',
-        app_secret: '',
-      }),
-      fields: [
-        {
-          name: 'package',
-          label: 'Package Name',
-          labelKey: 'appServices.push.field.package',
-          type: 'input_text',
-        },
-        {
-          name: 'app_id',
-          label: 'AppId',
-          labelKey: 'appServices.push.field.appId',
-          type: 'input_text',
-        },
-        {
-          name: 'app_key',
-          label: 'AppKey',
-          labelKey: 'appServices.push.field.appKey',
-          type: 'input_text',
-        },
-        {
-          name: 'app_secret',
-          label: 'AppSecret',
-          labelKey: 'appServices.push.field.appSecret',
-          type: 'input_text',
-        },
-      ],
-    },
-    {
-      type: 'Getui',
-      name: 'Getui',
-      nameKey: 'appServices.push.channel.Getui',
-      state: ref({
-        package: '',
-        app_id: '',
-        app_key: '',
-        master_secret: '',
-      }),
-      fields: [
-        {
-          name: 'package',
-          label: 'Package Name',
-          labelKey: 'appServices.push.field.package',
-          type: 'input_text',
-        },
-        {
-          name: 'app_id',
-          label: 'AppId',
-          labelKey: 'appServices.push.field.appId',
-          type: 'input_text',
-        },
-        {
-          name: 'app_key',
-          label: 'AppKey',
-          labelKey: 'appServices.push.field.appKey',
-          type: 'input_text',
-        },
-        {
-          name: 'master_secret',
-          label: 'MasterSecret',
-          labelKey: 'appServices.push.field.masterSecret',
-          type: 'input_text',
-        },
-      ],
-    },
-  ];
-
-  const channel = ref(settings[0].type);
-  const uploadState = reactive(
-    settings.reduce((result, setting) => {
-      result[setting.type] = {
-        file: {},
-        voipFile: {},
-      };
-      return result;
-    }, {})
+  const settings = reactive(
+    PUSH_CHANNELS.map((setting) => ({
+      ...setting,
+      items: [],
+      loading: false,
+      failed: false,
+    }))
   );
-  const fileInputRefs = reactive({});
+  const channel = ref(settings[0].type);
+  const dialog = reactive({
+    show: false,
+    mode: 'add',
+    draft: null,
+    errors: {},
+    saving: false,
+  });
 
-  function onTab(setting) {
-    channel.value = setting.type;
-    search();
-  }
+  const currentSetting = computed(
+    () => settings.find((setting) => setting.type === channel.value) || settings[0]
+  );
+  const dialogTitle = computed(() => {
+    const key =
+      dialog.mode === 'edit'
+        ? 'appServices.push.dialog.editTitle'
+        : 'appServices.push.dialog.addTitle';
+    return t(key, { channel: getSettingName(currentSetting.value) });
+  });
 
   function getSettingName(setting) {
     return setting.nameKey ? t(setting.nameKey, {}, setting.name) : setting.name;
@@ -353,260 +53,240 @@ import PageSection from '@/components/page-section.vue';
     return field.labelKey ? t(field.labelKey, {}, field.label) : field.label;
   }
 
-  function getFieldPlaceholder(field) {
-    const label = getFieldLabel(field);
-    return /^[A-Za-z]/.test(label) ? `请输入 ${label}` : `请输入${label}`;
+  function toast(icon, text) {
+    context.proxy.$toast({ icon, text });
   }
 
-  function getFileKey(settingType, fieldName) {
-    return `${settingType}:${fieldName}`;
-  }
-
-  function setFileInputRef(settingType, fieldName, element) {
-    const key = getFileKey(settingType, fieldName);
-    if (element) {
-      fileInputRefs[key] = element;
-    } else {
-      delete fileInputRefs[key];
+  function ensureSuccess(result) {
+    if (result?.code === RESPONSE.SUCCESS) {
+      return result;
     }
+    const error = new Error(result?.msg || 'request failed');
+    error.code = result?.code;
+    throw error;
   }
 
-  function triggerFileSelect(settingType, fieldName) {
-    fileInputRefs[getFileKey(settingType, fieldName)]?.click();
-  }
-
-  function onFileSelect(settingType, fieldType, event) {
-    const file = event.target.files?.[0] || {};
-    if (fieldType === 'voipfile') {
-      uploadState[settingType].voipFile = file;
-      return;
-    }
-    uploadState[settingType].file = file;
-  }
-
-  function onFileRemove(settingType, fieldType, fieldName) {
-    if (fieldType === 'voipfile') {
-      uploadState[settingType].voipFile = {};
-    } else {
-      uploadState[settingType].file = {};
-    }
-    const input = fileInputRefs[getFileKey(settingType, fieldName)];
-    if (input) {
-      input.value = '';
-    }
-  }
-
-  function getSelectedFileName(settingType, fieldType) {
-    if (fieldType === 'voipfile') {
-      return uploadState[settingType].voipFile?.name || '';
-    }
-    return uploadState[settingType].file?.name || '';
-  }
-
-  function getFieldValue(setting, field) {
-    return getSelectedFileName(setting.type, field.type) || setting.state.value[field.name] || '';
-  }
-
-  function onSubmit(setting) {
-    setting.state.value.file = uploadState[setting.type].file || {};
-    setting.state.value.voipFile = uploadState[setting.type].voipFile || {};
-    onSave(setting.state.value);
-  }
-
-  function onSave(item) {
-    if (channel.value.startsWith('ios')) {
-      let { file, voipFile } = item;
-      if(file.name || voipFile.name){
-        return Application.uploadIosPushConfig({
-          app_key,
-          package: item.package,
-          cert_pwd: item.cert_pwd,
-          file: item.file,
-          is_product: item.is_product,
-          voip_cert_pwd: item.voip_cert_pwd,
-          voipFile: item.voipFile,
-        }).then(() => {
-          context.proxy.$toast({ icon: 'success', text: t('appServices.push.feedback.saveSuccess') });
+  async function loadSetting(setting) {
+    setting.loading = true;
+    setting.failed = false;
+    try {
+      let result;
+      if (setting.kind === 'ios') {
+        result = await Application.getIosPushConfigList({ app_key: appKey });
+      } else if (setting.kind === 'fcm') {
+        result = await Application.getFcmPushConfigList({ app_key: appKey });
+      } else {
+        result = await Application.getAndroidPushConfigList({
+          app_key: appKey,
+          push_channel: setting.type,
         });
       }
-
-      Application.setIosPushConfig({
-        app_key,
-        package: item.package,
-        cert_pwd: item.cert_pwd,
-        voip_cert_pwd: item.voip_cert_pwd,
-        is_product: item.is_product,
-      }).then(() => {
-        context.proxy.$toast({ icon: 'success', text: t('appServices.push.feedback.saveSuccess') });
-      });
-
-    } else if(channel.value.startsWith('fcm')){
-      Application.uploadFcmPushConfig({
-        app_key,
-        package: item.package,
-        file: item.file,
-      }).then(() => {
-        context.proxy.$toast({ icon: 'success', text: t('appServices.push.feedback.saveSuccess') });
-      });
-    } else {
-      Application.setAndroidPushConfig({
-        app_key,
-        push_channel: channel.value,
-        package: item.package,
-        extra: item,
-      }).then(() => {
-        context.proxy.$toast({ icon: 'success', text: t('appServices.push.feedback.saveSuccess') });
-      });
+      ensureSuccess(result);
+      setting.items = Array.isArray(result.data) ? result.data : [];
+    } catch (error) {
+      setting.failed = true;
+      setting.items = [];
+      toast('error', t('appServices.push.feedback.queryFailed'));
+    } finally {
+      setting.loading = false;
     }
   }
 
-  async function search() {
-    if (channel.value.startsWith('ios')) {
-      const res = await Application.getIosPushConfig({ app_key, push_channel: channel.value });
-      let { data } = res;
-      if(!data){
-        data = { is_product: 0 };
+  function closeDialog() {
+    if (dialog.saving) {
+      return;
+    }
+    dialog.show = false;
+    dialog.draft = null;
+    dialog.errors = {};
+  }
+
+  function onTab(setting) {
+    closeDialog();
+    channel.value = setting.type;
+    loadSetting(setting);
+  }
+
+  function openAdd() {
+    dialog.mode = 'add';
+    dialog.draft = createPushDraft(currentSetting.value);
+    dialog.errors = {};
+    dialog.show = true;
+  }
+
+  function openEdit(item) {
+    dialog.mode = 'edit';
+    dialog.draft = createPushDraft(currentSetting.value, item);
+    dialog.errors = {};
+    dialog.show = true;
+  }
+
+  function buildTextExtra(setting, draft) {
+    return setting.fields.reduce((extra, field) => {
+      if (field.name !== 'package' && field.type === 'input_text') {
+        extra[field.name] =
+          typeof draft[field.name] === 'string' ? draft[field.name].trim() : draft[field.name];
       }
-      utils.forEach(settings, (item) => {
-        if (item.type === channel.value) {
-          item.state.value = {
-            ...item.state.value,
-            package: data.package,
-            cert_path: data.cert_path,
-            cert_pwd: data.cert_pwd,
-            voip_cert_pwd: data.voip_cert_pwd,
-            voip_cert_path: data.voip_cert_path,
-            is_product: data.is_product,
-          };
+      return extra;
+    }, {});
+  }
+
+  async function saveDraft() {
+    const setting = currentSetting.value;
+    dialog.errors = validatePushDraft(setting, dialog.draft, setting.items);
+    if (hasPushErrors(dialog.errors)) {
+      return;
+    }
+
+    const draft = dialog.draft;
+    draft.package = String(draft.package).trim();
+    dialog.saving = true;
+    try {
+      let result;
+      if (setting.kind === 'ios') {
+        const params = {
+          app_key: appKey,
+          package: draft.package,
+          original_package: draft.original_package,
+          cert_pwd: draft.cert_pwd,
+          voip_cert_pwd: draft.voip_cert_pwd,
+          is_product: draft.is_product,
+          file: draft.file,
+          voipFile: draft.voipFile,
+        };
+        if (!draft.original_package || draft.file?.name || draft.voipFile?.name) {
+          result = await Application.uploadIosPushConfig(params);
+        } else {
+          result = await Application.setIosPushConfig(params);
         }
-      });
-    }  else if(channel.value.startsWith('fcm')){
-      const res = await Application.getFcmPushConfig({ app_key, push_channel: channel.value });
-      let { data } = res;
-      if(!data){
-        data = { is_product: 0 };
+      } else if (setting.kind === 'fcm') {
+        result = await Application.uploadFcmPushConfig({
+          app_key: appKey,
+          package: draft.package,
+          original_package: draft.original_package,
+          file: draft.file,
+        });
+      } else {
+        result = await Application.setAndroidPushConfig({
+          app_key: appKey,
+          push_channel: setting.type,
+          package: draft.package,
+          original_package: draft.original_package,
+          extra: buildTextExtra(setting, draft),
+        });
       }
-      utils.forEach(settings, (item) => {
-        if (item.type === channel.value) {
-          item.state.value = {
-            ...item.state.value,
-            package: data.package,
-            fcm_conf: data.conf_path,
-          };
-        }
-      });
-    }else {
-      const res = await Application.getAndroidPushConfig({ app_key, push_channel: channel.value });
-      let { code,  data = {} } = res;
-      if(!utils.isEqual(code, RESPONSE.SUCCESS)){
-        return  context.proxy.$toast({ icon: 'error', text: t('appServices.push.feedback.queryFailed') });;
+      ensureSuccess(result);
+      toast('success', t('appServices.push.feedback.saveSuccess'));
+      dialog.show = false;
+      dialog.draft = null;
+      dialog.errors = {};
+      await loadSetting(setting);
+    } catch (error) {
+      if (error.code === RESPONSE.PUSH_CONF_EXISTED) {
+        dialog.errors = { ...dialog.errors, package: 'duplicate' };
       }
-      utils.forEach(settings, (item) => {
-        if (item.type === channel.value) {
-          item.state.value = {
-            ...item.state.value,
-            package: data.package,
-            ...data.extra,
-          };
-        }
-      });
+      toast(
+        'error',
+        t('appServices.push.feedback.saveFailed', {
+          code: error.code || '',
+          msg: error.message || '',
+        })
+      );
+    } finally {
+      dialog.saving = false;
     }
   }
 
-  search();
+  function getCardValue(item, field) {
+    const value = getPushCardValue(item, field);
+    if (field.type === 'radios') {
+      const option = field.radios.find((candidate) => candidate.value === value);
+      return option ? (option.labelKey ? t(option.labelKey, {}, option.label) : option.label) : '';
+    }
+    return value;
+  }
+
+  function cardFields(setting) {
+    return setting.fields.filter((field) => field.cardVisible);
+  }
+
+  loadSetting(settings[0]);
 </script>
+
 <template>
-  <PageSection title-key="menu.app.pushSettings" shell-class="cim-push-page" body-class="cim-push-content">
+  <PageSection
+    title-key="menu.app.pushSettings"
+    shell-class="cim-push-page"
+    body-class="cim-push-content"
+  >
     <ul class="nav nav-underline-border cim-push-tabs" role="tablist">
-      <li class="nav-item sw-nav-item" v-for="setting in settings" @click="onTab(setting)">
-        <a
+      <li class="nav-item sw-nav-item" v-for="setting in settings" :key="setting.type">
+        <button
+          type="button"
           class="nav-link cicon cicon-free"
-          :class="{ active: utils.isEqual(channel, setting.type) }"
-          >{{ getSettingName(setting) }}</a
+          :class="{ active: channel === setting.type }"
+          :aria-selected="channel === setting.type"
+          @click="onTab(setting)"
         >
+          {{ getSettingName(setting) }}
+        </button>
       </li>
     </ul>
-    <div class="tab-content cim-push-tab-content">
-      <div
-        class="tab-pane cim-push-pane"
-        v-for="setting in settings"
-        :key="setting.type"
-        :class="{ active: utils.isEqual(channel, setting.type) }"
-      >
-        <div class="cim-push-form-wrap">
-          <div class="cim-push-form">
-            <div
-              class="cim-push-field"
-              v-for="field in setting.fields"
-              :key="field.name"
-            >
-              <label class="cim-push-field-label">{{ getFieldLabel(field) }}</label>
 
-              <input
-                v-if="field.type === 'input_text'"
-                v-model="setting.state.value[field.name]"
-                class="form-control cim-push-input"
-                type="text"
-                :placeholder="getFieldPlaceholder(field)"
-              >
-
-              <div
-                v-else-if="field.type === 'file' || field.type === 'voipfile'"
-                class="cim-push-upload"
-              >
-                <input
-                  :ref="(element) => setFileInputRef(setting.type, field.name, element)"
-                  class="cim-push-upload-input"
-                  type="file"
-                  @change="onFileSelect(setting.type, field.type, $event)"
-                >
-                <div class="cim-push-upload-name">{{ getFieldValue(setting, field) }}</div>
-                <div
-                  v-if="getSelectedFileName(setting.type, field.type)"
-                  class="cim-push-upload-action cim-push-upload-remove"
-                  @click="onFileRemove(setting.type, field.type, field.name)"
-                >
-                  {{ t('common.form.removeCertificate') }}
-                </div>
-                <div
-                  class="cim-push-upload-action"
-                  @click="triggerFileSelect(setting.type, field.name)"
-                >
-                  {{ t('common.form.addCertificate') }}
-                </div>
-              </div>
-
-              <div
-                v-else-if="field.type === 'radios'"
-                class="cim-push-radios"
-              >
-                <label
-                  class="cim-push-radio"
-                  v-for="radio in field.radios"
-                  :key="`${field.name}-${radio.value}`"
-                >
-                  <input
-                    v-model="setting.state.value[field.name]"
-                    class="form-check-input"
-                    type="radio"
-                    :name="`${setting.type}-${field.name}`"
-                    :value="radio.value"
-                  >
-                  <span class="cim-push-radio-text">
-                    {{ radio.labelKey ? t(radio.labelKey, {}, radio.label) : radio.label }}
-                  </span>
-                </label>
-              </div>
-            </div>
-
-            <div class="cim-push-actions">
-              <div class="cim-button cim-button-bg cim-push-save" @click="onSubmit(setting)">
-                {{ t('common.dialog.save') }}
-              </div>
-            </div>
+    <div class="cim-push-state" v-if="currentSetting.loading">
+      {{ t('appServices.push.status.loading') }}
+    </div>
+    <div class="cim-push-state cim-push-state-error" v-else-if="currentSetting.failed">
+      <span>{{ t('appServices.push.feedback.queryFailed') }}</span>
+      <button type="button" class="cim-button" @click="loadSetting(currentSetting)">
+        {{ t('appServices.push.action.retry') }}
+      </button>
+    </div>
+    <div class="cim-push-card-grid" v-else>
+      <article class="cim-push-card" v-for="item in currentSetting.items" :key="item.package">
+        <header class="cim-push-card-header">
+          <h3 class="cim-push-card-title">{{ item.package }}</h3>
+        </header>
+        <div class="cim-push-card-body">
+          <div
+            class="cim-push-card-row"
+            v-for="field in cardFields(currentSetting)"
+            :key="field.name"
+          >
+            <span class="cim-push-card-label">{{ getFieldLabel(field) }}</span>
+            <span class="cim-push-card-value" :class="{ 'is-unset': !getCardValue(item, field) }">
+              {{ getCardValue(item, field) || t('appServices.push.status.unset') }}
+            </span>
           </div>
         </div>
-      </div>
+        <footer class="cim-push-card-footer">
+          <button type="button" class="cim-push-settings-button" @click="openEdit(item)">
+            {{ t('appServices.push.action.settings') }}
+          </button>
+        </footer>
+      </article>
+
+      <button
+        type="button"
+        class="cim-push-add-card"
+        @click="openAdd"
+        :aria-label="t('appServices.push.action.add')"
+      >
+        <span class="cim-push-add-icon" aria-hidden="true">+</span>
+        <span>{{ t('appServices.push.action.add') }}</span>
+      </button>
     </div>
+
+    <PushConfigDialog
+      v-if="dialog.draft"
+      :show="dialog.show"
+      :title="dialogTitle"
+      :setting="currentSetting"
+      :draft="dialog.draft"
+      :errors="dialog.errors"
+      :saving="dialog.saving"
+      @hide="closeDialog"
+      @save="saveDraft"
+    />
   </PageSection>
 </template>

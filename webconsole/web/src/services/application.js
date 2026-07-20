@@ -137,8 +137,14 @@ function getAndroidPushConfig(params) {
   return get(SERVER_PATH.APP_ANDROID_GET, params);
 }
 
+function getAndroidPushConfigList(params) {
+  return get(SERVER_PATH.APP_ANDROID_LIST, params);
+}
+
 function uploadIosPushConfig(params) {
-  let { app_key, cert_pwd, file, voipFile, voip_cert_pwd, is_product } = params;
+  let { app_key, cert_pwd, file = {}, voipFile = {}, voip_cert_pwd, is_product, original_package } = params;
+  file = file || {};
+  voipFile = voipFile || {};
   let form = new FormData();
   if(file.name){
     form.append('ioscer', file);
@@ -146,12 +152,13 @@ function uploadIosPushConfig(params) {
   }
   form.append('app_key', app_key);
   form.append('package', params.package);
+  form.append('original_package', original_package || '');
   form.append('cert_pwd', cert_pwd);
+  form.append('voip_cert_pwd', voip_cert_pwd || '');
   form.append('is_product', is_product);
   if(voipFile.name){
     form.append('voip_ioscer', voipFile);
     form.append('voip_cert_path', voipFile.name);
-    form.append('voip_cert_pwd', voip_cert_pwd);
   }
   return request(SERVER_PATH.APP_IOS_UPLOAD, {
     method: 'POST',
@@ -168,6 +175,10 @@ function setIosPushConfig(data) {
 
 function getIosPushConfig(params) {
   return get(SERVER_PATH.APP_IOS_GET, params);
+}
+
+function getIosPushConfigList(params) {
+  return get(SERVER_PATH.APP_IOS_LIST, params);
 }
 
 function uploadFile(file) {
@@ -262,13 +273,19 @@ function importSensitiveWords(appKey, file) {
 function getFcmPushConfig(params) {
   return get(SERVER_PATH.APP_FCM_GET, params);
 }
+function getFcmPushConfigList(params) {
+  return get(SERVER_PATH.APP_FCM_LIST, params);
+}
 function uploadFcmPushConfig(params) {
-  let { app_key, file } = params;
+  let { app_key, file = {}, original_package } = params;
+  file = file || {};
   let form = new FormData();
-  form.append('fcm_conf', file);
+  if (file.name) {
+    form.append('fcm_conf', file);
+  }
   form.append('app_key', app_key);
   form.append('package', params.package);
-  form.append('conf_path', file.name);
+  form.append('original_package', original_package || '');
   return request(SERVER_PATH.APP_FCM_UPLOAD, {
     method: 'POST',
     body: form,
@@ -293,8 +310,10 @@ export default {
   deleteInterceptorCondition,
   setAndroidPushConfig,
   getAndroidPushConfig,
+  getAndroidPushConfigList,
   uploadFile,
   getIosPushConfig,
+  getIosPushConfigList,
   setIosPushConfig,
   uploadIosPushConfig,
   getStorageConfig,
@@ -310,5 +329,6 @@ export default {
   deleteSensitiveWord,
   importSensitiveWords,
   getFcmPushConfig,
+  getFcmPushConfigList,
   uploadFcmPushConfig,  
 };
