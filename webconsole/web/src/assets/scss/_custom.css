@@ -4948,9 +4948,63 @@ em.cim-num{
   background: #f8f9fb;
 }
 
+.cim-push-dialog-input-wrap{
+  position: relative;
+  width: 100%;
+}
+
 .cim-push-dialog-input.form-control{
   padding: 8px 12px;
   box-shadow: none;
+}
+
+.cim-push-dialog-input.form-control.has-secret-toggle{
+  padding-right: 48px;
+}
+
+.cim-push-secret-toggle{
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #777b86;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.cim-push-secret-toggle:hover,
+.cim-push-secret-toggle:focus-visible{
+  outline: none;
+  background: rgba(36, 101, 255, 0.08);
+  color: #2465ff;
+}
+
+.cim-push-secret-toggle svg{
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cim-push-secret-toggle.is-hidden::after{
+  position: absolute;
+  width: 20px;
+  height: 1.5px;
+  border-radius: 999px;
+  background: currentColor;
+  content: '';
+  transform: rotate(45deg);
 }
 
 .cim-push-dialog-input.form-control:focus{

@@ -1,5 +1,5 @@
 <script setup>
-  import { ref } from 'vue';
+  import { ref, watch } from 'vue';
   import Dialog from './dialog.vue';
   import { t } from '@/i18n';
 
@@ -13,6 +13,14 @@
   });
   const emit = defineEmits(['save', 'hide']);
   const fileInputs = ref({});
+  const visibleSecrets = ref({});
+
+  watch(
+    () => props.draft,
+    () => {
+      visibleSecrets.value = {};
+    }
+  );
 
   function fieldLabel(field) {
     return field.labelKey ? t(field.labelKey, {}, field.label) : field.label;
@@ -70,6 +78,21 @@
       emit('save');
     }
   }
+
+  function isSecretVisible(field) {
+    return Boolean(visibleSecrets.value[field.name]);
+  }
+
+  function toggleSecretVisibility(field) {
+    visibleSecrets.value[field.name] = !isSecretVisible(field);
+  }
+
+  function secretToggleLabel(field) {
+    const key = isSecretVisible(field)
+      ? 'appServices.push.action.hideSecret'
+      : 'appServices.push.action.showSecret';
+    return t(key, { name: fieldLabel(field) });
+  }
 </script>
 
 <template>
@@ -87,15 +110,33 @@
           <span class="cim-push-required" v-if="field.required">*</span>
         </label>
 
-        <input
-          v-if="field.type === 'input_text'"
-          v-model="props.draft[field.name]"
-          class="form-control cim-push-dialog-input"
-          :class="{ 'is-invalid': props.errors[field.name] }"
-          :type="field.secret ? 'password' : 'text'"
-          :placeholder="fieldPlaceholder(field)"
-          autocomplete="new-password"
-        />
+        <div class="cim-push-dialog-input-wrap" v-if="field.type === 'input_text'">
+          <input
+            v-model="props.draft[field.name]"
+            class="form-control cim-push-dialog-input"
+            :class="{
+              'is-invalid': props.errors[field.name],
+              'has-secret-toggle': field.secret,
+            }"
+            :type="field.secret && !isSecretVisible(field) ? 'password' : 'text'"
+            :placeholder="fieldPlaceholder(field)"
+            autocomplete="new-password"
+          />
+          <button
+            v-if="field.secret"
+            type="button"
+            class="cim-push-secret-toggle"
+            :class="{ 'is-hidden': !isSecretVisible(field) }"
+            :aria-label="secretToggleLabel(field)"
+            :title="secretToggleLabel(field)"
+            @click="toggleSecretVisibility(field)"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" />
+              <circle cx="12" cy="12" r="2.75" />
+            </svg>
+          </button>
+        </div>
 
         <div
           v-else-if="field.type === 'file'"

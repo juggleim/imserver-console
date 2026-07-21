@@ -8,6 +8,7 @@
   import PushConfigDialog from '@/components/push-config-dialog.vue';
   import {
     PUSH_CHANNELS,
+    buildPushTextExtra,
     createPushDraft,
     getPushCardValue,
     hasPushErrors,
@@ -121,16 +122,6 @@
     dialog.show = true;
   }
 
-  function buildTextExtra(setting, draft) {
-    return setting.fields.reduce((extra, field) => {
-      if (field.name !== 'package' && field.type === 'input_text') {
-        extra[field.name] =
-          typeof draft[field.name] === 'string' ? draft[field.name].trim() : draft[field.name];
-      }
-      return extra;
-    }, {});
-  }
-
   async function saveDraft() {
     const setting = currentSetting.value;
     dialog.errors = validatePushDraft(setting, dialog.draft, setting.items);
@@ -172,7 +163,7 @@
           push_channel: setting.type,
           package: draft.package,
           original_package: draft.original_package,
-          extra: buildTextExtra(setting, draft),
+          extra: buildPushTextExtra(setting, draft),
         });
       }
       ensureSuccess(result);

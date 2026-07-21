@@ -1,8 +1,11 @@
 # multi-package-push-settings Specification
 
 ## Purpose
-TBD - created by archiving change support-multiple-push-packages. Update Purpose after archive.
+
+定义“应用管理 → 推送设置”的多包名配置能力，包括九个推送渠道的实际字段、卡片列表、新增与编辑弹窗、敏感字段显示策略、iOS/FCM 文件保留规则，以及服务端按应用、渠道和包名进行持久化的兼容性要求。
+
 ## Requirements
+
 ### Requirement: Channel tabs present package configuration cards
 系统 SHALL 在“应用管理 → 推送设置”的每个现有渠道标签页中，以卡片列表展示该应用在当前渠道下的全部包名配置。
 
@@ -22,8 +25,8 @@ TBD - created by archiving change support-multiple-push-packages. Update Purpose
 系统 SHALL 允许用户从当前渠道的新增卡片打开配置弹窗，并 SHALL 按该渠道的实际字段保存一组新的包名配置。
 
 #### Scenario: Add a Huawei configuration
-- **WHEN** 用户在华为标签页点击“+”，填写唯一的包名、App ID 和 App Secret，并点击保存
-- **THEN** 系统保存该华为配置、关闭弹窗，并在刷新后的华为卡片列表中展示该包名
+- **WHEN** 用户在华为标签页点击“+”，填写唯一的包名、App ID 和 App Secret，可选填写 Badge Class，并点击保存
+- **THEN** 系统保存该华为配置、关闭弹窗，并在刷新后的华为卡片列表中展示该包名；Badge Class 为空或仅包含空格时，保存的配置中不包含 `badge_class`
 
 #### Scenario: Add configuration for another channel
 - **WHEN** 用户在小米、OPPO、VIVO、iOS、FCM、极光、荣耀或个推标签页点击“+”
@@ -41,8 +44,40 @@ TBD - created by archiving change support-multiple-push-packages. Update Purpose
 - **WHEN** 同一包名已存在于该应用的另一个推送渠道
 - **THEN** 系统允许在当前渠道保存该包名配置
 
+### Requirement: Channel forms use the current provider fields
+
+系统 SHALL 按以下渠道字段渲染新增与编辑弹窗，并 SHALL 按必填与条件必填规则进行校验：
+
+| 渠道 | 必填字段 | 可选字段 |
+| --- | --- | --- |
+| 华为 | 包名、App ID、App Secret | Badge Class |
+| 小米 | 包名、App Secret | Channel ID |
+| OPPO | 包名、App Key、Master Secret | Channel ID |
+| VIVO | 包名、App ID、App Key、App Secret | 无 |
+| iOS | 包名、普通证书文件、普通证书密码、证书环境 | VoIP 证书文件、VoIP 证书密码 |
+| FCM | 包名、配置文件 | 无 |
+| 极光 | 包名、App Key、Master Secret | 无 |
+| 荣耀 | 包名、App ID、App Key、App Secret | Badge Class |
+| 个推 | 包名、App ID、App Key、Master Secret | 无 |
+
+#### Scenario: Optional Badge Class is omitted
+
+- **WHEN** 用户新增华为或荣耀配置时未填写 Badge Class，或仅输入空格
+- **THEN** 前端提交参数和服务端保存的渠道配置中均不包含 `badge_class`
+
+#### Scenario: Existing Badge Class is edited
+
+- **WHEN** 用户打开已配置 Badge Class 的华为或荣耀卡片
+- **THEN** 弹窗回填 `badge_class`，保存非空值时去除首尾空格；编辑时将该字段清空则服务端保留原值
+
+#### Scenario: VoIP password is conditionally required
+
+- **WHEN** 用户为 iOS 配置选择新的 VoIP 证书文件
+- **THEN** 系统要求存在 VoIP 证书密码；未选择 VoIP 证书文件时该密码不是新增配置的必填项
+
 ### Requirement: Configuration cards show channel-specific details safely
-每张配置卡片 SHALL 以包名作为标题，并 SHALL 在正文中展示当前渠道适合展示的实际配置字段；密钥和密码类字段 MUST 以掩码呈现，不得向页面返回明文。
+
+每张配置卡片 SHALL 以包名作为标题，并 SHALL 在正文中展示当前渠道适合展示的实际配置字段；卡片中的 App Secret、Master Secret、普通证书密码和 VoIP 证书密码 MUST 统一显示为 `********`。为了支持管理端编辑，列表接口 SHALL 返回这些敏感字段的真实值，编辑弹窗 SHALL 将其回填到密码输入框并默认隐藏。
 
 #### Scenario: Display Huawei card
 - **WHEN** 华为配置列表加载成功
@@ -53,15 +88,21 @@ TBD - created by archiving change support-multiple-push-packages. Update Purpose
 - **THEN** 卡片正文显示该渠道定义的凭证、选项或文件名，并使用对应字段标签
 
 #### Scenario: Display secret values
-- **WHEN** 配置包含 App Secret、Master Secret、证书密码或其他密钥类字段
-- **THEN** 卡片仅显示统一掩码且浏览器端不能从列表响应中取得原始密钥
+
+- **WHEN** 配置包含 App Secret、Master Secret、普通证书密码或 VoIP 证书密码
+- **THEN** 卡片仅显示统一掩码，编辑弹窗回填真实值并默认以密码形式隐藏
+
+#### Scenario: Toggle secret visibility
+
+- **WHEN** 敏感输入框处于密码隐藏状态
+- **THEN** 输入框显示掩码字符且小眼睛图标带斜线；用户点击后输入框显示明文且小眼睛图标去掉斜线，再次点击恢复隐藏状态
 
 ### Requirement: User can edit one package configuration
 每张配置卡片 SHALL 在底部提供“设置”按钮；系统 SHALL 使用与新增相同的渠道弹窗编辑被选中的配置，并且只更新该配置。
 
 #### Scenario: Open settings for an existing card
 - **WHEN** 用户点击某张卡片底部的“设置”按钮
-- **THEN** 弹窗展示该卡片的包名和非敏感配置值，敏感输入为空并提示留空将保留原值
+- **THEN** 弹窗展示该卡片的包名和配置值，所有敏感输入均回填并默认隐藏，每个敏感输入均提供独立的小眼睛切换按钮
 
 #### Scenario: Save changed credentials
 - **WHEN** 用户修改一个或多个字段并保存且服务端保存成功
@@ -103,7 +144,12 @@ TBD - created by archiving change support-multiple-push-packages. Update Purpose
 
 #### Scenario: List multiple Android configurations
 - **WHEN** 客户端按应用和渠道请求 Android 配置列表
-- **THEN** 服务端返回该范围下所有配置的轻量列表，不包含证书字节或明文密钥
+- **THEN** 服务端返回该范围下所有配置的轻量列表，包含编辑回填所需的 App Secret 或 Master Secret 真实值，不包含文件字节
+
+#### Scenario: List multiple iOS configurations
+
+- **WHEN** 客户端按应用请求 iOS 配置列表
+- **THEN** 服务端返回全部包名配置、环境、文件名、普通证书密码和 VoIP 证书密码，不返回普通证书或 VoIP 证书的文件字节
 
 #### Scenario: Existing single configuration after upgrade
 - **WHEN** 数据库中存在升级前保存的一条渠道配置

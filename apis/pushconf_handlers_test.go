@@ -15,7 +15,6 @@ import (
 	mysqlDriver "github.com/go-sql-driver/mysql"
 	"github.com/juggleim/imserver-console/commons/dbcommons"
 	consolelogs "github.com/juggleim/imserver-console/commons/logs"
-	"github.com/juggleim/imserver-console/services/models"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -93,7 +92,7 @@ func responseCode(t *testing.T, recorder *httptest.ResponseRecorder) int {
 	return response.Code
 }
 
-func TestListAndroidPushConfsMasksSecrets(t *testing.T) {
+func TestListAndroidPushConfsReturnsAppSecretForEditing(t *testing.T) {
 	mock, cleanup := openPushHandlerMockDB(t)
 	defer cleanup()
 	mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `androidpushconfs` WHERE app_key=? and push_channel=? ORDER BY package asc")).
@@ -103,8 +102,30 @@ func TestListAndroidPushConfsMasksSecrets(t *testing.T) {
 
 	request := httptest.NewRequest(http.MethodGet, "/apps/androidpushconf/list?app_key=app-1&push_channel=huawei", nil)
 	recorder := invokePushHandler(t, request, ListAndroidPushConfs)
-	if strings.Contains(recorder.Body.String(), "plain-secret") || !strings.Contains(recorder.Body.String(), models.PushSecretMask) {
-		t.Fatalf("unsafe list response: %s", recorder.Body.String())
+	if !strings.Contains(recorder.Body.String(), "plain-secret") {
+		t.Fatalf("app_secret was not returned for editing: %s", recorder.Body.String())
+	}
+	if responseCode(t, recorder) != 0 {
+		t.Fatalf("unexpected response: %s", recorder.Body.String())
+	}
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestListIosPushConfsReturnsCertificatePasswordsForEditing(t *testing.T) {
+	mock, cleanup := openPushHandlerMockDB(t)
+	defer cleanup()
+	columns := []string{"app_key", "package", "is_product", "cert_pwd", "voip_cert_pwd", "certificate", "cert_path", "voip_cert", "voip_cert_path"}
+	mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `ioscertificates` WHERE app_key=? ORDER BY package asc")).
+		WithArgs("app-1").
+		WillReturnRows(sqlmock.NewRows(columns).
+			AddRow("app-1", "com.example", 1, "cert-password", "voip-password", []byte("cert"), "app.p12", []byte("voip"), "voip.p12"))
+
+	request := httptest.NewRequest(http.MethodGet, "/apps/iospushcer/list?app_key=app-1", nil)
+	recorder := invokePushHandler(t, request, ListIosPushConfs)
+	if !strings.Contains(recorder.Body.String(), "cert-password") || !strings.Contains(recorder.Body.String(), "voip-password") {
+		t.Fatalf("certificate passwords were not returned for editing: %s", recorder.Body.String())
 	}
 	if responseCode(t, recorder) != 0 {
 		t.Fatalf("unexpected response: %s", recorder.Body.String())

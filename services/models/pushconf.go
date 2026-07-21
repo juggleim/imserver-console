@@ -53,8 +53,9 @@ type IosPushConfListItem struct {
 }
 
 type HuaweiPushConf struct {
-	AppId     string `json:"app_id"`
-	AppSecret string `json:"app_secret"`
+	AppId      string `json:"app_id"`
+	AppSecret  string `json:"app_secret"`
+	BadgeClass string `json:"badge_class,omitempty"`
 }
 
 func (conf *HuaweiPushConf) Valid() bool {
@@ -142,9 +143,10 @@ func (conf *JPushConf) Valid() bool {
 }
 
 type HonorPushConf struct {
-	AppId     string `json:"app_id"`
-	AppKey    string `json:"app_key"`
-	AppSecret string `json:"app_secret"`
+	AppId      string `json:"app_id"`
+	AppKey     string `json:"app_key"`
+	AppSecret  string `json:"app_secret"`
+	BadgeClass string `json:"badge_class,omitempty"`
 }
 
 func (conf *HonorPushConf) Valid() bool {

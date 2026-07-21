@@ -23,7 +23,8 @@
       "voipCertPassword": "VoIP 证书密码",
       "voipCertFile": "VoIP 证书文件",
       "certEnv": "证书环境",
-      "channelId": "Channel ID"
+      "channelId": "Channel ID",
+      "badgeClass": "Badge Class"
     },
     "option": {
       "dev": "开发环境",
@@ -37,7 +38,9 @@
     "action": {
       "add": "新增配置",
       "settings": "设置",
-      "retry": "重试"
+      "retry": "重试",
+      "showSecret": "显示{name}",
+      "hideSecret": "隐藏{name}"
     },
     "dialog": {
       "addTitle": "新增{channel}推送配置",

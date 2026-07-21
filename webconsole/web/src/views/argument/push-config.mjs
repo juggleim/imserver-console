@@ -35,6 +35,10 @@ export const PUSH_CHANNELS = [
         required: true,
         secret: true,
       }),
+      text('badge_class', 'Badge Class', {
+        labelKey: 'appServices.push.field.badgeClass',
+        omitEmpty: true,
+      }),
     ],
   },
   {
@@ -184,6 +188,10 @@ export const PUSH_CHANNELS = [
         required: true,
         secret: true,
       }),
+      text('badge_class', 'Badge Class', {
+        labelKey: 'appServices.push.field.badgeClass',
+        omitEmpty: true,
+      }),
     ],
   },
   {
@@ -218,8 +226,9 @@ export function createPushDraft(setting, item = null) {
   };
   setting.fields.forEach((field) => {
     if (field.secret) {
-      draft._secretPresent[field.name] = Boolean(source[field.name]);
-      draft[field.name] = '';
+      const storedValue = source[field.name];
+      draft._secretPresent[field.name] = Boolean(storedValue);
+      draft[field.name] = storedValue !== PUSH_SECRET_MASK ? storedValue || '' : '';
       return;
     }
     if (Object.prototype.hasOwnProperty.call(source, field.name)) {
@@ -269,6 +278,21 @@ export function validatePushDraft(setting, draft, items = []) {
 
 export function hasPushErrors(errors) {
   return Object.keys(errors).length > 0;
+}
+
+export function buildPushTextExtra(setting, draft) {
+  return setting.fields.reduce((extra, field) => {
+    if (field.name === 'package' || field.type !== 'input_text') {
+      return extra;
+    }
+    const value =
+      typeof draft[field.name] === 'string' ? draft[field.name].trim() : draft[field.name];
+    if (field.omitEmpty && (value === '' || value === null || value === undefined)) {
+      return extra;
+    }
+    extra[field.name] = value;
+    return extra;
+  }, {});
 }
 
 export function getPushCardValue(item, field) {

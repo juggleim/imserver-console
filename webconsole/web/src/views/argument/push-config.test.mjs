@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   PUSH_CHANNELS,
   PUSH_SECRET_MASK,
+  buildPushTextExtra,
   createPushDraft,
   getPushCardValue,
   hasPushErrors,
@@ -51,7 +52,23 @@ test('Huawei add validates package, App ID and App Secret', () => {
   assert.deepEqual(validatePushDraft(setting, draft, []), {});
 });
 
-test('edit drafts do not expose secrets and blank secrets preserve existing values', () => {
+test('Huawei and Honor omit blank badge_class and include a trimmed value', () => {
+  for (const channel of ['Huawei', 'Honor']) {
+    const setting = PUSH_CHANNELS.find((item) => item.type === channel);
+    const draft = createPushDraft(setting);
+    setting.fields.forEach((field) => {
+      if (field.type === 'input_text' && field.required) {
+        draft[field.name] = 'credential';
+      }
+    });
+
+    assert.equal(Object.hasOwn(buildPushTextExtra(setting, draft), 'badge_class'), false);
+    draft.badge_class = '  com.example.MainActivity  ';
+    assert.equal(buildPushTextExtra(setting, draft).badge_class, 'com.example.MainActivity');
+  }
+});
+
+test('masked secret placeholders stay out of edit drafts and preserve existing values', () => {
   const setting = PUSH_CHANNELS.find((item) => item.type === 'Huawei');
   const draft = createPushDraft(setting, {
     package: 'com.example',
@@ -60,6 +77,26 @@ test('edit drafts do not expose secrets and blank secrets preserve existing valu
   assert.equal(draft.app_secret, '');
   assert.equal(draft._secretPresent.app_secret, true);
   assert.deepEqual(validatePushDraft(setting, draft, []), {});
+});
+
+test('all secret fields refill plaintext values for editing', () => {
+  PUSH_CHANNELS.forEach((setting) => {
+    const secretFields = setting.fields.filter((field) => field.secret);
+    if (!secretFields.length) {
+      return;
+    }
+    const secrets = Object.fromEntries(
+      secretFields.map((field) => [field.name, `plain-${field.name}`])
+    );
+    const draft = createPushDraft(setting, {
+      package: `com.example.${setting.type.toLowerCase()}`,
+      ...(setting.kind === 'ios' ? secrets : { extra: secrets }),
+    });
+    secretFields.forEach((field) => {
+      assert.equal(draft[field.name], `plain-${field.name}`, `${setting.type}.${field.name}`);
+      assert.equal(draft._secretPresent[field.name], true, `${setting.type}.${field.name}`);
+    });
+  });
 });
 
 test('duplicate packages are scoped to the current channel list', () => {
@@ -102,9 +139,19 @@ test('drafts are isolated across tabs and card helpers always mask secret values
   first.package = 'com.changed';
   assert.equal(second.package, '');
 
-  const secretField = huawei.fields.find((field) => field.name === 'app_secret');
-  assert.equal(
-    getPushCardValue({ extra: { app_secret: 'plaintext' } }, secretField),
-    PUSH_SECRET_MASK
-  );
+  PUSH_CHANNELS.forEach((setting) => {
+    setting.fields
+      .filter((field) => field.secret)
+      .forEach((field) => {
+        const item =
+          setting.kind === 'ios'
+            ? { [field.name]: 'plaintext' }
+            : { extra: { [field.name]: 'plaintext' } };
+        assert.equal(
+          getPushCardValue(item, field),
+          PUSH_SECRET_MASK,
+          `${setting.type}.${field.name}`
+        );
+      });
+  });
 });

@@ -23,7 +23,8 @@
       "voipCertPassword": "VoIP Certificate Password",
       "voipCertFile": "VoIP Certificate File",
       "certEnv": "Certificate Environment",
-      "channelId": "Channel ID"
+      "channelId": "Channel ID",
+      "badgeClass": "Badge Class"
     },
     "option": {
       "dev": "Development",
@@ -37,7 +38,9 @@
     "action": {
       "add": "Add Configuration",
       "settings": "Settings",
-      "retry": "Retry"
+      "retry": "Retry",
+      "showSecret": "Show {name}",
+      "hideSecret": "Hide {name}"
     },
     "dialog": {
       "addTitle": "Add {channel} Push Configuration",

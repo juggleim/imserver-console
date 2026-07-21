@@ -68,16 +68,12 @@ func mergePushExtra(existing, incoming map[string]any) map[string]any {
 	return merged
 }
 
-func maskPushExtra(extra map[string]any) map[string]any {
-	masked := make(map[string]any, len(extra))
+func preparePushExtraForEditing(extra map[string]any) map[string]any {
+	prepared := make(map[string]any, len(extra))
 	for key, value := range extra {
-		if _, secret := secretPushFields[key]; secret && strings.TrimSpace(fmt.Sprint(value)) != "" {
-			masked[key] = models.PushSecretMask
-			continue
-		}
-		masked[key] = value
+		prepared[key] = value
 	}
-	return masked
+	return prepared
 }
 
 func normalizeAndValidatePushExtra(channel string, extra map[string]any) (map[string]any, string, error) {
@@ -90,6 +86,7 @@ func normalizeAndValidatePushExtra(channel string, extra map[string]any) (map[st
 	switch channel {
 	case string(models.PushChannel_Huawei):
 		value := tools.MapToStruct[models.HuaweiPushConf](extra)
+		value.BadgeClass = strings.TrimSpace(value.BadgeClass)
 		if !value.Valid() {
 			return nil, "", errors.New("app_id and app_secret are required")
 		}
@@ -120,6 +117,7 @@ func normalizeAndValidatePushExtra(channel string, extra map[string]any) (map[st
 		conf = value
 	case string(models.PushChannel_HONOR):
 		value := tools.MapToStruct[models.HonorPushConf](extra)
+		value.BadgeClass = strings.TrimSpace(value.BadgeClass)
 		if !value.Valid() {
 			return nil, "", errors.New("app_id, app_key and app_secret are required")
 		}

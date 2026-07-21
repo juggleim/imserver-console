@@ -55,7 +55,7 @@ func ListAndroidPushConfs(ctx *gin.Context) {
 		if pushChannel == string(models.PushChannel_FCM) {
 			item.ConfPath = row.PushConf
 		} else {
-			item.Extra = maskPushExtra(decodePushExtra(row.PushConf))
+			item.Extra = preparePushExtraForEditing(decodePushExtra(row.PushConf))
 		}
 		items = append(items, item)
 	}

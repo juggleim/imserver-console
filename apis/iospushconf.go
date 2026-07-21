@@ -45,13 +45,9 @@ func ListIosPushConfs(ctx *gin.Context) {
 			Package:      row.Package,
 			IsProduct:    row.IsProduct,
 			CertPath:     row.CertPath,
+			CertPwd:      row.CertPwd,
+			VoipCertPwd:  row.VoipCertPwd,
 			VoipCertPath: row.VoipCertPath,
-		}
-		if row.CertPwd != "" {
-			item.CertPwd = models.PushSecretMask
-		}
-		if row.VoipCertPwd != "" {
-			item.VoipCertPwd = models.PushSecretMask
 		}
 		items = append(items, item)
 	}
