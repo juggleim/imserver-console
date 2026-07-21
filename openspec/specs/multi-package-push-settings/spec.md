@@ -56,7 +56,7 @@
 | VIVO | 包名、App ID、App Key、App Secret | 无 |
 | iOS | 包名、普通证书文件、普通证书密码、证书环境 | VoIP 证书文件、VoIP 证书密码 |
 | FCM | 包名、配置文件 | 无 |
-| 极光 | 包名、App Key、Master Secret | 无 |
+| 极光 | 包名、App Key、Master Secret | Classification、Badge Class、华为/小米/荣耀/OPPO/VIVO/魅族渠道参数 |
 | 荣耀 | 包名、App ID、App Key、App Secret | Badge Class |
 | 个推 | 包名、App ID、App Key、Master Secret | 无 |
 
@@ -69,6 +69,26 @@
 
 - **WHEN** 用户打开已配置 Badge Class 的华为或荣耀卡片
 - **THEN** 弹窗回填 `badge_class`，保存非空值时去除首尾空格；编辑时将该字段清空则服务端保留原值
+
+#### Scenario: Configure JPush common options
+
+- **WHEN** 用户在极光弹窗填写可选的 Classification 或 Badge Class
+- **THEN** 系统分别以整数 `options.classification` 和与 `app_key`、`master_secret` 同级的字符串 `badge_class` 保存；Classification 输入框内提示请输入整数且为选填，字段未填写时不包含对应键，Classification 填写非整数时阻止提交并提示必须为整数
+
+#### Scenario: Configure JPush third-party channel options
+
+- **WHEN** 用户在极光弹窗的渠道可选参数区域切换华为、小米、荣耀、OPPO、VIVO 或魅族标签页并填写参数
+- **THEN** 系统按照 `options.third_party_channel` 下对应的小写渠道键保存参数：华为支持 `importance`、`category`；小米支持 `channel_id`、`mi_template_id`、`mi_template_param`；荣耀支持 `importance`；OPPO 支持 `channel_id`、`category`、整数 `notify_level`，其输入框内提示请输入整数且为选填；VIVO 支持 `distribution`、`category`、布尔值 `add_badge`；魅族支持 `distribution`
+
+#### Scenario: Omit empty JPush channel options
+
+- **WHEN** 极光的某个渠道参数标签页未填写任何值，或所有极光可选参数均未填写
+- **THEN** 系统不保存该空渠道对象；所有可选参数均为空时，新增配置不提交 `options`，编辑配置则清除原有 `options`，最终保存结果不包含 `options`
+
+#### Scenario: JPush-only option interface
+
+- **WHEN** 用户打开极光推送新增或编辑弹窗
+- **THEN** 弹窗使用比其他渠道更宽的布局，在 Master Secret 后先展示 Badge Class，再展示默认折叠的 Options；折叠时弹窗高度随基础内容自适应，展开后弹窗提升到视口可用高度并允许正文竖向滚动，同时依次展示 Classification 和六个渠道参数标签页；打开其他推送渠道弹窗时不展示这些极光专属字段、标签页或扩展尺寸
 
 #### Scenario: VoIP password is conditionally required
 

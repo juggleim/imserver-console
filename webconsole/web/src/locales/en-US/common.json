@@ -2,7 +2,6 @@
   "header": {
     "brand": "IM Console",
     "selectApp": "Select App",
-    "docs": "Docs",
     "accountSettings": "Settings",
     "logout": "Sign Out"
   },

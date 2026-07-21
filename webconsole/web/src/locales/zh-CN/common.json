@@ -2,7 +2,6 @@
   "header": {
     "brand": "管理后台",
     "selectApp": "选择应用",
-    "docs": "文档",
     "accountSettings": "账户设置",
     "logout": "退出登录"
   },

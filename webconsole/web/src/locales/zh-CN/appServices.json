@@ -9,6 +9,7 @@
       "fcm": "FCM",
       "Jpush": "极光",
       "Honor": "荣耀",
+      "Meizu": "魅族",
       "Getui": "个推"
     },
     "field": {
@@ -24,11 +25,24 @@
       "voipCertFile": "VoIP 证书文件",
       "certEnv": "证书环境",
       "channelId": "Channel ID",
-      "badgeClass": "Badge Class"
+      "badgeClass": "Badge Class",
+      "classification": "Classification",
+      "importance": "Importance",
+      "category": "Category",
+      "miTemplateId": "Mi Template ID",
+      "miTemplateParam": "Mi Template Param",
+      "notifyLevel": "Notify Level",
+      "distribution": "Distribution",
+      "addBadge": "Add Badge"
+    },
+    "section": {
+      "options": "Options",
+      "channelOptions": "渠道可选参数"
     },
     "option": {
       "dev": "开发环境",
-      "prod": "生产环境"
+      "prod": "生产环境",
+      "enabled": "启用"
     },
     "feedback": {
       "saveSuccess": "保存成功",
@@ -47,13 +61,15 @@
       "editTitle": "设置{channel}推送配置"
     },
     "placeholder": {
-      "input": "请输入{name}"
+      "input": "请输入{name}",
+      "integerOptional": "请输入整数（选填）"
     },
     "hint": {
       "secretUnchanged": "留空则保留原值"
     },
     "validation": {
       "required": "请输入或选择{name}",
+      "integer": "{name}必须为整数",
       "packageDuplicate": "该包名已在当前渠道配置"
     },
     "status": {

@@ -17,6 +17,25 @@ const file = (name, labelKey, model, options = {}) => ({
   ...options,
 });
 
+const integer = (name, label, options = {}) => ({
+  name,
+  label,
+  type: 'input_number',
+  integer: true,
+  cardVisible: true,
+  ...options,
+});
+
+const jpushField = (vendor, name, label, options = {}) => ({
+  name: `jpush_${vendor}_${name}`,
+  payloadName: name,
+  label,
+  type: 'input_text',
+  cardVisible: false,
+  path: ['options', 'third_party_channel', vendor, name],
+  ...options,
+});
+
 export const PUSH_CHANNELS = [
   {
     type: 'Huawei',
@@ -168,6 +187,103 @@ export const PUSH_CHANNELS = [
         required: true,
         secret: true,
       }),
+      text('badge_class', 'Badge Class', {
+        labelKey: 'appServices.push.field.badgeClass',
+        omitEmpty: true,
+      }),
+      integer('classification', 'Classification', {
+        labelKey: 'appServices.push.field.classification',
+        path: ['options', 'classification'],
+        omitEmpty: true,
+        optionsField: true,
+      }),
+    ],
+    jpushTabs: [
+      {
+        type: 'huawei',
+        label: 'Huawei',
+        labelKey: 'appServices.push.channel.Huawei',
+        fields: [
+          jpushField('huawei', 'importance', 'Importance', {
+            labelKey: 'appServices.push.field.importance',
+          }),
+          jpushField('huawei', 'category', 'Category', {
+            labelKey: 'appServices.push.field.category',
+          }),
+        ],
+      },
+      {
+        type: 'xiaomi',
+        label: 'Xiaomi',
+        labelKey: 'appServices.push.channel.Xiaomi',
+        fields: [
+          jpushField('xiaomi', 'channel_id', 'Channel ID', {
+            labelKey: 'appServices.push.field.channelId',
+          }),
+          jpushField('xiaomi', 'mi_template_id', 'Mi Template ID', {
+            labelKey: 'appServices.push.field.miTemplateId',
+          }),
+          jpushField('xiaomi', 'mi_template_param', 'Mi Template Param', {
+            labelKey: 'appServices.push.field.miTemplateParam',
+          }),
+        ],
+      },
+      {
+        type: 'honor',
+        label: 'Honor',
+        labelKey: 'appServices.push.channel.Honor',
+        fields: [
+          jpushField('honor', 'importance', 'Importance', {
+            labelKey: 'appServices.push.field.importance',
+          }),
+        ],
+      },
+      {
+        type: 'oppo',
+        label: 'OPPO',
+        labelKey: 'appServices.push.channel.Oppo',
+        fields: [
+          jpushField('oppo', 'channel_id', 'Channel ID', {
+            labelKey: 'appServices.push.field.channelId',
+          }),
+          jpushField('oppo', 'category', 'Category', {
+            labelKey: 'appServices.push.field.category',
+          }),
+          jpushField('oppo', 'notify_level', 'Notify Level', {
+            labelKey: 'appServices.push.field.notifyLevel',
+            type: 'input_number',
+            integer: true,
+          }),
+        ],
+      },
+      {
+        type: 'vivo',
+        label: 'VIVO',
+        labelKey: 'appServices.push.channel.Vivo',
+        fields: [
+          jpushField('vivo', 'distribution', 'Distribution', {
+            labelKey: 'appServices.push.field.distribution',
+          }),
+          jpushField('vivo', 'category', 'Category', {
+            labelKey: 'appServices.push.field.category',
+          }),
+          jpushField('vivo', 'add_badge', 'Add Badge', {
+            labelKey: 'appServices.push.field.addBadge',
+            type: 'checkbox',
+            defaultValue: false,
+          }),
+        ],
+      },
+      {
+        type: 'meizu',
+        label: 'Meizu',
+        labelKey: 'appServices.push.channel.Meizu',
+        fields: [
+          jpushField('meizu', 'distribution', 'Distribution', {
+            labelKey: 'appServices.push.field.distribution',
+          }),
+        ],
+      },
     ],
   },
   {
@@ -224,15 +340,16 @@ export function createPushDraft(setting, item = null) {
     voipFile: null,
     _secretPresent: {},
   };
-  setting.fields.forEach((field) => {
+  allDraftFields(setting).forEach((field) => {
     if (field.secret) {
       const storedValue = source[field.name];
       draft._secretPresent[field.name] = Boolean(storedValue);
       draft[field.name] = storedValue !== PUSH_SECRET_MASK ? storedValue || '' : '';
       return;
     }
-    if (Object.prototype.hasOwnProperty.call(source, field.name)) {
-      draft[field.name] = source[field.name];
+    const sourceValue = readFieldValue(source, field);
+    if (sourceValue !== undefined) {
+      draft[field.name] = sourceValue;
       return;
     }
     draft[field.name] = field.defaultValue ?? '';
@@ -243,7 +360,15 @@ export function createPushDraft(setting, item = null) {
 export function validatePushDraft(setting, draft, items = []) {
   const errors = {};
   const editing = Boolean(draft.original_package);
-  setting.fields.forEach((field) => {
+  allDraftFields(setting).forEach((field) => {
+    const value = draft[field.name];
+    if (field.integer && value !== '' && value !== null && value !== undefined) {
+      const numberValue = Number(value);
+      if (!Number.isInteger(numberValue)) {
+        errors[field.name] = 'integer';
+        return;
+      }
+    }
     if (!field.required) {
       return;
     }
@@ -256,7 +381,6 @@ export function validatePushDraft(setting, draft, items = []) {
       }
       return;
     }
-    const value = draft[field.name];
     if (value === '' || value === null || value === undefined) {
       errors[field.name] = 'required';
     }
@@ -280,7 +404,89 @@ export function hasPushErrors(errors) {
   return Object.keys(errors).length > 0;
 }
 
+function allDraftFields(setting) {
+  return [...setting.fields, ...(setting.jpushTabs || []).flatMap((tab) => tab.fields)];
+}
+
+function readPath(source, path) {
+  return path.reduce((value, key) => value?.[key], source);
+}
+
+function readFieldValue(source, field) {
+  return field.path ? readPath(source, field.path) : source[field.name];
+}
+
+function normalizeDraftValue(field, draft) {
+  const value = draft[field.name];
+  if (field.type === 'checkbox') {
+    return Boolean(value);
+  }
+  if (field.integer && value !== '' && value !== null && value !== undefined) {
+    return Number(value);
+  }
+  return typeof value === 'string' ? value.trim() : value;
+}
+
+function isEmptyOptionalValue(field, value) {
+  return (
+    value === '' ||
+    value === null ||
+    value === undefined ||
+    (field.type === 'checkbox' && !value) ||
+    (field.integer && value === 0)
+  );
+}
+
+function buildJpushExtra(setting, draft) {
+  const extra = {};
+  const options = {};
+
+  setting.fields.forEach((field) => {
+    if (field.name === 'package') {
+      return;
+    }
+    const value = normalizeDraftValue(field, draft);
+    if (field.path?.[0] === 'options') {
+      if (!isEmptyOptionalValue(field, value)) {
+        options[field.path[field.path.length - 1]] = value;
+      }
+      return;
+    }
+    if (field.omitEmpty && isEmptyOptionalValue(field, value)) {
+      return;
+    }
+    extra[field.name] = value;
+  });
+
+  const thirdPartyChannel = {};
+  setting.jpushTabs.forEach((tab) => {
+    const channel = {};
+    tab.fields.forEach((field) => {
+      const value = normalizeDraftValue(field, draft);
+      if (!isEmptyOptionalValue(field, value)) {
+        channel[field.payloadName] = value;
+      }
+    });
+    if (Object.keys(channel).length) {
+      thirdPartyChannel[tab.type] = channel;
+    }
+  });
+  if (Object.keys(thirdPartyChannel).length) {
+    options.third_party_channel = thirdPartyChannel;
+  }
+  if (Object.keys(options).length) {
+    extra.options = options;
+  } else if (draft.original_package) {
+    // An explicit null clears previously saved optional settings during editing.
+    extra.options = null;
+  }
+  return extra;
+}
+
 export function buildPushTextExtra(setting, draft) {
+  if (setting.type === 'Jpush') {
+    return buildJpushExtra(setting, draft);
+  }
   return setting.fields.reduce((extra, field) => {
     if (field.name === 'package' || field.type !== 'input_text') {
       return extra;
@@ -297,7 +503,7 @@ export function buildPushTextExtra(setting, draft) {
 
 export function getPushCardValue(item, field) {
   const source = { ...item, ...(item.extra || {}) };
-  const value = source[field.name];
+  const value = readFieldValue(source, field);
   if (field.secret && value) {
     return PUSH_SECRET_MASK;
   }

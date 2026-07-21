@@ -9,6 +9,7 @@
       "fcm": "FCM",
       "Jpush": "JPush",
       "Honor": "Honor",
+      "Meizu": "Meizu",
       "Getui": "Getui"
     },
     "field": {
@@ -24,11 +25,24 @@
       "voipCertFile": "VoIP Certificate File",
       "certEnv": "Certificate Environment",
       "channelId": "Channel ID",
-      "badgeClass": "Badge Class"
+      "badgeClass": "Badge Class",
+      "classification": "Classification",
+      "importance": "Importance",
+      "category": "Category",
+      "miTemplateId": "Mi Template ID",
+      "miTemplateParam": "Mi Template Param",
+      "notifyLevel": "Notify Level",
+      "distribution": "Distribution",
+      "addBadge": "Add Badge"
+    },
+    "section": {
+      "options": "Options",
+      "channelOptions": "Channel Options"
     },
     "option": {
       "dev": "Development",
-      "prod": "Production"
+      "prod": "Production",
+      "enabled": "Enabled"
     },
     "feedback": {
       "saveSuccess": "Saved successfully",
@@ -47,13 +61,15 @@
       "editTitle": "Configure {channel} Push"
     },
     "placeholder": {
-      "input": "Enter {name}"
+      "input": "Enter {name}",
+      "integerOptional": "Enter an integer (optional)"
     },
     "hint": {
       "secretUnchanged": "Leave blank to keep the current value"
     },
     "validation": {
       "required": "Enter or select {name}",
+      "integer": "{name} must be an integer",
       "packageDuplicate": "This package is already configured for the channel"
     },
     "status": {

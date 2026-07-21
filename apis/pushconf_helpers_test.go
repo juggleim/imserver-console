@@ -110,3 +110,70 @@ func TestHuaweiAndHonorBadgeClassIsOptional(t *testing.T) {
 		})
 	}
 }
+
+func TestJPushProviderOptionsArePreserved(t *testing.T) {
+	extra := map[string]any{
+		"app_key":       "key",
+		"master_secret": "secret",
+		"badge_class":   "com.example.Badge",
+		"options": map[string]any{
+			"classification": 2,
+			"third_party_channel": map[string]any{
+				"huawei": map[string]any{"importance": "HIGH", "category": "IM"},
+				"xiaomi": map[string]any{
+					"channel_id": "xiaomi-channel", "mi_template_id": "template-id", "mi_template_param": "{\"key\":\"value\"}",
+				},
+				"honor": map[string]any{"importance": "NORMAL"},
+				"oppo":  map[string]any{"channel_id": "oppo-channel", "category": "IM", "notify_level": 2},
+				"vivo":  map[string]any{"distribution": "push", "category": "IM", "add_badge": true},
+				"meizu": map[string]any{"distribution": "push"},
+			},
+		},
+	}
+
+	_, raw, err := normalizeAndValidatePushExtra(string(models.PushChannel_Jpush), extra)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var saved models.JPushConf
+	if err := json.Unmarshal([]byte(raw), &saved); err != nil {
+		t.Fatal(err)
+	}
+	if saved.BadgeClass != "com.example.Badge" || saved.Options == nil || saved.Options.Classification != 2 {
+		t.Fatalf("top-level JPush options were not preserved: %s", raw)
+	}
+	channels := saved.Options.ThirdPartyChannel
+	if channels == nil || channels.Huawei == nil || channels.Huawei.Importance != "HIGH" || channels.Huawei.Category != "IM" {
+		t.Fatalf("Huawei channel options were not preserved: %s", raw)
+	}
+	if channels.Xiaomi == nil || channels.Xiaomi.ChannelId != "xiaomi-channel" || channels.Xiaomi.MiTemplateId != "template-id" || channels.Xiaomi.MiTemplateParam != "{\"key\":\"value\"}" {
+		t.Fatalf("Xiaomi channel options were not preserved: %s", raw)
+	}
+	if channels.Honor == nil || channels.Honor.Importance != "NORMAL" {
+		t.Fatalf("Honor channel options were not preserved: %s", raw)
+	}
+	if channels.Oppo == nil || channels.Oppo.NotifyLevel != 2 {
+		t.Fatalf("OPPO channel options were not preserved: %s", raw)
+	}
+	if channels.Vivo == nil || !channels.Vivo.AddBadge {
+		t.Fatalf("VIVO channel options were not preserved: %s", raw)
+	}
+	if channels.Meizu == nil || channels.Meizu.Distribution != "push" {
+		t.Fatalf("Meizu channel options were not preserved: %s", raw)
+	}
+}
+
+func TestJPushEmptyOptionsAreOmitted(t *testing.T) {
+	merged := mergePushExtra(map[string]any{
+		"app_key": "key", "master_secret": "secret", "options": map[string]any{"classification": 2},
+	}, map[string]any{
+		"app_key": "key", "master_secret": "secret", "options": nil,
+	})
+	_, raw, err := normalizeAndValidatePushExtra(string(models.PushChannel_Jpush), merged)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(raw, "options") {
+		t.Fatalf("empty JPush options must be omitted: %s", raw)
+	}
+}

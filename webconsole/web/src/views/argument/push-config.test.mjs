@@ -68,6 +68,97 @@ test('Huawei and Honor omit blank badge_class and include a trimmed value', () =
   }
 });
 
+test('JPush exposes only its own provider option fields in six channel tabs', () => {
+  const jpush = PUSH_CHANNELS.find((item) => item.type === 'Jpush');
+  assert.deepEqual(
+    jpush.fields.slice(-2).map((field) => field.name),
+    ['badge_class', 'classification']
+  );
+  assert.equal(jpush.fields.find((field) => field.name === 'classification').integer, true);
+  assert.equal(jpush.fields.find((field) => field.name === 'classification').optionsField, true);
+  assert.equal(jpush.fields.find((field) => field.name === 'badge_class').required, undefined);
+  assert.deepEqual(
+    jpush.jpushTabs.map((tab) => tab.type),
+    ['huawei', 'xiaomi', 'honor', 'oppo', 'vivo', 'meizu']
+  );
+  assert.deepEqual(
+    Object.fromEntries(
+      jpush.jpushTabs.map((tab) => [tab.type, tab.fields.map((field) => field.payloadName)])
+    ),
+    {
+      huawei: ['importance', 'category'],
+      xiaomi: ['channel_id', 'mi_template_id', 'mi_template_param'],
+      honor: ['importance'],
+      oppo: ['channel_id', 'category', 'notify_level'],
+      vivo: ['distribution', 'category', 'add_badge'],
+      meizu: ['distribution'],
+    }
+  );
+  PUSH_CHANNELS.filter((item) => item.type !== 'Jpush').forEach((setting) => {
+    assert.equal(setting.jpushTabs, undefined, setting.type);
+  });
+});
+
+test('JPush provider options round-trip with nested API field names and numeric types', () => {
+  const jpush = PUSH_CHANNELS.find((item) => item.type === 'Jpush');
+  const item = {
+    package: 'com.example.jpush',
+    extra: {
+      app_key: 'key',
+      master_secret: 'secret',
+      badge_class: 'com.example.Badge',
+      options: {
+        classification: 2,
+        third_party_channel: {
+          huawei: { importance: 'HIGH', category: 'IM' },
+          xiaomi: {
+            channel_id: 'xiaomi-channel',
+            mi_template_id: 'template-id',
+            mi_template_param: '{"key":"value"}',
+          },
+          honor: { importance: 'NORMAL' },
+          oppo: { channel_id: 'oppo-channel', category: 'IM', notify_level: 2 },
+          vivo: { distribution: 'push', category: 'IM', add_badge: true },
+          meizu: { distribution: 'push' },
+        },
+      },
+    },
+  };
+  const draft = createPushDraft(jpush, item);
+
+  assert.equal(draft.classification, 2);
+  assert.equal(draft.jpush_xiaomi_mi_template_id, 'template-id');
+  assert.equal(draft.jpush_oppo_notify_level, 2);
+  assert.equal(draft.jpush_vivo_add_badge, true);
+  assert.deepEqual(buildPushTextExtra(jpush, draft), item.extra);
+});
+
+test('JPush omits empty options and validates optional integer values when present', () => {
+  const jpush = PUSH_CHANNELS.find((item) => item.type === 'Jpush');
+  const draft = createPushDraft(jpush);
+  Object.assign(draft, {
+    package: 'com.example.jpush',
+    app_key: 'key',
+    master_secret: 'secret',
+  });
+
+  assert.deepEqual(buildPushTextExtra(jpush, draft), {
+    app_key: 'key',
+    master_secret: 'secret',
+  });
+  draft.classification = '1.5';
+  draft.jpush_oppo_notify_level = 'high';
+  assert.deepEqual(validatePushDraft(jpush, draft, []), {
+    classification: 'integer',
+    jpush_oppo_notify_level: 'integer',
+  });
+
+  draft.classification = '';
+  draft.jpush_oppo_notify_level = '';
+  draft.original_package = draft.package;
+  assert.equal(buildPushTextExtra(jpush, draft).options, null);
+});
+
 test('masked secret placeholders stay out of edit drafts and preserve existing values', () => {
   const setting = PUSH_CHANNELS.find((item) => item.type === 'Huawei');
   const draft = createPushDraft(setting, {

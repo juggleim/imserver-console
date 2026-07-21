@@ -94,6 +94,7 @@ func (conf *VivoPushConf) Valid() bool {
 type JPushConf struct {
 	AppKey       string        `json:"app_key"`
 	MasterSecret string        `json:"master_secret"`
+	BadgeClass   string        `json:"badge_class,omitempty"`
 	Options      *JPushOptions `json:"options,omitempty"`
 }
 type JPushOptions struct {
@@ -116,7 +117,9 @@ type JPushHuaweiChannel struct {
 }
 
 type JPushXiaomiChannel struct {
-	ChannelId string `json:"channel_id,omitempty"`
+	ChannelId       string `json:"channel_id,omitempty"`
+	MiTemplateId    string `json:"mi_template_id"`
+	MiTemplateParam string `json:"mi_template_param"`
 }
 
 type JPushHonorChannel struct {
@@ -132,6 +135,7 @@ type JPushOppoChannel struct {
 type JPushVivoChannel struct {
 	Distribution string `json:"distribution,omitempty"`
 	Category     string `json:"category,omitempty"`
+	AddBadge     bool   `json:"add_badge,omitempty"`
 }
 
 type JPushMeizuChannel struct {
