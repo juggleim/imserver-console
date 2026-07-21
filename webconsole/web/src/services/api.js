@@ -31,12 +31,15 @@ let SERVER_PATH = {
   APP_INTERCEPTOR_CONDITION_DELETE: 'apps/interceptors/conditions/delete',
   APP_ANDROID_UPDATE: 'apps/androidpushconf/set',
   APP_ANDROID_GET: 'apps/androidpushconf/get',
+  APP_ANDROID_LIST: 'apps/androidpushconf/list',
 
   APP_IOS_UPDATE: 'apps/iospushcer/set',
   APP_IOS_UPLOAD: 'apps/iospushcer/upload',
   APP_IOS_GET: 'apps/iospushcer/get',
+  APP_IOS_LIST: 'apps/iospushcer/list',
 
   APP_FCM_GET: 'apps/fcmpushconf/get',
+  APP_FCM_LIST: 'apps/fcmpushconf/list',
   APP_FCM_UPLOAD: 'apps/fcmpushconf/upload',
 
   UPLOAD_FILE: 'common/upload',

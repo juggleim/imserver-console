@@ -228,10 +228,6 @@ nextTick(() => {
       </BaseDropdown>
 
       <div class="cim-topbar-actions">
-        <button class="cim-topbar-doc" type="button" @click="onNavigate('OrderList')">
-          {{ t('common.header.docs') }}
-        </button>
-
         <LangSwitcher
           wrapper-class="cim-topbar-lang"
           class-name="cim-topbar-lang-trigger"

@@ -9,6 +9,7 @@
       "fcm": "FCM",
       "Jpush": "JPush",
       "Honor": "Honor",
+      "Meizu": "Meizu",
       "Getui": "Getui"
     },
     "field": {
@@ -18,18 +19,64 @@
       "appSecret": "AppSecret",
       "masterSecret": "MasterSecret",
       "certFile": "Certificate File",
+      "configFile": "Configuration File",
       "certPassword": "Certificate Password",
       "voipCertPassword": "VoIP Certificate Password",
       "voipCertFile": "VoIP Certificate File",
-      "certEnv": "Certificate Environment"
+      "certEnv": "Certificate Environment",
+      "channelId": "Channel ID",
+      "badgeClass": "Badge Class",
+      "classification": "Classification",
+      "importance": "Importance",
+      "category": "Category",
+      "miTemplateId": "Mi Template ID",
+      "miTemplateParam": "Mi Template Param",
+      "notifyLevel": "Notify Level",
+      "distribution": "Distribution",
+      "addBadge": "Add Badge"
+    },
+    "section": {
+      "options": "Options",
+      "channelOptions": "Channel Options"
     },
     "option": {
       "dev": "Development",
-      "prod": "Production"
+      "prod": "Production",
+      "enabled": "Enabled"
     },
     "feedback": {
       "saveSuccess": "Saved successfully",
+      "saveFailed": "Save failed: {code} {msg}",
       "queryFailed": "Query failed. Refresh and try again."
+    },
+    "action": {
+      "add": "Add Configuration",
+      "settings": "Settings",
+      "retry": "Retry",
+      "showSecret": "Show {name}",
+      "hideSecret": "Hide {name}"
+    },
+    "dialog": {
+      "addTitle": "Add {channel} Push Configuration",
+      "editTitle": "Configure {channel} Push"
+    },
+    "placeholder": {
+      "input": "Enter {name}",
+      "integerOptional": "Enter an integer (optional)"
+    },
+    "hint": {
+      "secretUnchanged": "Leave blank to keep the current value"
+    },
+    "validation": {
+      "required": "Enter or select {name}",
+      "integer": "{name} must be an integer",
+      "packageDuplicate": "This package is already configured for the channel"
+    },
+    "status": {
+      "loading": "Loading push configurations…",
+      "saving": "Saving…",
+      "unset": "Not configured",
+      "noFile": "No file selected"
     }
   },
   "webhook": {

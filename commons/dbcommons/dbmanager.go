@@ -18,6 +18,17 @@ var db *gorm.DB
 func GetDb() *gorm.DB {
 	return db
 }
+
+// SetDbForTesting replaces the package-level connection for a test and returns
+// a restore function. Production code must initialize the database via
+// InitMysql instead.
+func SetDbForTesting(testDB *gorm.DB) func() {
+	previous := db
+	db = testDB
+	return func() {
+		db = previous
+	}
+}
 func InitMysql() error {
 	var err error
 

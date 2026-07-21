@@ -54,10 +54,13 @@ func Route(eng *gin.Engine, prefix string) *gin.RouterGroup {
 	group.POST("/apps/iospushcer/set", apis.SetIosPushConf)
 	group.POST("/apps/iospushcer/upload", apis.UploadIosCer)
 	group.GET("/apps/iospushcer/get", apis.GetIosCer)
+	group.GET("/apps/iospushcer/list", apis.ListIosPushConfs)
 	group.POST("/apps/fcmpushconf/upload", apis.UploadFcmPushConf)
 	group.GET("/apps/fcmpushconf/get", apis.GetFcmPushConf)
+	group.GET("/apps/fcmpushconf/list", apis.ListFcmPushConfs)
 	group.POST("/apps/androidpushconf/set", apis.SetAndroidPushConf)
 	group.GET("/apps/androidpushconf/get", apis.GetAndroidPushConf)
+	group.GET("/apps/androidpushconf/list", apis.ListAndroidPushConfs)
 
 	group.POST("/apps/fileconf/set", apis.SetFileConf)
 	group.GET("/apps/fileconf/get", apis.GetFileConf)

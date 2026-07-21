@@ -517,28 +517,6 @@ input[type="number"] {
   align-items: center;
   gap: 24px;
 }
-.cim-topbar-doc{
-  height: 32px;
-  border: 0;
-  background: transparent;
-  color: #212121;
-  font-size: 14px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  padding: 0;
-  border-radius: 0;
-}
-.cim-topbar-doc::before{
-  content: "";
-  width: 18px;
-  height: 18px;
-  background: url('../images/header/icon-doc.png') no-repeat center / contain;
-}
-.cim-topbar-doc:hover{
-  opacity: 0.85;
-}
 .cim-topbar-lang{
   width: 108px;
 }
@@ -634,9 +612,6 @@ input[type="number"] {
   }
   .cim-topbar-actions{
     gap: 14px;
-  }
-  .cim-topbar-doc{
-    display: none;
   }
 }
 
@@ -4814,6 +4789,517 @@ em.cim-num{
   font-weight: 400;
 }
 
+.cim-push-card-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+.cim-push-card,
+.cim-push-add-card{
+  min-height: 244px;
+  border: 1px solid #e8eaf0;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(31, 43, 72, 0.06);
+}
+
+.cim-push-card{
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cim-push-card-header{
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid #f0f1f4;
+}
+
+.cim-push-card-title{
+  overflow: hidden;
+  margin: 0;
+  color: #20232a;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cim-push-card-body{
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 20px;
+}
+
+.cim-push-card-row{
+  display: grid;
+  grid-template-columns: minmax(92px, 0.8fr) minmax(0, 1.2fr);
+  align-items: start;
+  gap: 12px;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.cim-push-card-label{
+  color: #777b86;
+}
+
+.cim-push-card-value{
+  overflow-wrap: anywhere;
+  color: #252932;
+  text-align: right;
+}
+
+.cim-push-card-value.is-unset{
+  color: #a2a5ad;
+}
+
+.cim-push-card-footer{
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 20px;
+  border-top: 1px solid #f0f1f4;
+}
+
+.cim-push-settings-button,
+.cim-push-upload-button{
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #2465ff;
+  font-size: 14px;
+  line-height: 22px;
+  cursor: pointer;
+}
+
+.cim-push-settings-button:hover,
+.cim-push-upload-button:hover{
+  color: #174bc9;
+}
+
+.cim-push-add-card{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  border-style: dashed;
+  color: #707581;
+  cursor: pointer;
+  transition: border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.cim-push-add-card:hover,
+.cim-push-add-card:focus-visible{
+  border-color: #2465ff;
+  outline: none;
+  color: #2465ff;
+  box-shadow: 0 8px 28px rgba(36, 101, 255, 0.12);
+}
+
+.cim-push-add-icon{
+  font-size: 38px;
+  font-weight: 300;
+  line-height: 38px;
+}
+
+.cim-push-state{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  color: #777b86;
+}
+
+.cim-push-state-error{
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cim-push-dialog .modal-dialog{
+  max-width: 620px;
+}
+
+.cim-jpush-dialog .modal-dialog{
+  width: calc(100% - 32px);
+  max-width: 1080px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.cim-push-dialog .modal-content{
+  min-height: auto;
+}
+
+.cim-jpush-dialog .modal-content{
+  max-height: calc(100vh - 32px);
+  overflow: hidden;
+}
+
+.cim-jpush-dialog.is-options-expanded .modal-dialog{
+  height: calc(100vh - 32px);
+  min-height: 0;
+}
+
+.cim-jpush-dialog.is-options-expanded .modal-content{
+  height: 100%;
+}
+
+.cim-push-dialog .modal-header{
+  padding: 20px 5%;
+}
+
+.cim-push-dialog .modal-body{
+  align-items: stretch;
+  padding: 24px 0 28px;
+}
+
+.cim-jpush-dialog .modal-body{
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: #aeb5c2 #eef0f4;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+}
+
+.cim-jpush-dialog.is-options-expanded .modal-body{
+  flex: 1 1 0;
+  overflow-y: scroll;
+}
+
+.cim-jpush-dialog .modal-body::-webkit-scrollbar{
+  width: 8px;
+}
+
+.cim-jpush-dialog .modal-body::-webkit-scrollbar-track{
+  background: #eef0f4;
+}
+
+.cim-jpush-dialog .modal-body::-webkit-scrollbar-thumb{
+  border: 2px solid #eef0f4;
+  border-radius: 8px;
+  background: #aeb5c2;
+  background-clip: padding-box;
+}
+
+.cim-push-dialog .modal-footer{
+  padding: 16px 5% 20px;
+}
+
+.cim-push-dialog-fields{
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 90%;
+  margin: 0 auto;
+}
+
+.cim-jpush-dialog .cim-push-dialog-fields{
+  align-self: flex-start;
+  flex: 0 0 90%;
+}
+
+.cim-jpush-dialog .cim-push-dialog-fields > *{
+  flex-shrink: 0;
+}
+
+.cim-push-dialog-field{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cim-push-dialog-label{
+  margin: 0;
+  color: #4c515c;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.cim-push-required{
+  margin-left: 2px;
+  color: #e34d59;
+}
+
+.cim-push-dialog-input.form-control,
+.cim-push-dialog-upload{
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid #dfe2e8;
+  border-radius: 8px;
+  background: #f8f9fb;
+}
+
+.cim-push-dialog-input-wrap{
+  position: relative;
+  width: 100%;
+}
+
+.cim-push-dialog-input.form-control{
+  padding: 8px 12px;
+  box-shadow: none;
+}
+
+.cim-push-dialog-input.form-control.has-secret-toggle{
+  padding-right: 48px;
+}
+
+.cim-push-secret-toggle{
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #777b86;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.cim-push-secret-toggle:hover,
+.cim-push-secret-toggle:focus-visible{
+  outline: none;
+  background: rgba(36, 101, 255, 0.08);
+  color: #2465ff;
+}
+
+.cim-push-secret-toggle svg{
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cim-push-secret-toggle.is-hidden::after{
+  position: absolute;
+  width: 20px;
+  height: 1.5px;
+  border-radius: 999px;
+  background: currentColor;
+  content: '';
+  transform: rotate(45deg);
+}
+
+.cim-push-dialog-input.form-control:focus{
+  border-color: rgba(36, 101, 255, 0.55);
+  box-shadow: 0 0 0 3px rgba(36, 101, 255, 0.1);
+}
+
+.cim-push-dialog-upload{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 12px;
+}
+
+.cim-push-dialog-input.is-invalid,
+.cim-push-dialog-upload.is-invalid{
+  border-color: #e34d59;
+}
+
+.cim-push-dialog-file-name{
+  overflow: hidden;
+  flex: 1;
+  color: #777b86;
+  font-size: 13px;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cim-push-dialog-radios{
+  display: flex;
+  gap: 24px;
+  min-height: 40px;
+  align-items: center;
+}
+
+.cim-push-dialog-radio{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.cim-push-field-error,
+.cim-push-field-hint,
+.cim-push-saving{
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.cim-push-field-error{
+  color: #d83a47;
+}
+
+.cim-push-field-hint,
+.cim-push-saving{
+  color: #8b8f98;
+}
+
+.cim-push-saving{
+  text-align: right;
+}
+
+.cim-jpush-options{
+  overflow: visible;
+}
+
+.cim-jpush-options-title{
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 7px 2px;
+  border: 0;
+  background: transparent;
+  color: #8b8f98;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 400;
+  text-align: left;
+  gap: 12px;
+}
+
+.cim-jpush-options-title:hover,
+.cim-jpush-options-title:focus-visible{
+  outline: none;
+  color: #777b86;
+}
+
+.cim-jpush-options-label{
+  flex: 0 0 auto;
+}
+
+.cim-jpush-options-line{
+  height: 1px;
+  flex: 1 1 auto;
+  background: #dfe2e8;
+}
+
+.cim-jpush-options-title:hover .cim-jpush-options-line,
+.cim-jpush-options-title:focus-visible .cim-jpush-options-line{
+  background: #d7dae0;
+}
+
+.cim-jpush-options-chevron{
+  flex: 0 0 auto;
+  width: 9px;
+  height: 9px;
+  margin-top: -4px;
+  margin-right: 3px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.2s ease;
+}
+
+.cim-jpush-options-chevron.is-expanded{
+  transform: rotate(225deg);
+}
+
+.cim-jpush-options-content{
+  overflow: hidden;
+  margin-top: 8px;
+  border: 1px solid #e3e6ec;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.cim-jpush-options-fields{
+  padding: 18px;
+  border-bottom: 1px solid #e9ebef;
+}
+
+.cim-jpush-channel-title{
+  padding: 16px 18px 12px;
+  color: #30343b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cim-jpush-tabs{
+  display: flex;
+  overflow-x: auto;
+  padding: 0 12px;
+  border-bottom: 1px solid #e9ebef;
+  gap: 4px;
+}
+
+.cim-jpush-tab{
+  position: relative;
+  flex: 0 0 auto;
+  padding: 10px 14px 11px;
+  border: 0;
+  background: transparent;
+  color: #777b86;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.cim-jpush-tab::after{
+  position: absolute;
+  right: 14px;
+  bottom: 0;
+  left: 14px;
+  height: 2px;
+  border-radius: 2px;
+  background: transparent;
+  content: '';
+}
+
+.cim-jpush-tab:hover,
+.cim-jpush-tab.is-active{
+  color: #2465ff;
+}
+
+.cim-jpush-tab.is-active::after{
+  background: #2465ff;
+}
+
+.cim-jpush-tab-panel{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 18px;
+  gap: 18px 20px;
+}
+
+.cim-jpush-checkbox{
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid #dfe2e8;
+  border-radius: 8px;
+  background: #f8f9fb;
+  color: #4c515c;
+  cursor: pointer;
+  gap: 10px;
+}
+
+.cim-jpush-checkbox input{
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
 @media (max-width: 990px){
   .app-base.cim-page-shell{
     padding: 20px 18px 28px;
@@ -4929,6 +5415,39 @@ em.cim-num{
 
   .cim-push-upload-name{
     flex-basis: 100%;
+  }
+
+  .cim-push-card-grid{
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 640px){
+  .cim-push-page .cim-push-tabs{
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+
+  .cim-push-card-grid{
+    grid-template-columns: 1fr;
+  }
+
+  .cim-push-card,
+  .cim-push-add-card{
+    min-height: 220px;
+  }
+
+  .cim-push-dialog-upload{
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .cim-push-dialog-file-name{
+    flex-basis: 100%;
+  }
+
+  .cim-jpush-tab-panel{
+    grid-template-columns: 1fr;
   }
 }
 .cim-r3-container-sms .cim-r3-item {

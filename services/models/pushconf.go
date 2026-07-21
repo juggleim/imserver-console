@@ -25,15 +25,37 @@ const (
 )
 
 type AndroidPushConf struct {
+	AppKey          string         `json:"app_key"`
+	PushChannel     string         `json:"push_channel,omitempty"`
+	Package         string         `json:"package"`
+	OriginalPackage string         `json:"original_package,omitempty"`
+	Extra           map[string]any `json:"extra"`
+}
+
+const PushSecretMask = "********"
+
+type PushConfListItem struct {
 	AppKey      string         `json:"app_key"`
-	PushChannel string         `json:"push_channel,omitempty"`
+	PushChannel string         `json:"push_channel"`
 	Package     string         `json:"package"`
-	Extra       map[string]any `json:"extra"`
+	ConfPath    string         `json:"conf_path,omitempty"`
+	Extra       map[string]any `json:"extra,omitempty"`
+}
+
+type IosPushConfListItem struct {
+	AppKey       string `json:"app_key"`
+	Package      string `json:"package"`
+	IsProduct    int    `json:"is_product"`
+	CertPath     string `json:"cert_path,omitempty"`
+	CertPwd      string `json:"cert_pwd,omitempty"`
+	VoipCertPwd  string `json:"voip_cert_pwd,omitempty"`
+	VoipCertPath string `json:"voip_cert_path,omitempty"`
 }
 
 type HuaweiPushConf struct {
-	AppId     string `json:"app_id"`
-	AppSecret string `json:"app_secret"`
+	AppId      string `json:"app_id"`
+	AppSecret  string `json:"app_secret"`
+	BadgeClass string `json:"badge_class,omitempty"`
 }
 
 func (conf *HuaweiPushConf) Valid() bool {
@@ -72,6 +94,7 @@ func (conf *VivoPushConf) Valid() bool {
 type JPushConf struct {
 	AppKey       string        `json:"app_key"`
 	MasterSecret string        `json:"master_secret"`
+	BadgeClass   string        `json:"badge_class,omitempty"`
 	Options      *JPushOptions `json:"options,omitempty"`
 }
 type JPushOptions struct {
@@ -94,7 +117,9 @@ type JPushHuaweiChannel struct {
 }
 
 type JPushXiaomiChannel struct {
-	ChannelId string `json:"channel_id,omitempty"`
+	ChannelId       string `json:"channel_id,omitempty"`
+	MiTemplateId    string `json:"mi_template_id"`
+	MiTemplateParam string `json:"mi_template_param"`
 }
 
 type JPushHonorChannel struct {
@@ -110,6 +135,7 @@ type JPushOppoChannel struct {
 type JPushVivoChannel struct {
 	Distribution string `json:"distribution,omitempty"`
 	Category     string `json:"category,omitempty"`
+	AddBadge     bool   `json:"add_badge,omitempty"`
 }
 
 type JPushMeizuChannel struct {
@@ -121,9 +147,10 @@ func (conf *JPushConf) Valid() bool {
 }
 
 type HonorPushConf struct {
-	AppId     string `json:"app_id"`
-	AppKey    string `json:"app_key"`
-	AppSecret string `json:"app_secret"`
+	AppId      string `json:"app_id"`
+	AppKey     string `json:"app_key"`
+	AppSecret  string `json:"app_secret"`
+	BadgeClass string `json:"badge_class,omitempty"`
 }
 
 func (conf *HonorPushConf) Valid() bool {

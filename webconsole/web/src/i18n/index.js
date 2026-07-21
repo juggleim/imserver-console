@@ -3,13 +3,18 @@ import { dateEnUS, dateZhCN, enUS, zhCN } from 'naive-ui';
 import Storage from '@/common/storage';
 import { STORAGE } from '@/common/enum';
 import { resources } from './resources';
+import {
+  DEFAULT_LOCALE,
+  FALLBACK_LOCALE,
+  normalizeSupportedLocale,
+  resolveLocalePreference,
+} from './locale-preference.mjs';
 
-export const DEFAULT_LOCALE = 'zh-CN';
-export const FALLBACK_LOCALE = 'zh-CN';
+export { DEFAULT_LOCALE, FALLBACK_LOCALE };
 
 export const LOCALE_OPTIONS = [
-  { value: 'zh-CN', label: '简体中文' },
   { value: 'en-US', label: 'English' },
+  { value: 'zh-CN', label: '简体中文' },
 ];
 
 const naiveLocaleMap = {
@@ -33,37 +38,6 @@ const state = reactive({
 
 function isSupportedLocale(locale) {
   return Object.prototype.hasOwnProperty.call(resources, locale);
-}
-
-function normalizeLocale(input) {
-  if (typeof input !== 'string') {
-    return DEFAULT_LOCALE;
-  }
-  const lowerInput = input.toLowerCase();
-  if (lowerInput.startsWith('en')) {
-    return 'en-US';
-  }
-  if (lowerInput.startsWith('zh')) {
-    return 'zh-CN';
-  }
-  return DEFAULT_LOCALE;
-}
-
-function resolveLocaleFromStorage() {
-  const storedLocale = Storage.get(STORAGE.LOCALE);
-  if (typeof storedLocale !== 'string') {
-    return null;
-  }
-  const locale = normalizeLocale(storedLocale);
-  return isSupportedLocale(locale) ? locale : null;
-}
-
-function resolveLocaleFromBrowser() {
-  if (typeof navigator === 'undefined') {
-    return DEFAULT_LOCALE;
-  }
-  const locale = normalizeLocale(navigator.language || navigator.userLanguage);
-  return isSupportedLocale(locale) ? locale : DEFAULT_LOCALE;
 }
 
 function getMessage(locale, key) {
@@ -92,25 +66,22 @@ function storeLocale(locale) {
 }
 
 export function initI18n() {
-  const localeFromStorage = resolveLocaleFromStorage();
-  if (localeFromStorage) {
-    state.locale = localeFromStorage;
-    state.source = 'storage';
-    state.isReady = true;
-    return state.locale;
-  }
-
-  const localeFromBrowser = resolveLocaleFromBrowser();
-  state.locale = localeFromBrowser;
-  state.source = 'browser';
+  const browserLocales =
+    typeof navigator === 'undefined'
+      ? []
+      : navigator.languages?.length
+        ? navigator.languages
+        : [navigator.language || navigator.userLanguage];
+  const preference = resolveLocalePreference(Storage.get(STORAGE.LOCALE), browserLocales);
+  state.locale = preference.locale;
+  state.source = preference.source;
   state.isReady = true;
-  storeLocale(state.locale);
   return state.locale;
 }
 
 export function setLocale(nextLocale) {
-  const locale = normalizeLocale(nextLocale);
-  if (!isSupportedLocale(locale)) {
+  const locale = normalizeSupportedLocale(nextLocale);
+  if (!locale || !isSupportedLocale(locale)) {
     return false;
   }
   state.locale = locale;
