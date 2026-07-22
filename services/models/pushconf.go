@@ -127,9 +127,13 @@ type JPushHonorChannel struct {
 }
 
 type JPushOppoChannel struct {
-	ChannelId   string `json:"channel_id,omitempty"`
-	Category    string `json:"category,omitempty"`
-	NotifyLevel int    `json:"notify_level,omitempty"`
+	ChannelId                string            `json:"channel_id,omitempty"`
+	Category                 string            `json:"category,omitempty"`
+	NotifyLevel              int               `json:"notify_level,omitempty"`
+	BadgeOperationType       *int              `json:"badge_operation_type,omitempty"`
+	PrivateMsgTemplateId     string            `json:"private_msg_template_id,omitempty"`
+	PrivateContentParameters map[string]string `json:"private_content_parameters,omitempty"`
+	PrivateTitleParameters   map[string]string `json:"private_title_parameters,omitempty"`
 }
 
 type JPushVivoChannel struct {

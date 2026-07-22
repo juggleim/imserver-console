@@ -254,6 +254,35 @@ export const PUSH_CHANNELS = [
             type: 'input_number',
             integer: true,
           }),
+          jpushField('oppo', 'badge_operation_type', 'Badge Operation Type', {
+            labelKey: 'appServices.push.field.badgeOperationType',
+            type: 'select',
+            integer: true,
+            allowZero: true,
+            options: [
+              {
+                value: 0,
+                label: 'Overwrite',
+                labelKey: 'appServices.push.option.badgeOverwrite',
+              },
+              {
+                value: 1,
+                label: 'Increase',
+                labelKey: 'appServices.push.option.badgeIncrease',
+              },
+            ],
+          }),
+          jpushField('oppo', 'private_msg_template_id', 'Private Message Template ID', {
+            labelKey: 'appServices.push.field.privateMsgTemplateId',
+          }),
+          jpushField('oppo', 'private_content_parameters', 'Private Content Parameters', {
+            labelKey: 'appServices.push.field.privateContentParameters',
+            jsonObject: true,
+          }),
+          jpushField('oppo', 'private_title_parameters', 'Private Title Parameters', {
+            labelKey: 'appServices.push.field.privateTitleParameters',
+            jsonObject: true,
+          }),
         ],
       },
       {
@@ -349,7 +378,10 @@ export function createPushDraft(setting, item = null) {
     }
     const sourceValue = readFieldValue(source, field);
     if (sourceValue !== undefined) {
-      draft[field.name] = sourceValue;
+      draft[field.name] =
+        field.jsonObject && typeof sourceValue === 'object'
+          ? JSON.stringify(sourceValue)
+          : sourceValue;
       return;
     }
     draft[field.name] = field.defaultValue ?? '';
@@ -366,6 +398,22 @@ export function validatePushDraft(setting, draft, items = []) {
       const numberValue = Number(value);
       if (!Number.isInteger(numberValue)) {
         errors[field.name] = 'integer';
+        return;
+      }
+    }
+    if (field.jsonObject && value !== '' && value !== null && value !== undefined) {
+      try {
+        const parsed = typeof value === 'string' ? JSON.parse(value) : value;
+        if (
+          !parsed ||
+          Array.isArray(parsed) ||
+          typeof parsed !== 'object' ||
+          Object.values(parsed).some((item) => typeof item !== 'string')
+        ) {
+          throw new TypeError('expected an object with string values');
+        }
+      } catch {
+        errors[field.name] = 'stringMap';
         return;
       }
     }
@@ -421,6 +469,10 @@ function normalizeDraftValue(field, draft) {
   if (field.type === 'checkbox') {
     return Boolean(value);
   }
+  if (field.jsonObject && typeof value === 'string') {
+    const trimmed = value.trim();
+    return trimmed ? JSON.parse(trimmed) : trimmed;
+  }
   if (field.integer && value !== '' && value !== null && value !== undefined) {
     return Number(value);
   }
@@ -433,7 +485,8 @@ function isEmptyOptionalValue(field, value) {
     value === null ||
     value === undefined ||
     (field.type === 'checkbox' && !value) ||
-    (field.integer && value === 0)
+    (field.integer && !field.allowZero && value === 0) ||
+    (field.jsonObject && typeof value === 'object' && Object.keys(value).length === 0)
   );
 }
 

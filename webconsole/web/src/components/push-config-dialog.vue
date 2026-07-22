@@ -46,6 +46,9 @@
     if (field.integer) {
       return t('appServices.push.placeholder.integerOptional');
     }
+    if (field.jsonObject) {
+      return t('appServices.push.placeholder.jsonObjectOptional');
+    }
     return t('appServices.push.placeholder.input', { name: fieldLabel(field) });
   }
 
@@ -56,6 +59,9 @@
     }
     if (error === 'integer') {
       return t('appServices.push.validation.integer', { name: fieldLabel(field) });
+    }
+    if (error === 'stringMap') {
+      return t('appServices.push.validation.stringMap', { name: fieldLabel(field) });
     }
     return error ? t('appServices.push.validation.required', { name: fieldLabel(field) }) : '';
   }
@@ -300,6 +306,18 @@
                 <input :id="field.name" v-model="props.draft[field.name]" type="checkbox" />
                 <span>{{ t('appServices.push.option.enabled') }}</span>
               </label>
+
+              <select
+                v-else-if="field.type === 'select'"
+                :id="field.name"
+                v-model="props.draft[field.name]"
+                class="form-select cim-push-dialog-input"
+              >
+                <option value="">{{ t('appServices.push.option.notSet') }}</option>
+                <option v-for="option in field.options" :key="option.value" :value="option.value">
+                  {{ option.labelKey ? t(option.labelKey, {}, option.label) : option.label }}
+                </option>
+              </select>
 
               <input
                 v-else

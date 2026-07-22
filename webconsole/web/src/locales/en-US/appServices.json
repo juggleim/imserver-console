@@ -32,6 +32,10 @@
       "miTemplateId": "Mi Template ID",
       "miTemplateParam": "Mi Template Param",
       "notifyLevel": "Notify Level",
+      "badgeOperationType": "Badge Operation Type",
+      "privateMsgTemplateId": "Private Message Template ID",
+      "privateContentParameters": "Private Content Parameters",
+      "privateTitleParameters": "Private Title Parameters",
       "distribution": "Distribution",
       "addBadge": "Add Badge"
     },
@@ -42,7 +46,10 @@
     "option": {
       "dev": "Development",
       "prod": "Production",
-      "enabled": "Enabled"
+      "enabled": "Enabled",
+      "notSet": "Not set (optional)",
+      "badgeOverwrite": "Overwrite (0)",
+      "badgeIncrease": "Increase (1)"
     },
     "feedback": {
       "saveSuccess": "Saved successfully",
@@ -62,7 +69,8 @@
     },
     "placeholder": {
       "input": "Enter {name}",
-      "integerOptional": "Enter an integer (optional)"
+      "integerOptional": "Enter an integer (optional)",
+      "jsonObjectOptional": "Enter a JSON object (optional)"
     },
     "hint": {
       "secretUnchanged": "Leave blank to keep the current value"
@@ -70,6 +78,7 @@
     "validation": {
       "required": "Enter or select {name}",
       "integer": "{name} must be an integer",
+      "stringMap": "{name} must be a JSON object with string values",
       "packageDuplicate": "This package is already configured for the channel"
     },
     "status": {

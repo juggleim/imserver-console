@@ -78,7 +78,7 @@
 #### Scenario: Configure JPush third-party channel options
 
 - **WHEN** 用户在极光弹窗的渠道可选参数区域切换华为、小米、荣耀、OPPO、VIVO 或魅族标签页并填写参数
-- **THEN** 系统按照 `options.third_party_channel` 下对应的小写渠道键保存参数：华为支持 `importance`、`category`；小米支持 `channel_id`、`mi_template_id`、`mi_template_param`；荣耀支持 `importance`；OPPO 支持 `channel_id`、`category`、整数 `notify_level`，其输入框内提示请输入整数且为选填；VIVO 支持 `distribution`、`category`、布尔值 `add_badge`；魅族支持 `distribution`
+- **THEN** 系统按照 `options.third_party_channel` 下对应的小写渠道键保存参数：华为支持 `importance`、`category`；小米支持 `channel_id`、`mi_template_id`、`mi_template_param`；荣耀支持 `importance`；OPPO 支持 `channel_id`、`category`、整数 `notify_level`、可选的 `badge_operation_type` 下拉框（`0` 为覆盖、`1` 为增加）、`private_msg_template_id`，以及 JSON 字符串映射 `private_content_parameters`、`private_title_parameters`；VIVO 支持 `distribution`、`category`、布尔值 `add_badge`；魅族支持 `distribution`
 
 #### Scenario: Omit empty JPush channel options
 
