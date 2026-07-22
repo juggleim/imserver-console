@@ -2595,6 +2595,51 @@ em.cim-num{
 .cim-signal-item:first-child{
   min-width: 60px;
 }
+.cim-signal-main{
+  flex: 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.cim-signal-detail-toggle{
+  font-size: 12px;
+  white-space: nowrap;
+  margin-left: 20px;
+}
+.cim-signal-detail{
+  background-color: #abc7d90f;
+  border-top: 1px dashed #abc7d9;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+.cim-signal-detail-empty{
+  margin: 0;
+  color: #8a949c;
+}
+.cim-signal-detail-list{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.cim-signal-detail-head{
+  display: flex;
+  gap: 20px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.cim-signal-detail-expend{
+  color: #8a949c;
+  font-weight: 400;
+}
+.cim-signal-detail-item .cim-signal-list{
+  flex-wrap: wrap;
+}
+.cim-table-lf-tip{
+  font-size: 12px;
+  color: #8a949c;
+  display: flex;
+  align-items: center;
+}
 .cim-loading{
   position: absolute;
   background-color: rgb(187 198 206 / 29%);

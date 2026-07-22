@@ -25,4 +25,6 @@ var (
 	AdminErrorCode_NotPermission     AdminErrorCode = 1018
 	AdminErrorCode_PushConfExisted   AdminErrorCode = 1019
 	AdminErrorCode_PushConfNotExist  AdminErrorCode = 1020
+	AdminErrorCode_QryServerLogsFail AdminErrorCode = 1021
+	AdminErrorCode_RequestLimit      AdminErrorCode = 1022
 )

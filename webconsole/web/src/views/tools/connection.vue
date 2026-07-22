@@ -80,15 +80,52 @@ function getSignals(params, callback){
     if(utils.isEqual(code, RESPONSE.SUCCESS)){
       let { logs } = data;
       item.currentCount = logs.length;
-      if(utils.isEqual(start, 0)){
-        logs.unshift({ action: 'connect', real_time: item.timestamp, user_id: item.user_id })
-      }
       let _list = formatLogs(logs);
       callback({ list: _list, index });
     }else{
-      context.proxy.$toast({ icon: 'error', text: t('tools.connection.feedback.requestFailed', { code, msg }, `Error: ${code} ${msg}`) });
+      toastError(code, msg);
     }
   })
+}
+
+// a signal carries a seq index; the server-side handling of that same index is
+// written to the business log, which is what the drill-down fetches
+function onDetail({ item, conn }){
+  if(utils.isUndefined(item.seq_index) || item.isDetailLoading){
+    return;
+  }
+  if(item.details){
+    item.isDetailOpen = !item.isDetailOpen;
+    return;
+  }
+  item.isDetailLoading = true;
+  let start = getLogTime(item);
+  Inspect.getSignalLogs({
+    app_key,
+    session: conn.session,
+    user_id: conn.user_id,
+    index: item.seq_index,
+    // the node only scans the log file covering `start`, and it keeps lines
+    // strictly newer than it, so back off one millisecond from the signal
+    start: start > 0 ? start - 1 : 0,
+    count: 50,
+  }).then((result) => {
+    let { code, msg, data } = result;
+    item.isDetailLoading = false;
+    if(utils.isEqual(code, RESPONSE.SUCCESS)){
+      item.details = formatDetails(data.logs);
+      item.isDetailOpen = true;
+    }else{
+      toastError(code, msg);
+    }
+  })
+}
+
+function toastError(code, msg){
+  let text = utils.isEqual(code, RESPONSE.REQUEST_LIMIT)
+    ? t('tools.connection.feedback.rateLimited')
+    : t('tools.connection.feedback.requestFailed', { code, msg }, `Error: ${code} ${msg}`);
+  context.proxy.$toast({ icon: 'error', text });
 }
 let actionMap = {
   connect: { type: SIGNAL_TYPE.CONNECTED, method: 'connect' },
@@ -101,9 +138,8 @@ let actionMap = {
   disconnect: { type: SIGNAL_TYPE.DISCONNECTED, method: 'disconnect' },
 };
 function formatLogs(logs){
-  console.log(logs)
   let _logs = utils.map(logs, (log) => {
-    let { real_time, action } = log;
+    let { action } = log;
     // 移除内置属性
     let _log = utils.clone(log);
     let infos = removeAttrs(_log);
@@ -115,24 +151,53 @@ function formatLogs(logs){
     let methodItem = METHOD_MAP[method] || {};
     log = utils.extend(log, methodItem);
 
-    log.timeName = format(real_time, 'hh:mm:ss.S');
+    log.timeName = format(getLogTime(log), 'hh:mm:ss.S');
     return log;
   });
   return _logs;
 }
-function removeAttrs(log){
-  let { code} = log;
-  
-  let error = { name: t('tools.connection.status.success'), value: '', cls: 'success' }
-  if(!utils.isUndefined(code)){
-    let index = utils.find(IM_ERRORS, (item) => {
-      return utils.isEqual(item.code, code);
+
+// business logs describe how one signal was handled: the fixed fields carry the
+// service and its cost, everything else the node collected lands in `parms`
+function formatDetails(logs){
+  return utils.map(logs || [], (log) => {
+    let { service_name, method, expend, parms } = log;
+    let infos = [];
+    utils.forEach(parms || {}, (v, k) => {
+      infos.push({ name: k, value: `: ${v}` });
     });
-    let errorItem = IM_ERRORS[index] || { code: code, msg: '' }
+    return {
+      service_name,
+      method,
+      expend,
+      infos,
+      timeName: format(getLogTime(log), 'hh:mm:ss.S'),
+    };
+  });
+}
+
+// vlog lines are stamped by the node with `timestamp`; older kv-backed logs
+// carried `real_time`
+function getLogTime(log){
+  return Number(log.real_time || log.timestamp) || 0;
+}
+
+function removeAttrs(log){
+  let { code } = log;
+
+  let error = { name: t('tools.connection.status.success'), value: '', cls: 'success' }
+  // log fields arrive as strings, error codes are compared as numbers, and a
+  // logged code of 0 is the server confirming the signal succeeded
+  let logCode = Number(code);
+  if(!utils.isUndefined(code) && logCode !== 0){
+    let index = utils.find(IM_ERRORS, (item) => {
+      return utils.isEqual(item.code, logCode);
+    });
+    let errorItem = IM_ERRORS[index] || { code: logCode, msg: '' }
     error = { name: t('tools.connection.status.failed'), value: `: ${errorItem.code} ${errorItem.msg}`, cls: 'warn' }
   }
 
-  let attrs = ['action', 'app_key', 'method', 'session', 'timestamp', 'code', 'real_time'];
+  let attrs = ['action', 'app_key', 'appkey', 'method', 'session', 'timestamp', 'code', 'real_time', 'service_name'];
   utils.forEach(attrs, (key) => {
     delete log[key];
   });
@@ -169,7 +234,7 @@ function format(date, fmt = 'yyyy-MM-dd hh:mm') {
     <ul class="cim-tcon-contents">
       <li class="cim-tcon-content" v-for="(tab, index) in state.tabs" :class="[tab.session == state.current.session ? 'display-flex' : 'display-none']">
         <ConnManger v-if="tab.session == 'manger'" @create="onCreateCon"></ConnManger>
-        <ConnSignal v-else :conn="tab" @next="onNext"></ConnSignal>
+        <ConnSignal v-else :conn="tab" @next="onNext" @detail="onDetail"></ConnSignal>
       </li>
     </ul>
   </PageSection>

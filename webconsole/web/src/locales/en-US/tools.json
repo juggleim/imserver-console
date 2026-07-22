@@ -8,7 +8,8 @@
       "managerHint": "Search connection records by time and user ID, then open a record to inspect its full signaling timeline.",
       "detailHint": "You are viewing a connection detail tab. Click the time chip to copy the exact timestamp for log inspection.",
       "openTabs": "Open Details",
-      "loadedItems": "Loaded Items"
+      "loadedItems": "Loaded Items",
+      "lookbackHint": "Only the last 24 hours of logs can be queried"
     },
     "field": {
       "userId": "User ID"
@@ -24,7 +25,10 @@
       "search": "Search",
       "viewDetails": "View Details",
       "next": "Next",
-      "copyTime": "Time copied"
+      "copyTime": "Time copied",
+      "viewServerDetail": "Server Handling",
+      "hideServerDetail": "Hide Server Handling",
+      "loadingDetail": "Loading…"
     },
     "status": {
       "success": "Success",
@@ -32,10 +36,17 @@
     },
     "empty": {
       "connections": "No connection data",
-      "signals": "No signaling data"
+      "signals": "No signaling data",
+      "serverDetail": "No server-side log found for this signal"
     },
     "feedback": {
-      "requestFailed": "Error: {code} {msg}"
+      "requestFailed": "Error: {code} {msg}",
+      "rateLimited": "Server log query is busy, please retry shortly",
+      "userIdRequired": "Please enter a user ID",
+      "lookbackClamped": "Only the last 24 hours can be queried; start time adjusted"
+    },
+    "detail": {
+      "expend": "took {expend}"
     }
   },
   "api": {

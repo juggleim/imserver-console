@@ -6,7 +6,7 @@ import { t } from '@/i18n';
 
 const context = getCurrentInstance();
 const props = defineProps(['conn']);
-const emit = defineEmits(['next']);
+const emit = defineEmits(['next', 'detail']);
 
 watch(() => props.conn.list, () => {
   nextTick(() => {
@@ -35,12 +35,39 @@ function onCopy(item){
           </div>
         </div>
         
-        <div class="cim-signal-body">
-          <ul class="cim-signal-list">
-            <li class="cim-signal-item" v-for="info in item.infos" :key="`${info.name}-${info.value}`" :class="[info.cls ? info.cls : '']">
-              {{ info.name }} {{ info.value }}
-            </li>
-          </ul>
+        <div class="cim-signal-main">
+          <div class="cim-signal-body">
+            <ul class="cim-signal-list">
+              <li class="cim-signal-item" v-for="info in item.infos" :key="`${info.name}-${info.value}`" :class="[info.cls ? info.cls : '']">
+                {{ info.name }} {{ info.value }}
+              </li>
+            </ul>
+
+            <a class="btn-link cim-signal-detail-toggle" v-if="!utils.isUndefined(item.seq_index)" href="#" @click.prevent="emit('detail', { item, conn: props.conn })">
+              <span v-if="item.isDetailLoading">{{ t('tools.connection.action.loadingDetail') }}</span>
+              <span v-else-if="item.isDetailOpen">{{ t('tools.connection.action.hideServerDetail') }}</span>
+              <span v-else>{{ t('tools.connection.action.viewServerDetail') }}</span>
+            </a>
+          </div>
+
+          <div class="cim-signal-detail" v-if="item.isDetailOpen">
+            <p class="cim-signal-detail-empty" v-if="!item.details?.length">{{ t('tools.connection.empty.serverDetail') }}</p>
+            <ul class="cim-signal-detail-list" v-else>
+              <li class="cim-signal-detail-item" v-for="(detail, i) in item.details" :key="`${detail.service_name}-${detail.timeName}-${i}`">
+                <div class="cim-signal-detail-head">
+                  <span class="cim-signal-detail-time">{{ detail.timeName }}</span>
+                  <span class="cim-signal-detail-service">{{ detail.service_name }}</span>
+                  <span class="cim-signal-detail-method" v-if="detail.method">{{ detail.method }}</span>
+                  <span class="cim-signal-detail-expend" v-if="detail.expend">{{ t('tools.connection.detail.expend', { expend: detail.expend }) }}</span>
+                </div>
+                <ul class="cim-signal-list">
+                  <li class="cim-signal-item" v-for="info in detail.infos" :key="`${info.name}-${info.value}`">
+                    {{ info.name }} {{ info.value }}
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
         </div>
       </li>
     </ul>

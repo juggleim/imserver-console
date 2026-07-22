@@ -70,9 +70,10 @@ func Route(eng *gin.Engine, prefix string) *gin.RouterGroup {
 	group.POST("/apps/clientlogs/notify", apis.ClientLogNtf)
 	group.GET("/apps/clientlogs/list", apis.ClientLogList)
 	group.GET("/apps/clientlogs/download", apis.ClientLogDownload)
-	// group.GET("/apps/serverlogs/userconnect", apis.QryUserConnectLogs)
-	// group.GET("/apps/serverlogs/connect", apis.QryConnectLogs)
-	// group.GET("/apps/serverlogs/business", apis.QryBusinessLogs)
+	//connection inspector, proxied to the im server's vlog query
+	group.GET("/apps/serverlogs/userconnect", apis.QryUserConnectLogs)
+	group.GET("/apps/serverlogs/connect", apis.QryConnectLogs)
+	group.GET("/apps/serverlogs/business", apis.QryBusinessLogs)
 
 	//statistic
 	group.GET("/apps/statistic/msg", apis.QryMsgStatistic)

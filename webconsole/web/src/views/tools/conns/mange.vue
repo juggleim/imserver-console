@@ -29,7 +29,18 @@ let state = reactive({
 
 function onSearch(){
   let { start, count, user_id } = state.params;
+  user_id = (user_id || '').trim();
+  if(!user_id){
+    return context.proxy.$toast({ icon: 'error', text: t('tools.connection.feedback.userIdRequired') });
+  }
   start = new Date(start).getTime();
+  // the node keeps only the last 24h of log files
+  let earliest = Date.now() - Inspect.MAX_LOOKBACK;
+  if(start < earliest){
+    start = earliest;
+    state.params.start = new Date(earliest);
+    context.proxy.$toast({ icon: 'warn', text: t('tools.connection.feedback.lookbackClamped') });
+  }
   search({start, app_key, count, user_id}, SEARCH_TYPE.RESET);
 }
 
@@ -64,7 +75,10 @@ function search(params, type){
       }
       utils.extend(state, { list, currentCount: logs.length });
     }else{
-      context.proxy.$toast({ icon: 'error', text: t('tools.connection.feedback.requestFailed', { code, msg }, `Error: ${code} ${msg}`) });
+      let text = utils.isEqual(code, RESPONSE.REQUEST_LIMIT)
+        ? t('tools.connection.feedback.rateLimited')
+        : t('tools.connection.feedback.requestFailed', { code, msg }, `Error: ${code} ${msg}`);
+      context.proxy.$toast({ icon: 'error', text });
     }
   })
 }
@@ -92,6 +106,9 @@ function format(date, fmt = 'yyyy-MM-dd hh:mm') {
         </li>
         <li class="cim-table-lf-item">
           <div class="cim-button cim-button-bg" @click="onSearch">{{ t('tools.connection.action.search') }}</div>
+        </li>
+        <li class="cim-table-lf-item cim-table-lf-tip">
+          {{ t('tools.connection.page.lookbackHint') }}
         </li>
       </ul>
     </div>

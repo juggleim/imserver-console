@@ -8,7 +8,8 @@
       "managerHint": "按连接时间和用户 ID 查询连接记录，选择具体连接后可继续查看完整信令轨迹。",
       "detailHint": "当前为连接详情视图，可点击时间复制真实时间戳以辅助日志排查。",
       "openTabs": "已打开详情",
-      "loadedItems": "当前条目"
+      "loadedItems": "当前条目",
+      "lookbackHint": "仅支持查询最近 24 小时的日志"
     },
     "field": {
       "userId": "用户 ID"
@@ -24,7 +25,10 @@
       "search": "查询",
       "viewDetails": "查看详情",
       "next": "下一页",
-      "copyTime": "【时间】已复制"
+      "copyTime": "【时间】已复制",
+      "viewServerDetail": "查看服务端处理",
+      "hideServerDetail": "收起服务端处理",
+      "loadingDetail": "加载中…"
     },
     "status": {
       "success": "成功",
@@ -32,10 +36,17 @@
     },
     "empty": {
       "connections": "暂无连接数据",
-      "signals": "暂无信令数据"
+      "signals": "暂无信令数据",
+      "serverDetail": "未查询到该信令的服务端处理日志"
     },
     "feedback": {
-      "requestFailed": "Error: {code} {msg}"
+      "requestFailed": "Error: {code} {msg}",
+      "rateLimited": "服务端日志查询繁忙，请稍后重试",
+      "userIdRequired": "请输入用户 ID",
+      "lookbackClamped": "仅支持查询最近 24 小时，已自动调整起始时间"
+    },
+    "detail": {
+      "expend": "耗时 {expend}"
     }
   },
   "api": {

@@ -20,7 +20,16 @@ function request(url, options = {}) {
       emitter.$emit(EVENT_NAME.ON_LOGOUT);
       return Promise.reject(new Error('Unauthorized'));
     }
-    return res.json();
+    // an unknown route answers 404 with an empty body: parsing that as json
+    // rejects the promise, which leaves callers stuck on their loading state
+    // instead of reporting the failure
+    return res.text().then((text) => {
+      try {
+        return JSON.parse(text);
+      } catch (e) {
+        return { code: res.status || 1000, msg: text || `HTTP ${res.status}` };
+      }
+    });
   });
 }
 

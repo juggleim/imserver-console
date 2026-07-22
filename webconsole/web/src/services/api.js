@@ -65,6 +65,7 @@ let SERVER_PATH = {
   
   CONN_GET_LIST: 'apps/serverlogs/userconnect',
   CONN_GET_ONE: 'apps/serverlogs/connect',
+  CONN_GET_SIGNAL_LOGS: 'apps/serverlogs/business',
   
   R3D_TRANSLTE_GET: 'apps/translate/get',
   R3D_TRANSLTE_SET: 'apps/translate/set',
