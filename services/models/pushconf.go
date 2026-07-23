@@ -127,6 +127,7 @@ type JPushHonorChannel struct {
 }
 
 type JPushOppoChannel struct {
+	Distribution             string            `json:"distribution,omitempty"`
 	ChannelId                string            `json:"channel_id,omitempty"`
 	Category                 string            `json:"category,omitempty"`
 	NotifyLevel              int               `json:"notify_level,omitempty"`

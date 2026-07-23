@@ -243,6 +243,9 @@ export const PUSH_CHANNELS = [
         label: 'OPPO',
         labelKey: 'appServices.push.channel.Oppo',
         fields: [
+          jpushField('oppo', 'distribution', 'Distribution', {
+            labelKey: 'appServices.push.field.distribution',
+          }),
           jpushField('oppo', 'channel_id', 'Channel ID', {
             labelKey: 'appServices.push.field.channelId',
           }),

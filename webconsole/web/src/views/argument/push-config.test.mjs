@@ -90,6 +90,7 @@ test('JPush exposes only its own provider option fields in six channel tabs', ()
       xiaomi: ['channel_id', 'mi_template_id', 'mi_template_param'],
       honor: ['importance'],
       oppo: [
+        'distribution',
         'channel_id',
         'category',
         'notify_level',
@@ -144,6 +145,7 @@ test('JPush provider options round-trip with nested API field names and numeric 
           },
           honor: { importance: 'NORMAL' },
           oppo: {
+            distribution: 'push',
             channel_id: 'oppo-channel',
             category: 'IM',
             notify_level: 2,
@@ -162,6 +164,7 @@ test('JPush provider options round-trip with nested API field names and numeric 
 
   assert.equal(draft.classification, 2);
   assert.equal(draft.jpush_xiaomi_mi_template_id, 'template-id');
+  assert.equal(draft.jpush_oppo_distribution, 'push');
   assert.equal(draft.jpush_oppo_notify_level, 2);
   assert.equal(draft.jpush_oppo_badge_operation_type, 0);
   assert.equal(draft.jpush_oppo_private_msg_template_id, 'template-id');

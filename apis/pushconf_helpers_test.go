@@ -125,7 +125,7 @@ func TestJPushProviderOptionsArePreserved(t *testing.T) {
 				},
 				"honor": map[string]any{"importance": "NORMAL"},
 				"oppo": map[string]any{
-					"channel_id": "oppo-channel", "category": "IM", "notify_level": 2, "badge_operation_type": 0,
+					"distribution": "push", "channel_id": "oppo-channel", "category": "IM", "notify_level": 2, "badge_operation_type": 0,
 					"private_msg_template_id": "template-id", "private_content_parameters": map[string]string{"name": "value"},
 					"private_title_parameters": map[string]string{"title": "value"},
 				},
@@ -156,7 +156,7 @@ func TestJPushProviderOptionsArePreserved(t *testing.T) {
 	if channels.Honor == nil || channels.Honor.Importance != "NORMAL" {
 		t.Fatalf("Honor channel options were not preserved: %s", raw)
 	}
-	if channels.Oppo == nil || channels.Oppo.NotifyLevel != 2 || channels.Oppo.BadgeOperationType == nil || *channels.Oppo.BadgeOperationType != 0 ||
+	if channels.Oppo == nil || channels.Oppo.Distribution != "push" || channels.Oppo.NotifyLevel != 2 || channels.Oppo.BadgeOperationType == nil || *channels.Oppo.BadgeOperationType != 0 ||
 		channels.Oppo.PrivateMsgTemplateId != "template-id" || channels.Oppo.PrivateContentParameters["name"] != "value" || channels.Oppo.PrivateTitleParameters["title"] != "value" {
 		t.Fatalf("OPPO channel options were not preserved: %s", raw)
 	}
