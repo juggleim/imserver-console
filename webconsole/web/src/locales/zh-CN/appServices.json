@@ -37,6 +37,7 @@
       "privateContentParameters": "Private Content Parameters",
       "privateTitleParameters": "Private Title Parameters",
       "distribution": "Distribution",
+      "pushMode": "Push Mode",
       "addBadge": "Add Badge"
     },
     "section": {
@@ -49,7 +50,9 @@
       "enabled": "启用",
       "notSet": "不设置（选填）",
       "badgeOverwrite": "覆盖（0）",
-      "badgeIncrease": "增加（1）"
+      "badgeIncrease": "增加（1）",
+      "pushModeProduction": "正式推送（0）",
+      "pushModeTest": "测试推送（1）"
     },
     "feedback": {
       "saveSuccess": "保存成功",
@@ -78,6 +81,7 @@
     "validation": {
       "required": "请输入或选择{name}",
       "integer": "{name}必须为整数",
+      "range": "{name}的取值必须为 0 或 1",
       "stringMap": "{name}必须是值为字符串的 JSON 对象",
       "packageDuplicate": "该包名已在当前渠道配置"
     },

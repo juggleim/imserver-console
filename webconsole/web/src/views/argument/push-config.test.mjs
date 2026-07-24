@@ -99,7 +99,7 @@ test('JPush exposes only its own provider option fields in six channel tabs', ()
         'private_content_parameters',
         'private_title_parameters',
       ],
-      vivo: ['distribution', 'category', 'add_badge'],
+      vivo: ['distribution', 'category', 'add_badge', 'push_mode'],
       meizu: ['distribution'],
     }
   );
@@ -120,6 +120,16 @@ test('JPush exposes only its own provider option fields in six channel tabs', ()
   assert.equal(
     oppoFields.find((field) => field.payloadName === 'private_title_parameters').jsonObject,
     true
+  );
+  const pushMode = jpush.jpushTabs
+    .find((tab) => tab.type === 'vivo')
+    .fields.find((field) => field.payloadName === 'push_mode');
+  assert.equal(pushMode.labelKey, 'appServices.push.field.pushMode');
+  assert.equal(pushMode.type, 'select');
+  assert.equal(pushMode.required, undefined);
+  assert.deepEqual(
+    pushMode.options.map((option) => option.value),
+    [0, 1]
   );
   PUSH_CHANNELS.filter((item) => item.type !== 'Jpush').forEach((setting) => {
     assert.equal(setting.jpushTabs, undefined, setting.type);
@@ -154,7 +164,7 @@ test('JPush provider options round-trip with nested API field names and numeric 
             private_content_parameters: { name: 'value' },
             private_title_parameters: { title: 'value' },
           },
-          vivo: { distribution: 'push', category: 'IM', add_badge: true },
+          vivo: { distribution: 'push', category: 'IM', push_mode: 0, add_badge: true },
           meizu: { distribution: 'push' },
         },
       },
@@ -170,6 +180,7 @@ test('JPush provider options round-trip with nested API field names and numeric 
   assert.equal(draft.jpush_oppo_private_msg_template_id, 'template-id');
   assert.equal(draft.jpush_oppo_private_content_parameters, '{"name":"value"}');
   assert.equal(draft.jpush_oppo_private_title_parameters, '{"title":"value"}');
+  assert.equal(draft.jpush_vivo_push_mode, 0);
   assert.equal(draft.jpush_vivo_add_badge, true);
   assert.deepEqual(buildPushTextExtra(jpush, draft), item.extra);
 });
@@ -193,6 +204,7 @@ test('JPush omits empty options and validates optional integer values when prese
     0
   );
   draft.jpush_oppo_badge_operation_type = '';
+  draft.jpush_vivo_push_mode = 2;
   draft.jpush_oppo_private_content_parameters = '{"name":1}';
   draft.jpush_oppo_private_title_parameters = 'invalid';
   draft.classification = '1.5';
@@ -200,12 +212,14 @@ test('JPush omits empty options and validates optional integer values when prese
   assert.deepEqual(validatePushDraft(jpush, draft, []), {
     classification: 'integer',
     jpush_oppo_notify_level: 'integer',
+    jpush_vivo_push_mode: 'range',
     jpush_oppo_private_content_parameters: 'stringMap',
     jpush_oppo_private_title_parameters: 'stringMap',
   });
 
   draft.classification = '';
   draft.jpush_oppo_notify_level = '';
+  draft.jpush_vivo_push_mode = '';
   draft.jpush_oppo_private_content_parameters = '{}';
   draft.jpush_oppo_private_title_parameters = '';
   draft.original_package = draft.package;

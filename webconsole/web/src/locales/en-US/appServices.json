@@ -37,6 +37,7 @@
       "privateContentParameters": "Private Content Parameters",
       "privateTitleParameters": "Private Title Parameters",
       "distribution": "Distribution",
+      "pushMode": "Push Mode",
       "addBadge": "Add Badge"
     },
     "section": {
@@ -49,7 +50,9 @@
       "enabled": "Enabled",
       "notSet": "Not set (optional)",
       "badgeOverwrite": "Overwrite (0)",
-      "badgeIncrease": "Increase (1)"
+      "badgeIncrease": "Increase (1)",
+      "pushModeProduction": "Production Push (0)",
+      "pushModeTest": "Test Push (1)"
     },
     "feedback": {
       "saveSuccess": "Saved successfully",
@@ -78,6 +81,7 @@
     "validation": {
       "required": "Enter or select {name}",
       "integer": "{name} must be an integer",
+      "range": "{name} must be 0 or 1",
       "stringMap": "{name} must be a JSON object with string values",
       "packageDuplicate": "This package is already configured for the channel"
     },

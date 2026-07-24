@@ -304,6 +304,25 @@ export const PUSH_CHANNELS = [
             type: 'checkbox',
             defaultValue: false,
           }),
+          jpushField('vivo', 'push_mode', 'Push Mode', {
+            labelKey: 'appServices.push.field.pushMode',
+            type: 'select',
+            integer: true,
+            allowZero: true,
+            allowedValues: [0, 1],
+            options: [
+              {
+                value: 0,
+                label: 'Production Push',
+                labelKey: 'appServices.push.option.pushModeProduction',
+              },
+              {
+                value: 1,
+                label: 'Test Push',
+                labelKey: 'appServices.push.option.pushModeTest',
+              },
+            ],
+          }),
         ],
       },
       {
@@ -401,6 +420,10 @@ export function validatePushDraft(setting, draft, items = []) {
       const numberValue = Number(value);
       if (!Number.isInteger(numberValue)) {
         errors[field.name] = 'integer';
+        return;
+      }
+      if (field.allowedValues && !field.allowedValues.includes(numberValue)) {
+        errors[field.name] = 'range';
         return;
       }
     }

@@ -129,7 +129,7 @@ func TestJPushProviderOptionsArePreserved(t *testing.T) {
 					"private_msg_template_id": "template-id", "private_content_parameters": map[string]string{"name": "value"},
 					"private_title_parameters": map[string]string{"title": "value"},
 				},
-				"vivo":  map[string]any{"distribution": "push", "category": "IM", "add_badge": true},
+				"vivo":  map[string]any{"distribution": "push", "category": "IM", "push_mode": 0, "add_badge": true},
 				"meizu": map[string]any{"distribution": "push"},
 			},
 		},
@@ -160,11 +160,29 @@ func TestJPushProviderOptionsArePreserved(t *testing.T) {
 		channels.Oppo.PrivateMsgTemplateId != "template-id" || channels.Oppo.PrivateContentParameters["name"] != "value" || channels.Oppo.PrivateTitleParameters["title"] != "value" {
 		t.Fatalf("OPPO channel options were not preserved: %s", raw)
 	}
-	if channels.Vivo == nil || !channels.Vivo.AddBadge {
+	if channels.Vivo == nil || channels.Vivo.PushMode == nil || *channels.Vivo.PushMode != 0 || !channels.Vivo.AddBadge {
 		t.Fatalf("VIVO channel options were not preserved: %s", raw)
 	}
 	if channels.Meizu == nil || channels.Meizu.Distribution != "push" {
 		t.Fatalf("Meizu channel options were not preserved: %s", raw)
+	}
+}
+
+func TestJPushVivoPushModeRejectsOutOfRangeValues(t *testing.T) {
+	for _, pushMode := range []int{-1, 2} {
+		extra := map[string]any{
+			"app_key":       "key",
+			"master_secret": "secret",
+			"options": map[string]any{
+				"third_party_channel": map[string]any{
+					"vivo": map[string]any{"push_mode": pushMode},
+				},
+			},
+		}
+
+		if _, _, err := normalizeAndValidatePushExtra(string(models.PushChannel_Jpush), extra); err == nil {
+			t.Fatalf("push_mode %d must be rejected", pushMode)
+		}
 	}
 }
 

@@ -140,6 +140,7 @@ type JPushOppoChannel struct {
 type JPushVivoChannel struct {
 	Distribution string `json:"distribution,omitempty"`
 	Category     string `json:"category,omitempty"`
+	PushMode     *int   `json:"push_mode,omitempty"`
 	AddBadge     bool   `json:"add_badge,omitempty"`
 }
 

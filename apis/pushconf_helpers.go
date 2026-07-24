@@ -114,6 +114,12 @@ func normalizeAndValidatePushExtra(channel string, extra map[string]any) (map[st
 		if !value.Valid() {
 			return nil, "", errors.New("app_key and master_secret are required")
 		}
+		if value.Options != nil && value.Options.ThirdPartyChannel != nil {
+			vivo := value.Options.ThirdPartyChannel.Vivo
+			if vivo != nil && vivo.PushMode != nil && (*vivo.PushMode < 0 || *vivo.PushMode > 1) {
+				return nil, "", errors.New("vivo push_mode must be 0 or 1")
+			}
+		}
 		conf = value
 	case string(models.PushChannel_HONOR):
 		value := tools.MapToStruct[models.HonorPushConf](extra)

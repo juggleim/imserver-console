@@ -60,6 +60,9 @@
     if (error === 'integer') {
       return t('appServices.push.validation.integer', { name: fieldLabel(field) });
     }
+    if (error === 'range') {
+      return t('appServices.push.validation.range', { name: fieldLabel(field) });
+    }
     if (error === 'stringMap') {
       return t('appServices.push.validation.stringMap', { name: fieldLabel(field) });
     }
