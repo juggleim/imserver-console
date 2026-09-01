@@ -38,7 +38,7 @@ type InterceptorConditionReq struct {
 
 func AddInterceptor(ctx *gin.Context) {
 	var req InterceptorReq
-	if err := ctx.ShouldBindJSON(&req); err != nil || req.AppKey == "" || req.Name == "" {
+	if err := ctx.ShouldBindJSON(&req); err != nil || req.AppKey == "" {
 		ctxs.FailHttpResp(ctx, errs.AdminErrorCode_ParamError, "param illegal")
 		return
 	}
