@@ -9,8 +9,8 @@
     "licenseCount": "Licensed Users",
     "status": "App Status",
     "wsUrl": "WebSocket URL",
-    "apiUrl": "API URL",
-    "appUrl": "App URL"
+    "apiUrl": "Server API URL",
+    "appUrl": "App Server URL"
   },
   "status": {
     "online": "Online"

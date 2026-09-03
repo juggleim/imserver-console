@@ -9,8 +9,8 @@
     "licenseCount": "授权数量",
     "status": "App 状态",
     "wsUrl": "WebSocket 地址",
-    "apiUrl": "API 地址",
-    "appUrl": "App 地址"
+    "apiUrl": "Server API 地址",
+    "appUrl": "App Server 地址"
   },
   "status": {
     "online": "已上线"

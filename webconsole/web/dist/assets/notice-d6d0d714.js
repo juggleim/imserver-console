@@ -1,1 +1,0 @@
-import{s as t,o as e}from"./index-a172d94c.js";import{_ as o}from"./page-section-e7e33af9.js";const n={__name:"notice",setup(c){return(r,s)=>(e(),t(o,{"title-key":"tools.notice.title"}))}};export{n as default};

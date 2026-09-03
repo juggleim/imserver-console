@@ -3489,6 +3489,42 @@ em.cim-num{
   width: 100%;
 }
 
+.cim-app-base-alias.is-editing{
+  grid-template-columns: minmax(120px, 1fr) auto auto;
+}
+
+.cim-app-base-edit-text{
+  align-self: center;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.cim-app-base-btn-ghost.cim-button{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  height: 36px;
+  padding: 0 16px;
+  border: 1px solid #d4d7de;
+  border-radius: 8px;
+  background: #fff;
+  color: #2465ff;
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 400;
+}
+
+.cim-app-base-btn-ghost.cim-button:hover{
+  border-color: #2465ff;
+  background: rgba(36, 101, 255, 0.04);
+}
+
+.cim-app-base-btn-ghost.cim-button:disabled{
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .cim-app-base-alias-input.form-control{
   min-width: 0;
   height: 36px;
