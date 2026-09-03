@@ -63,6 +63,27 @@ function updateAlias({ app_key, alias }) {
   });
 }
 
+function updateWsUrl({ app_key, url }) {
+  return request(SERVER_PATH.APP_WSURL_SET, {
+    method: 'POST',
+    body: utils.toJSON({ app_key, url }),
+  });
+}
+
+function updateAppUrl({ app_key, url }) {
+  return request(SERVER_PATH.APP_APPURL_SET, {
+    method: 'POST',
+    body: utils.toJSON({ app_key, url }),
+  });
+}
+
+function updateApiUrl({ app_key, url }) {
+  return request(SERVER_PATH.APP_APIURL_SET, {
+    method: 'POST',
+    body: utils.toJSON({ app_key, url }),
+  });
+}
+
 function setEventHook({ app_key, config, hooks }) {
   let sw = {};
   utils.forEach(hooks, (hook) => {
@@ -307,6 +328,9 @@ export default {
   getList,
   getOne,
   updateAlias,
+  updateWsUrl,
+  updateAppUrl,
+  updateApiUrl,
   setEventHook,
   getEventHook,
   getInterceptorList,

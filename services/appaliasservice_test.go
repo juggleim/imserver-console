@@ -21,10 +21,11 @@ func (f fakeAppFinder) FindByAppkey(appkey string) *dbs.AppInfoDao {
 }
 
 type fakeAppNavStore struct {
-	items     map[string]*dbs.AppNavDao
-	findError error
-	upsertErr error
-	ensureErr error
+	items      map[string]*dbs.AppNavDao
+	findError  error
+	upsertErr  error
+	ensureErr  error
+	upsertUrlErr error
 }
 
 func (f *fakeAppNavStore) FindByAppkey(appkey string) (*dbs.AppNavDao, error) {
@@ -53,7 +54,34 @@ func (f *fakeAppNavStore) UpsertAlias(appkey string, aliasNo string) error {
 	if f.upsertErr != nil {
 		return f.upsertErr
 	}
-	f.items[appkey] = &dbs.AppNavDao{AppKey: appkey, AliasNo: aliasNo}
+	item, ok := f.items[appkey]
+	if !ok {
+		item = &dbs.AppNavDao{AppKey: appkey}
+		f.items[appkey] = item
+	}
+	item.AliasNo = aliasNo
+	return nil
+}
+
+func (f *fakeAppNavStore) UpsertUrl(appkey string, column string, url string) error {
+	if f.upsertUrlErr != nil {
+		return f.upsertUrlErr
+	}
+	item, ok := f.items[appkey]
+	if !ok {
+		item = &dbs.AppNavDao{AppKey: appkey}
+		f.items[appkey] = item
+	}
+	switch column {
+	case "ws_url":
+		item.WsUrl = url
+	case "api_url":
+		item.ApiUrl = url
+	case "app_url":
+		item.AppUrl = url
+	default:
+		return errors.New("unsupported url column: " + column)
+	}
 	return nil
 }
 

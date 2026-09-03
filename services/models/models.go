@@ -46,6 +46,10 @@ type AppInfo struct {
 	AppStatus int    `json:"app_status"`
 	Alias     string `json:"alias"`
 
+	WsUrl  string `json:"ws_url"`
+	ApiUrl string `json:"api_url"`
+	AppUrl string `json:"app_url"`
+
 	MaxUserCount int   `json:"max_user_count"`
 	CurUserCount int64 `json:"cur_user_count"`
 

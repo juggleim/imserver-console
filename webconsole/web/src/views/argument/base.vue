@@ -10,6 +10,29 @@ const context = getCurrentInstance();
 let router = useRouter();
 let { currentRoute: { _rawValue: { params: { app_key } } } } = router;
 
+const MAX_URL_LENGTH = 255;
+
+const URL_FIELD_DEFS = [
+  {
+    key: 'ws',
+    field: 'ws_url',
+    label: 'appBase.field.wsUrl',
+    save: ({ app_key, url }) => Application.updateWsUrl({ app_key, url }),
+  },
+  {
+    key: 'api',
+    field: 'api_url',
+    label: 'appBase.field.apiUrl',
+    save: ({ app_key, url }) => Application.updateApiUrl({ app_key, url }),
+  },
+  {
+    key: 'app',
+    field: 'app_url',
+    label: 'appBase.field.appUrl',
+    save: ({ app_key, url }) => Application.updateAppUrl({ app_key, url }),
+  },
+];
+
 let state = reactive({
   appInfo: {
     restricted_fields: {}
@@ -18,6 +41,11 @@ let state = reactive({
   isSavingAlias: false,
   editingAlias: '0',
   aliasErrorMsg: '',
+  urlFields: URL_FIELD_DEFS.map((def) => utils.extend({}, [def, {
+    editing: '',
+    saving: false,
+    errorMsg: '',
+  }])),
 });
 
 function fetchApp() {
@@ -30,6 +58,9 @@ function fetchApp() {
     data.n_app_secret = '********************';
     utils.extend(state.appInfo, data);
     state.editingAlias = data.alias || '0';
+    utils.forEach(state.urlFields, (field) => {
+      field.editing = data[field.field] || '';
+    });
   });
 }
 fetchApp();
@@ -79,6 +110,44 @@ function onSaveAlias() {
     context.proxy.$toast({ icon: 'error', text: t('appBase.feedback.aliasRequestFailed') });
   }).finally(() => {
     state.isSavingAlias = false;
+  });
+}
+
+function onUrlInput(field) {
+  field.errorMsg = '';
+}
+
+function onSaveUrl(field) {
+  if (field.saving) {
+    return;
+  }
+  const url = String(field.editing || '').trim();
+  const label = t(field.label);
+  if (!url) {
+    field.errorMsg = t('appBase.validation.urlRequired', { field: label });
+    return;
+  }
+  if ([...url].length > MAX_URL_LENGTH) {
+    field.errorMsg = t('appBase.validation.urlTooLong', { field: label });
+    return;
+  }
+
+  field.saving = true;
+  field.save({ app_key, url }).then(({ code, msg }) => {
+    if (utils.isEqual(code, ErrorType.SUCCESS_0.code)) {
+      state.appInfo[field.field] = url;
+      field.editing = url;
+      context.proxy.$toast({ icon: 'success', text: t('appBase.feedback.urlSaved', { field: label }) });
+      return;
+    }
+    context.proxy.$toast({
+      icon: 'error',
+      text: t('appBase.feedback.urlSaveFailed', { field: label, code, msg }),
+    });
+  }).catch(() => {
+    context.proxy.$toast({ icon: 'error', text: t('appBase.feedback.urlRequestFailed', { field: label }) });
+  }).finally(() => {
+    field.saving = false;
   });
 }
 
@@ -146,6 +215,31 @@ function onSaveAlias() {
         <div class="cim-app-base-item">
           <div class="cim-app-base-label">{{ t('appBase.field.status') }}</div>
           <div class="cim-app-base-value">{{ t('appBase.status.online') }}</div>
+        </div>
+        <div class="cim-app-base-item" v-for="field in state.urlFields" :key="field.key">
+          <div class="cim-app-base-label">{{ t(field.label) }}</div>
+          <div class="cim-app-base-value cim-app-base-alias">
+            <input
+              class="form-control cim-app-base-alias-input"
+              type="text"
+              :maxlength="MAX_URL_LENGTH"
+              :placeholder="t(field.label)"
+              v-model="field.editing"
+              @input="onUrlInput(field)"
+              @keydown.enter="onSaveUrl(field)"
+            >
+            <button
+              type="button"
+              class="cim-button cim-app-base-alias-save"
+              :disabled="field.saving"
+              @click="onSaveUrl(field)"
+            >
+              {{ t('common.dialog.save') }}
+            </button>
+            <div class="invalid-feedback feedback cim-app-base-alias-error" v-if="field.errorMsg">
+              {{ field.errorMsg }}
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -21,6 +21,13 @@ import (
 )
 
 const MaxAppAliasLength = 50
+const MaxAppUrlLength = 255
+
+const (
+	AppNavWsUrlColumn  = "ws_url"
+	AppNavApiUrlColumn = "api_url"
+	AppNavAppUrlColumn = "app_url"
+)
 
 type appInfoFinder interface {
 	FindByAppkey(appkey string) *dbs.AppInfoDao
@@ -30,6 +37,7 @@ type appNavStore interface {
 	FindByAppkey(appkey string) (*dbs.AppNavDao, error)
 	FindByAliasNo(aliasNo string) (*dbs.AppNavDao, error)
 	UpsertAlias(appkey string, aliasNo string) error
+	UpsertUrl(appkey string, column string, url string) error
 	EnsureNextAlias(appkey string) (string, error)
 }
 
@@ -205,6 +213,9 @@ func QryApp(appkey string) *models.AppInfo {
 		UpdateTime:   dbApp.UpdatedTime.UnixMilli(),
 		AppStatus:    dbApp.AppStatus,
 		Alias:        queryAppAlias(appkey, dbs.AppNavDao{}),
+		WsUrl:        queryAppNavUrl(appkey, AppNavWsUrlColumn, dbs.AppNavDao{}),
+		ApiUrl:       queryAppNavUrl(appkey, AppNavApiUrlColumn, dbs.AppNavDao{}),
+		AppUrl:       queryAppNavUrl(appkey, AppNavAppUrlColumn, dbs.AppNavDao{}),
 		ConfigFields: make(map[string]string),
 		MaxUserCount: 100,
 	}
@@ -236,8 +247,42 @@ func queryAppAlias(appkey string, navStore appNavStore) string {
 	return appNav.AliasNo
 }
 
+func queryAppNavUrl(appkey string, column string, navStore appNavStore) string {
+	appNav, err := navStore.FindByAppkey(appkey)
+	if err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			logs.NewLogEntity().Error(err.Error())
+		}
+		return ""
+	}
+	if appNav == nil {
+		return ""
+	}
+	switch column {
+	case AppNavWsUrlColumn:
+		return appNav.WsUrl
+	case AppNavApiUrlColumn:
+		return appNav.ApiUrl
+	case AppNavAppUrlColumn:
+		return appNav.AppUrl
+	}
+	return ""
+}
+
 func UpdateAppAlias(appkey string, alias string) errs.AdminErrorCode {
 	return updateAppAlias(appkey, alias, dbs.AppInfoDao{}, dbs.AppNavDao{})
+}
+
+func UpdateAppWsUrl(appkey string, url string) errs.AdminErrorCode {
+	return updateAppUrl(appkey, url, AppNavWsUrlColumn, dbs.AppInfoDao{}, dbs.AppNavDao{})
+}
+
+func UpdateAppApiUrl(appkey string, url string) errs.AdminErrorCode {
+	return updateAppUrl(appkey, url, AppNavApiUrlColumn, dbs.AppInfoDao{}, dbs.AppNavDao{})
+}
+
+func UpdateAppAppUrl(appkey string, url string) errs.AdminErrorCode {
+	return updateAppUrl(appkey, url, AppNavAppUrlColumn, dbs.AppInfoDao{}, dbs.AppNavDao{})
 }
 
 func EnsureAppAlias(appkey string) (errs.AdminErrorCode, string) {
@@ -285,6 +330,50 @@ func updateAppAlias(appkey string, alias string, appFinder appInfoFinder, navSto
 		if err != nil {
 			logs.NewLogEntity().Error(err.Error())
 		}
+		return errs.AdminErrorCode_UpdAppFail
+	}
+	return errs.AdminErrorCode_Success
+}
+
+func updateAppUrl(appkey string, url string, column string, appFinder appInfoFinder, navStore appNavStore) errs.AdminErrorCode {
+	appkey = strings.TrimSpace(appkey)
+	url = strings.TrimSpace(url)
+	if appkey == "" || url == "" || utf8.RuneCountInString(url) > MaxAppUrlLength {
+		return errs.AdminErrorCode_ParamError
+	}
+	switch column {
+	case AppNavWsUrlColumn, AppNavApiUrlColumn, AppNavAppUrlColumn:
+	default:
+		return errs.AdminErrorCode_ParamError
+	}
+	if appFinder.FindByAppkey(appkey) == nil {
+		return errs.AdminErrorCode_AppNotExist
+	}
+
+	if err := navStore.UpsertUrl(appkey, column, url); err != nil {
+		logs.NewLogEntity().Error(err.Error())
+		return errs.AdminErrorCode_UpdAppFail
+	}
+
+	saved, err := navStore.FindByAppkey(appkey)
+	if err != nil || saved == nil {
+		if err != nil {
+			logs.NewLogEntity().Error(err.Error())
+		}
+		return errs.AdminErrorCode_UpdAppFail
+	}
+	var savedUrl string
+	switch column {
+	case AppNavWsUrlColumn:
+		savedUrl = saved.WsUrl
+	case AppNavApiUrlColumn:
+		savedUrl = saved.ApiUrl
+	case AppNavAppUrlColumn:
+		savedUrl = saved.AppUrl
+	default:
+		return errs.AdminErrorCode_ParamError
+	}
+	if savedUrl != url {
 		return errs.AdminErrorCode_UpdAppFail
 	}
 	return errs.AdminErrorCode_Success

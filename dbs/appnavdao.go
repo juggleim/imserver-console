@@ -12,6 +12,12 @@ import (
 
 const appNavAliasLockName = "imserver-console:appnav-alias"
 
+var appNavUrlColumns = map[string]bool{
+	"ws_url":  true,
+	"api_url": true,
+	"app_url": true,
+}
+
 type AppNavDao struct {
 	ID      int64  `gorm:"primary_key"`
 	AppKey  string `gorm:"app_key"`
@@ -50,6 +56,17 @@ func (app AppNavDao) UpsertAlias(appkey string, aliasNo string) error {
 		"INSERT INTO appnavs (app_key,alias_no) VALUES (?,?) ON DUPLICATE KEY UPDATE alias_no=VALUES(alias_no)",
 		appkey,
 		aliasNo,
+	).Error
+}
+
+func (app AppNavDao) UpsertUrl(appkey string, column string, url string) error {
+	if !appNavUrlColumns[column] {
+		return fmt.Errorf("unsupported appnav url column: %s", column)
+	}
+	return dbcommons.GetDb().Exec(
+		fmt.Sprintf("INSERT INTO appnavs (app_key,%s) VALUES (?,?) ON DUPLICATE KEY UPDATE %s=VALUES(%s)", column, column, column),
+		appkey,
+		url,
 	).Error
 }
 

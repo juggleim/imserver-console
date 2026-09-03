@@ -19,6 +19,9 @@ let SERVER_PATH = {
   APP_GET_LIST: 'apps/list',
   APP_GET_ONE: 'apps/info',
   APP_ALIAS_SET: 'apps/alias/set',
+  APP_WSURL_SET: 'apps/wsurl/set',
+  APP_APPURL_SET: 'apps/appurl/set',
+  APP_APIURL_SET: 'apps/apiurl/set',
   
   APP_EVENT_SET: 'apps/eventsubconfig/set',
   APP_EVENT_GET: 'apps/eventsubconfig/get',

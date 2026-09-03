@@ -7,18 +7,26 @@
     "appSecret": "App Secret",
     "expireTime": "App Expiration",
     "licenseCount": "Licensed Users",
-    "status": "App Status"
+    "status": "App Status",
+    "wsUrl": "WebSocket URL",
+    "apiUrl": "API URL",
+    "appUrl": "App URL"
   },
   "status": {
     "online": "Online"
   },
   "validation": {
     "aliasRequired": "Alias is required",
-    "aliasTooLong": "Alias cannot exceed 50 characters"
+    "aliasTooLong": "Alias cannot exceed 50 characters",
+    "urlRequired": "{field} is required",
+    "urlTooLong": "{field} cannot exceed 255 characters"
   },
   "feedback": {
     "aliasSaved": "Alias updated successfully",
     "aliasSaveFailed": "Failed to update alias: {code} {msg}",
-    "aliasRequestFailed": "Request failed. Please try again later"
+    "aliasRequestFailed": "Request failed. Please try again later",
+    "urlSaved": "{field} updated successfully",
+    "urlSaveFailed": "Failed to update {field}: {code} {msg}",
+    "urlRequestFailed": "Request failed updating {field}. Please try again later"
   }
 }

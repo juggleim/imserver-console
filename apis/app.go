@@ -115,6 +115,62 @@ type UpdateAppAliasReq struct {
 	Alias  string `json:"alias"`
 }
 
+func UpdateAppWsUrl(ctx *gin.Context) {
+	var req UpdateAppUrlReq
+	if err := ctx.ShouldBindJSON(&req); err != nil || req.AppKey == "" || req.Url == "" {
+		ctx.JSON(http.StatusBadRequest, &ctxs.ApiErrorMsg{
+			Code: errs.AdminErrorCode_ParamError,
+			Msg:  "param illegal",
+		})
+		return
+	}
+	code := services.UpdateAppWsUrl(req.AppKey, req.Url)
+	if code != errs.AdminErrorCode_Success {
+		ctxs.FailHttpResp(ctx, code)
+		return
+	}
+	ctxs.SuccessHttpResp(ctx, nil)
+}
+
+func UpdateAppApiUrl(ctx *gin.Context) {
+	var req UpdateAppUrlReq
+	if err := ctx.ShouldBindJSON(&req); err != nil || req.AppKey == "" || req.Url == "" {
+		ctx.JSON(http.StatusBadRequest, &ctxs.ApiErrorMsg{
+			Code: errs.AdminErrorCode_ParamError,
+			Msg:  "param illegal",
+		})
+		return
+	}
+	code := services.UpdateAppApiUrl(req.AppKey, req.Url)
+	if code != errs.AdminErrorCode_Success {
+		ctxs.FailHttpResp(ctx, code)
+		return
+	}
+	ctxs.SuccessHttpResp(ctx, nil)
+}
+
+func UpdateAppAppUrl(ctx *gin.Context) {
+	var req UpdateAppUrlReq
+	if err := ctx.ShouldBindJSON(&req); err != nil || req.AppKey == "" || req.Url == "" {
+		ctx.JSON(http.StatusBadRequest, &ctxs.ApiErrorMsg{
+			Code: errs.AdminErrorCode_ParamError,
+			Msg:  "param illegal",
+		})
+		return
+	}
+	code := services.UpdateAppAppUrl(req.AppKey, req.Url)
+	if code != errs.AdminErrorCode_Success {
+		ctxs.FailHttpResp(ctx, code)
+		return
+	}
+	ctxs.SuccessHttpResp(ctx, nil)
+}
+
+type UpdateAppUrlReq struct {
+	AppKey string `json:"app_key"`
+	Url    string `json:"url"`
+}
+
 func UpdateAppConfigs(ctx *gin.Context) {
 	var req services.AppConfigs
 	if err := ctx.ShouldBindJSON(&req); err != nil || req.AppKey == "" {

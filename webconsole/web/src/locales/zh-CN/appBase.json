@@ -7,18 +7,26 @@
     "appSecret": "App Secret",
     "expireTime": "App 到期时间",
     "licenseCount": "授权数量",
-    "status": "App 状态"
+    "status": "App 状态",
+    "wsUrl": "WebSocket 地址",
+    "apiUrl": "API 地址",
+    "appUrl": "App 地址"
   },
   "status": {
     "online": "已上线"
   },
   "validation": {
     "aliasRequired": "别名不能为空",
-    "aliasTooLong": "别名不能超过 50 个字符"
+    "aliasTooLong": "别名不能超过 50 个字符",
+    "urlRequired": "{field}不能为空",
+    "urlTooLong": "{field}不能超过 255 个字符"
   },
   "feedback": {
     "aliasSaved": "别名更新成功",
     "aliasSaveFailed": "别名更新失败：{code} {msg}",
-    "aliasRequestFailed": "请求失败，请稍后重试"
+    "aliasRequestFailed": "请求失败，请稍后重试",
+    "urlSaved": "{field}更新成功",
+    "urlSaveFailed": "{field}更新失败：{code} {msg}",
+    "urlRequestFailed": "{field}请求失败，请稍后重试"
   }
 }
