@@ -113,7 +113,7 @@ func TestListAndroidPushConfsReturnsAppSecretForEditing(t *testing.T) {
 	}
 }
 
-func TestListIosPushConfsReturnsCertificatePasswordsForEditing(t *testing.T) {
+func TestListIosPushConfsNeverReturnsCredentials(t *testing.T) {
 	mock, cleanup := openPushHandlerMockDB(t)
 	defer cleanup()
 	columns := []string{"app_key", "package", "is_product", "cert_pwd", "voip_cert_pwd", "certificate", "cert_path", "voip_cert", "voip_cert_path"}
@@ -124,8 +124,10 @@ func TestListIosPushConfsReturnsCertificatePasswordsForEditing(t *testing.T) {
 
 	request := httptest.NewRequest(http.MethodGet, "/apps/iospushcer/list?app_key=app-1", nil)
 	recorder := invokePushHandler(t, request, ListIosPushConfs)
-	if !strings.Contains(recorder.Body.String(), "cert-password") || !strings.Contains(recorder.Body.String(), "voip-password") {
-		t.Fatalf("certificate passwords were not returned for editing: %s", recorder.Body.String())
+	for _, forbidden := range []string{"cert-password", "voip-password", `"cert_pwd"`, `"voip_cert_pwd"`, `"certificate"`, `"voip_cert"`, `"p8_private_key"`} {
+		if strings.Contains(recorder.Body.String(), forbidden) {
+			t.Fatal("credential field returned")
+		}
 	}
 	if responseCode(t, recorder) != 0 {
 		t.Fatalf("unexpected response: %s", recorder.Body.String())
@@ -192,17 +194,13 @@ func TestUploadIosCerReplacesOnlySelectedCertificate(t *testing.T) {
 	mock, cleanup := openPushHandlerMockDB(t)
 	defer cleanup()
 	columns := []string{"app_key", "package", "is_product", "cert_pwd", "voip_cert_pwd", "certificate", "cert_path", "voip_cert", "voip_cert_path"}
-	mock.ExpectQuery("SELECT .*ioscertificates.*package=.*LIMIT").
-		WithArgs("app-1", "com.example", 1).
-		WillReturnRows(sqlmock.NewRows(columns).
-			AddRow("app-1", "com.example", 0, "old-cert-password", "old-voip-password", []byte("old-cert"), "old.p12", []byte("old-voip"), "old-voip.p12"))
 	mock.ExpectBegin()
 	mock.ExpectQuery("SELECT .*ioscertificates.*FOR UPDATE").
 		WithArgs("app-1", "com.example", 1).
 		WillReturnRows(sqlmock.NewRows(columns).
 			AddRow("app-1", "com.example", 0, "old-cert-password", "old-voip-password", []byte("old-cert"), "old.p12", []byte("old-voip"), "old-voip.p12"))
 	mock.ExpectExec("UPDATE `ioscertificates` SET").
-		WithArgs("new.p12", "new-cert-password", []byte("new-cert"), 1, "com.example", []byte("old-voip"), "old-voip.p12", "old-voip-password", "app-1", "com.example").
+		WithArgs("p12", "new.p12", "new-cert-password", []byte("new-cert"), 2, 1, "", "", []byte(nil), "", "com.example", []byte("old-voip"), "old-voip.p12", "old-voip-password", "app-1", "com.example").
 		WillReturnResult(sqlmock.NewResult(0, 1))
 	mock.ExpectCommit()
 
@@ -229,17 +227,13 @@ func TestSetIosPushConfPreservesFilesAndBlankPasswords(t *testing.T) {
 	mock, cleanup := openPushHandlerMockDB(t)
 	defer cleanup()
 	columns := []string{"app_key", "package", "is_product", "cert_pwd", "voip_cert_pwd", "certificate", "cert_path", "voip_cert", "voip_cert_path"}
-	mock.ExpectQuery("SELECT .*ioscertificates.*package=.*LIMIT").
-		WithArgs("app-1", "com.example", 1).
-		WillReturnRows(sqlmock.NewRows(columns).
-			AddRow("app-1", "com.example", 0, "old-cert-password", "old-voip-password", []byte("old-cert"), "old.p12", []byte("old-voip"), "old-voip.p12"))
 	mock.ExpectBegin()
 	mock.ExpectQuery("SELECT .*ioscertificates.*FOR UPDATE").
 		WithArgs("app-1", "com.example", 1).
 		WillReturnRows(sqlmock.NewRows(columns).
 			AddRow("app-1", "com.example", 0, "old-cert-password", "old-voip-password", []byte("old-cert"), "old.p12", []byte("old-voip"), "old-voip.p12"))
 	mock.ExpectExec("UPDATE `ioscertificates` SET").
-		WithArgs("old.p12", "old-cert-password", []byte("old-cert"), 1, "com.example", []byte("old-voip"), "old-voip.p12", "old-voip-password", "app-1", "com.example").
+		WithArgs("p12", "old.p12", "old-cert-password", []byte("old-cert"), 2, 1, "", "", []byte(nil), "", "com.example", []byte("old-voip"), "old-voip.p12", "old-voip-password", "app-1", "com.example").
 		WillReturnResult(sqlmock.NewResult(0, 1))
 	mock.ExpectCommit()
 

@@ -28,7 +28,10 @@ func main() {
 		return
 	}
 	//upgrade db
-	dbcommons.Upgrade()
+	if err := dbcommons.Upgrade(); err != nil {
+		fmt.Println("Upgrade Mysql failed", err)
+		return
+	}
 
 	httpServer := gin.Default()
 	routers.Route(httpServer, "admingateway")

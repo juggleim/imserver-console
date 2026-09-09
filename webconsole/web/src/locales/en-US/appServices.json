@@ -23,7 +23,12 @@
       "certPassword": "Certificate Password",
       "voipCertPassword": "VoIP Certificate Password",
       "voipCertFile": "VoIP Certificate File",
-      "certEnv": "Certificate Environment",
+      "certEnv": "APNs Environment",
+      "authType": "Authentication",
+      "p8KeyId": "Key ID",
+      "p8TeamId": "Team ID",
+      "p8File": "P8 Private Key",
+      "p8Status": "Key Status",
       "channelId": "Channel ID",
       "badgeClass": "Badge Class",
       "classification": "Classification",
@@ -55,11 +60,14 @@
       "pushModeTest": "Test Push (1)"
     },
     "feedback": {
+      "versionConflict": "Another administrator changed this configuration. Your input has been kept and was not saved. Reload to discard this draft and review the latest configuration before saving again.",
+      "configMissing": "This configuration was renamed or removed. Select it again from the refreshed list.",
       "saveSuccess": "Saved successfully",
       "saveFailed": "Save failed: {code} {msg}",
       "queryFailed": "Query failed. Refresh and try again."
     },
     "action": {
+      "reloadConfig": "Discard Draft and Reload",
       "add": "Add Configuration",
       "settings": "Settings",
       "retry": "Retry",
@@ -76,9 +84,14 @@
       "jsonObjectOptional": "Enter a JSON object (optional)"
     },
     "hint": {
+      "p8Setup": "Upload a PKCS#8 P-256 .p8 key (max 16 KiB). The original file is stored directly in the database without application encryption; protect database and backup access. No new file keeps an existing raw key. Changes may take five minutes to reach sending nodes. Apple must authorize this key for the selected app, environment and VoIP.",
+      "iosCredentials": "Saved passwords are never displayed. Leave passwords and files unchanged to keep existing credentials. Switching authentication retains the other credentials. Changes may take five minutes to reach sending nodes.",
       "secretUnchanged": "Leave blank to keep the current value"
     },
     "validation": {
+      "topic": "Bundle must contain 1-100 ASCII letters, digits, periods or hyphens (no spaces or slashes)",
+      "p8Size": "The P8 key must not exceed 16 KiB",
+      "appleId": "Key ID and Team ID must be 10 uppercase letters or digits",
       "required": "Enter or select {name}",
       "integer": "{name} must be an integer",
       "range": "{name} must be 0 or 1",
@@ -86,6 +99,7 @@
       "packageDuplicate": "This package is already configured for the channel"
     },
     "status": {
+      "keyStored": "Original P8 saved (not returned by API)",
       "loading": "Loading push configurations…",
       "saving": "Saving…",
       "unset": "Not configured",

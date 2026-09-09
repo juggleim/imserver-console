@@ -43,13 +43,17 @@ type PushConfListItem struct {
 }
 
 type IosPushConfListItem struct {
-	AppKey       string `json:"app_key"`
-	Package      string `json:"package"`
-	IsProduct    int    `json:"is_product"`
-	CertPath     string `json:"cert_path,omitempty"`
-	CertPwd      string `json:"cert_pwd,omitempty"`
-	VoipCertPwd  string `json:"voip_cert_pwd,omitempty"`
-	VoipCertPath string `json:"voip_cert_path,omitempty"`
+	AppKey        string `json:"app_key"`
+	Package       string `json:"package"`
+	IsProduct     int    `json:"is_product"`
+	CertPath      string `json:"cert_path,omitempty"`
+	VoipCertPath  string `json:"voip_cert_path,omitempty"`
+	AuthType      string `json:"auth_type"`
+	P8KeyID       string `json:"p8_key_id"`
+	P8TeamID      string `json:"p8_team_id"`
+	P8KeyName     string `json:"p8_key_name"`
+	HasP8Key      bool   `json:"has_p8_key"`
+	ConfigVersion int64  `json:"config_version"`
 }
 
 type HuaweiPushConf struct {

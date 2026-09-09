@@ -42,7 +42,7 @@ function getSetting(data) {
 }
 
 function getList(params = {}) {
-  let { limit = 50, offset ='', account = '' } = params;
+  let { limit = 50, offset = '', account = '' } = params;
   let url = `${SERVER_PATH.APP_GET_LIST}?limit=${limit}&offset=${offset}&account=${account}`;
   return request(url, {
     method: 'GET',
@@ -170,21 +170,34 @@ function getAndroidPushConfigList(params) {
 }
 
 function uploadIosPushConfig(params) {
-  let { app_key, cert_pwd, file = {}, voipFile = {}, voip_cert_pwd, is_product, original_package } = params;
+  let {
+    app_key,
+    cert_pwd,
+    file = {},
+    voipFile = {},
+    voip_cert_pwd,
+    is_product,
+    original_package,
+  } = params;
   file = file || {};
   voipFile = voipFile || {};
   let form = new FormData();
-  if(file.name){
+  if (file.name) {
     form.append('ioscer', file);
     form.append('cert_path', file.name);
   }
   form.append('app_key', app_key);
   form.append('package', params.package);
   form.append('original_package', original_package || '');
-  form.append('cert_pwd', cert_pwd);
+  form.append('cert_pwd', cert_pwd || '');
   form.append('voip_cert_pwd', voip_cert_pwd || '');
   form.append('is_product', is_product);
-  if(voipFile.name){
+  if (params.config_version !== undefined) form.append('config_version', params.config_version);
+  for (const key of ['auth_type', 'p8_key_id', 'p8_team_id']) {
+    if (params[key]) form.append(key, params[key]);
+  }
+  if (params.p8File?.name) form.append('p8_file', params.p8File);
+  if (voipFile.name) {
     form.append('voip_ioscer', voipFile);
     form.append('voip_cert_path', voipFile.name);
   }
@@ -362,5 +375,5 @@ export default {
   importSensitiveWords,
   getFcmPushConfig,
   getFcmPushConfigList,
-  uploadFcmPushConfig,  
+  uploadFcmPushConfig,
 };

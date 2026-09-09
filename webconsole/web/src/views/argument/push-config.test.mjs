@@ -1,12 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import {
   PUSH_CHANNELS,
   PUSH_SECRET_MASK,
   buildPushTextExtra,
+  buildIosPushParams,
   createPushDraft,
   getPushCardValue,
   hasPushErrors,
+  isPushFieldActive,
+  p8KeyStatus,
   validatePushDraft,
 } from './push-config.mjs';
 
@@ -20,6 +24,162 @@ test('defines all nine push channel tabs with package fields', () => {
     assert.equal(setting.fields[0].name, 'package');
     assert.equal(setting.fields[0].required, true);
   });
+});
+
+test('P8 presence depends on raw status rather than a saved filename', () => {
+  const ios = PUSH_CHANNELS.find((item) => item.kind === 'ios');
+  for (const raw of [false, true]) {
+    const draft = createPushDraft(ios, {
+      package: 'com.example',
+      auth_type: 'p8',
+      p8_key_id: 'ABC1234567',
+      p8_team_id: 'XYZ1234567',
+      p8_key_name: 'saved.p8',
+      voip_cert_path: 'retained-voip.p12',
+      has_p8_key: raw,
+      config_version: 4,
+    });
+    assert.equal(p8KeyStatus(draft), `appServices.push.status.${raw ? 'keyStored' : 'unset'}`);
+    assert.equal(validatePushDraft(ios, draft).p8_key_name, raw ? undefined : 'required');
+    draft.p8File = { name: 'new.p8', size: 400 };
+    assert.deepEqual(validatePushDraft(ios, draft), {});
+    const params = buildIosPushParams('app-1', draft);
+    assert.equal(params.config_version, 4);
+    assert.equal(params.has_p8_key, undefined);
+    draft.p8File = null;
+    assert.equal(validatePushDraft(ios, draft).p8_key_name, raw ? undefined : 'required');
+    draft.auth_type = 'p12';
+    assert.equal(draft._originalAuthType, 'p8');
+    assert.deepEqual(validatePushDraft(ios, draft), {});
+  }
+});
+
+test('P8 card and editor share bilingual saved and unset status', () => {
+  for (const locale of ['en-US', 'zh-CN']) {
+    const text = readFileSync(
+      new URL(`../../locales/${locale}/appServices.json`, import.meta.url),
+      'utf8'
+    );
+    const { push } = JSON.parse(text);
+    assert.ok(push.hint.p8Setup);
+    assert.ok(push.status.keyStored);
+    assert.ok(push.status.unset);
+  }
+  const view = readFileSync(new URL('./push.vue', import.meta.url), 'utf8');
+  const dialog = readFileSync(
+    new URL('../../components/push-config-dialog.vue', import.meta.url),
+    'utf8'
+  );
+  assert.match(view, /t\(p8KeyStatus\(item\)\)/);
+  assert.match(dialog, /t\(p8KeyStatus\(props.draft\)\)/);
+  assert.match(dialog, /!props.draft.has_p8_key/);
+});
+
+test('two administrators keep distinct iOS draft versions and reloading clears credential inputs', () => {
+  const ios = PUSH_CHANNELS.find((item) => item.kind === 'ios');
+  const old = {
+    package: 'com.example',
+    auth_type: 'p8',
+    config_version: 7,
+    has_p8_key: true,
+    p8_key_id: 'OLD1234567',
+    p8_team_id: 'XYZ1234567',
+  };
+  const a = createPushDraft(ios, old);
+  const b = createPushDraft(ios, old);
+  b.p8_key_id = 'NEW1234567';
+  b.p8File = { name: 'new.p8' };
+  assert.equal(buildIosPushParams('app-1', b).config_version, 7);
+  a.is_product = 1;
+  assert.equal(buildIosPushParams('app-1', a).config_version, 7);
+  const reloaded = createPushDraft(ios, { ...old, config_version: 8, p8_key_id: b.p8_key_id });
+  assert.equal(buildIosPushParams('app-1', reloaded).config_version, 8);
+  assert.equal(reloaded.p8_key_id, 'NEW1234567');
+  assert.equal(reloaded.p8File, null);
+  assert.equal(reloaded.cert_pwd, '');
+  assert.equal(buildIosPushParams('app-1', createPushDraft(ios)).config_version, undefined);
+});
+
+test('legacy iOS VoIP-only and unnamed passwordless credentials permit metadata edits', () => {
+  const ios = PUSH_CHANNELS.find((item) => item.kind === 'ios');
+  for (const metadata of [{ voip_cert_path: 'voip.p12' }, { cert_path: 'app.p12' }, {}]) {
+    const draft = createPushDraft(ios, { package: 'com.example', ...metadata, config_version: 2 });
+    draft.is_product = 1;
+    assert.deepEqual(validatePushDraft(ios, draft), {});
+    draft.voipFile = { name: 'new-passwordless.p12' };
+    assert.deepEqual(validatePushDraft(ios, draft), {});
+    assert.equal(buildIosPushParams('app-1', draft).cert_pwd, '');
+    assert.equal(buildIosPushParams('app-1', draft).config_version, 2);
+  }
+  const newDraft = createPushDraft(ios);
+  newDraft.package = 'com.example';
+  assert.equal(validatePushDraft(ios, newDraft).cert_path, 'required');
+  assert.equal(validatePushDraft(ios, newDraft).cert_pwd, 'required');
+});
+
+test('P8 to P12 rollback accepts retained or uploaded VoIP without an ordinary certificate', () => {
+  const ios = PUSH_CHANNELS.find((item) => item.kind === 'ios');
+  for (const retained of [false, true]) {
+    const draft = createPushDraft(ios, {
+      package: 'com.example',
+      auth_type: 'p8',
+      config_version: 7,
+      voip_cert_path: retained ? 'retained-voip.p12' : '',
+    });
+    draft.auth_type = 'p12';
+    assert.equal(draft._originalAuthType, 'p8');
+    assert.equal(draft.cert_path, '');
+    assert.equal(draft.file, null);
+    if (!retained) {
+      assert.deepEqual(validatePushDraft(ios, draft), { cert_path: 'required' });
+      draft.voipFile = { name: 'new-voip.p12' };
+    }
+    assert.deepEqual(validatePushDraft(ios, draft), {});
+    const params = buildIosPushParams('app-1', draft);
+    assert.equal(params.auth_type, 'p12');
+    assert.equal(params.config_version, 7);
+    assert.equal(params.file, null);
+    assert.equal(params.cert_pwd, '');
+    assert.equal(params.voip_cert_pwd, '');
+    assert.equal(params.voipFile, draft.voipFile);
+    draft.voipFile = null;
+    assert.deepEqual(validatePushDraft(ios, draft), retained ? {} : { cert_path: 'required' });
+  }
+  const added = createPushDraft(ios);
+  added.package = 'com.example';
+  added.voipFile = { name: 'new-voip.p12' };
+  assert.deepEqual(validatePushDraft(ios, added), {
+    cert_path: 'required',
+    cert_pwd: 'required',
+    voip_cert_pwd: 'required',
+  });
+});
+
+test('iOS bundles match the shared ASCII 100-character rule', () => {
+  const ios = PUSH_CHANNELS.find((item) => item.kind === 'ios');
+  const draft = createPushDraft(ios, { package: 'com.original' });
+  for (const value of ['com.example app', 'com/example', 'com_foo', 'com.例', 'a'.repeat(101)]) {
+    draft.package = value;
+    assert.equal(validatePushDraft(ios, draft).package, 'topic');
+    assert.equal(draft.original_package, 'com.original');
+  }
+  draft.package = 'a'.repeat(100);
+  assert.deepEqual(validatePushDraft(ios, draft), {});
+});
+
+test('multipart carries version and conflict UI offers explicit reload without automatic retry', () => {
+  const service = readFileSync(new URL('../../services/application.js', import.meta.url), 'utf8');
+  assert.match(service, /form\.append\('config_version', params\.config_version\)/);
+  const view = readFileSync(new URL('./push.vue', import.meta.url), 'utf8');
+  assert.match(view, /error\.code === 409/);
+  assert.match(view, /dialog\.conflict = true/);
+  assert.match(view, /@reload="reloadConflictedDraft"/);
+  const dialog = readFileSync(
+    new URL('../../components/push-config-dialog.vue', import.meta.url),
+    'utf8'
+  );
+  assert.match(dialog, /!props\.saving && !props\.conflict/);
+  assert.match(dialog, /emit\('reload'\)/);
 });
 
 test('every channel accepts its declared required fields and files', () => {
@@ -237,7 +397,7 @@ test('masked secret placeholders stay out of edit drafts and preserve existing v
   assert.deepEqual(validatePushDraft(setting, draft, []), {});
 });
 
-test('all secret fields refill plaintext values for editing', () => {
+test('Android secrets refill for editing while iOS passwords never refill', () => {
   PUSH_CHANNELS.forEach((setting) => {
     const secretFields = setting.fields.filter((field) => field.secret);
     if (!secretFields.length) {
@@ -248,10 +408,16 @@ test('all secret fields refill plaintext values for editing', () => {
     );
     const draft = createPushDraft(setting, {
       package: `com.example.${setting.type.toLowerCase()}`,
+      cert_path: 'app.p12',
+      voip_cert_path: 'voip.p12',
       ...(setting.kind === 'ios' ? secrets : { extra: secrets }),
     });
     secretFields.forEach((field) => {
-      assert.equal(draft[field.name], `plain-${field.name}`, `${setting.type}.${field.name}`);
+      assert.equal(
+        draft[field.name],
+        setting.kind === 'ios' ? '' : `plain-${field.name}`,
+        `${setting.type}.${field.name}`
+      );
       assert.equal(draft._secretPresent[field.name], true, `${setting.type}.${field.name}`);
     });
   });
@@ -281,12 +447,74 @@ test('FCM and iOS edit drafts keep existing file names without new File objects'
   const iosDraft = createPushDraft(ios, {
     package: 'com.ios',
     cert_path: 'app.p12',
-    cert_pwd: PUSH_SECRET_MASK,
     voip_cert_path: 'voip.p12',
-    voip_cert_pwd: PUSH_SECRET_MASK,
     is_product: 1,
   });
   assert.deepEqual(validatePushDraft(ios, iosDraft, []), {});
+});
+
+test('P8 create and edit enforce key presence, size and Apple IDs without P12 fields', () => {
+  const ios = PUSH_CHANNELS.find((item) => item.kind === 'ios');
+  const draft = createPushDraft(ios);
+  assert.equal(draft.auth_type, 'p12');
+  Object.assign(draft, {
+    package: 'com.example',
+    auth_type: 'p8',
+    p8_key_id: 'ABC1234567',
+    p8_team_id: 'XYZ1234567',
+  });
+  assert.deepEqual(validatePushDraft(ios, draft), { p8_key_name: 'required' });
+  draft.p8File = { name: 'AuthKey.p8', size: 16384 };
+  assert.deepEqual(validatePushDraft(ios, draft), {});
+  draft.p8File.size++;
+  assert.equal(validatePushDraft(ios, draft).p8_key_name, 'p8Size');
+  draft.p8_key_id = 'lowercase0';
+  assert.equal(validatePushDraft(ios, draft).p8_key_id, 'appleId');
+  const edit = createPushDraft(ios, {
+    package: 'com.example',
+    auth_type: 'p8',
+    has_p8_key: true,
+    p8_key_name: 'saved.p8',
+    p8_key_id: 'ABC1234567',
+    p8_team_id: 'XYZ1234567',
+    is_product: 1,
+  });
+  assert.equal(edit.p8File, null);
+  assert.deepEqual(validatePushDraft(ios, edit), {});
+  edit.has_p8_key = false;
+  assert.equal(validatePushDraft(ios, edit).p8_key_name, 'required');
+});
+
+test('iOS authentication switches retain draft files but do not submit inactive credentials', () => {
+  const ios = PUSH_CHANNELS.find((item) => item.kind === 'ios');
+  const draft = createPushDraft(ios, {
+    package: 'com.example',
+    cert_path: 'app.p12',
+    auth_type: 'p8',
+    has_p8_key: true,
+    p8_key_id: 'ABC1234567',
+    p8_team_id: 'XYZ1234567',
+  });
+  draft.file = { name: 'replacement.p12' };
+  draft.p8File = { name: 'replacement.p8', size: 300 };
+  const p8 = buildIosPushParams('app-1', draft);
+  assert.equal(p8.file, undefined);
+  assert.equal(p8.cert_pwd, undefined);
+  assert.equal(p8.p8File, draft.p8File);
+  assert.equal(
+    ios.fields
+      .filter((field) => isPushFieldActive(field, draft))
+      .some((field) => field.name === 'cert_pwd'),
+    false
+  );
+  draft.auth_type = 'p12';
+  assert.deepEqual(validatePushDraft(ios, draft), {});
+  const p12 = buildIosPushParams('app-1', draft);
+  assert.equal(p12.p8File, undefined);
+  assert.equal(p12.p8_key_id, undefined);
+  assert.equal(p12.file, draft.file);
+  assert.equal(p12.cert_pwd, '');
+  assert.equal(draft.p8File.name, 'replacement.p8');
 });
 
 test('drafts are isolated across tabs and card helpers always mask secret values', () => {

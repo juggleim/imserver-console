@@ -9,9 +9,12 @@
   import {
     PUSH_CHANNELS,
     buildPushTextExtra,
+    buildIosPushParams,
     createPushDraft,
     getPushCardValue,
     hasPushErrors,
+    isPushFieldActive,
+    p8KeyStatus,
     validatePushDraft,
   } from './push-config.mjs';
 
@@ -33,6 +36,7 @@
     draft: null,
     errors: {},
     saving: false,
+    conflict: false,
   });
 
   const currentSetting = computed(
@@ -109,6 +113,7 @@
   }
 
   function openAdd() {
+    dialog.conflict = false;
     dialog.mode = 'add';
     dialog.draft = createPushDraft(currentSetting.value);
     dialog.errors = {};
@@ -116,6 +121,7 @@
   }
 
   function openEdit(item) {
+    dialog.conflict = false;
     dialog.mode = 'edit';
     dialog.draft = createPushDraft(currentSetting.value, item);
     dialog.errors = {};
@@ -123,6 +129,7 @@
   }
 
   async function saveDraft() {
+    if (dialog.conflict || dialog.saving) return;
     const setting = currentSetting.value;
     dialog.errors = validatePushDraft(setting, dialog.draft, setting.items);
     if (hasPushErrors(dialog.errors)) {
@@ -135,17 +142,13 @@
     try {
       let result;
       if (setting.kind === 'ios') {
-        const params = {
-          app_key: appKey,
-          package: draft.package,
-          original_package: draft.original_package,
-          cert_pwd: draft.cert_pwd,
-          voip_cert_pwd: draft.voip_cert_pwd,
-          is_product: draft.is_product,
-          file: draft.file,
-          voipFile: draft.voipFile,
-        };
-        if (!draft.original_package || draft.file?.name || draft.voipFile?.name) {
+        const params = buildIosPushParams(appKey, draft);
+        if (
+          !draft.original_package ||
+          params.file?.name ||
+          params.voipFile?.name ||
+          params.p8File?.name
+        ) {
           result = await Application.uploadIosPushConfig(params);
         } else {
           result = await Application.setIosPushConfig(params);
@@ -173,6 +176,10 @@
       dialog.errors = {};
       await loadSetting(setting);
     } catch (error) {
+      if (setting.kind === 'ios' && error.code === 409) {
+        dialog.conflict = true;
+        return;
+      }
       if (error.code === RESPONSE.PUSH_CONF_EXISTED) {
         dialog.errors = { ...dialog.errors, package: 'duplicate' };
       }
@@ -188,6 +195,27 @@
     }
   }
 
+  async function reloadConflictedDraft() {
+    if (dialog.saving) return;
+    dialog.saving = true;
+    const originalPackage = dialog.draft.original_package;
+    const setting = currentSetting.value;
+    try {
+      await loadSetting(setting);
+      if (setting.failed) return;
+      const latest = setting.items.find((item) => item.package === originalPackage);
+      if (latest) openEdit(latest);
+      else {
+        dialog.show = false;
+        dialog.draft = null;
+        dialog.conflict = false;
+        toast('error', t('appServices.push.feedback.configMissing'));
+      }
+    } finally {
+      dialog.saving = false;
+    }
+  }
+
   function getCardValue(item, field) {
     const value = getPushCardValue(item, field);
     if (field.type === 'radios') {
@@ -197,8 +225,8 @@
     return value;
   }
 
-  function cardFields(setting) {
-    return setting.fields.filter((field) => field.cardVisible);
+  function cardFields(setting, item) {
+    return setting.fields.filter((field) => field.cardVisible && isPushFieldActive(field, item));
   }
 
   loadSetting(settings[0]);
@@ -241,13 +269,17 @@
         <div class="cim-push-card-body">
           <div
             class="cim-push-card-row"
-            v-for="field in cardFields(currentSetting)"
+            v-for="field in cardFields(currentSetting, item)"
             :key="field.name"
           >
             <span class="cim-push-card-label">{{ getFieldLabel(field) }}</span>
             <span class="cim-push-card-value" :class="{ 'is-unset': !getCardValue(item, field) }">
               {{ getCardValue(item, field) || t('appServices.push.status.unset') }}
             </span>
+          </div>
+          <div v-if="item.auth_type === 'p8'" class="cim-push-card-row">
+            <span class="cim-push-card-label">{{ t('appServices.push.field.p8Status') }}</span>
+            <span class="cim-push-card-value">{{ t(p8KeyStatus(item)) }}</span>
           </div>
         </div>
         <footer class="cim-push-card-footer">
@@ -276,6 +308,8 @@
       :draft="dialog.draft"
       :errors="dialog.errors"
       :saving="dialog.saving"
+      :conflict="dialog.conflict"
+      @reload="reloadConflictedDraft"
       @hide="closeDialog"
       @save="saveDraft"
     />

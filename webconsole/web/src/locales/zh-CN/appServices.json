@@ -23,7 +23,12 @@
       "certPassword": "证书密码",
       "voipCertPassword": "VoIP 证书密码",
       "voipCertFile": "VoIP 证书文件",
-      "certEnv": "证书环境",
+      "certEnv": "APNs 环境",
+      "authType": "认证方式",
+      "p8KeyId": "Key ID",
+      "p8TeamId": "Team ID",
+      "p8File": "P8 私钥文件",
+      "p8Status": "密钥状态",
       "channelId": "Channel ID",
       "badgeClass": "Badge Class",
       "classification": "Classification",
@@ -55,11 +60,14 @@
       "pushModeTest": "测试推送（1）"
     },
     "feedback": {
+      "versionConflict": "其他管理员已修改此配置。你的输入已保留但未保存；重新加载将丢弃当前草稿，请核对最新配置后再保存。",
+      "configMissing": "此配置已被改名或删除，请从刷新后的列表重新选择。",
       "saveSuccess": "保存成功",
       "saveFailed": "保存失败：{code} {msg}",
       "queryFailed": "查询异常，请刷新重试"
     },
     "action": {
+      "reloadConfig": "丢弃草稿并重新加载",
       "add": "新增配置",
       "settings": "设置",
       "retry": "重试",
@@ -76,9 +84,14 @@
       "jsonObjectOptional": "请输入 JSON 对象（选填）"
     },
     "hint": {
+      "p8Setup": "请上传 PKCS#8 P-256 格式的 .p8 私钥，最大 16 KiB。原文件直接存入数据库，不做应用层加密，请保护数据库及备份访问权限。不选新文件会保留已存原始密钥。保存后发送节点最长约五分钟刷新。请确认 Apple 已授权该密钥用于目标应用、环境和 VoIP。",
+      "iosCredentials": "已存密码不回显，密码留空和不选新文件均保留原值。切换认证方式会保留另一模式的凭据。保存后发送节点最长约五分钟刷新。",
       "secretUnchanged": "留空则保留原值"
     },
     "validation": {
+      "topic": "包名须为 1-100 位 ASCII 字母、数字、点或连字符，不能包含空格或斜杠",
+      "p8Size": "P8 私钥文件不能超过 16 KiB",
+      "appleId": "Key ID 和 Team ID 必须为 10 位大写字母或数字",
       "required": "请输入或选择{name}",
       "integer": "{name}必须为整数",
       "range": "{name}的取值必须为 0 或 1",
@@ -86,6 +99,7 @@
       "packageDuplicate": "该包名已在当前渠道配置"
     },
     "status": {
+      "keyStored": "P8 原文件已保存（接口不回传）",
       "loading": "正在加载推送配置…",
       "saving": "正在保存…",
       "unset": "未配置",

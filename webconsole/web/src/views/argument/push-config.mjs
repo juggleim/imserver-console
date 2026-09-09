@@ -130,16 +130,51 @@ export const PUSH_CHANNELS = [
         required: true,
         cardVisible: false,
       }),
-      file('cert_path', 'appServices.push.field.certFile', 'file', { required: true }),
+      {
+        name: 'auth_type',
+        labelKey: 'appServices.push.field.authType',
+        type: 'radios',
+        required: true,
+        cardVisible: true,
+        defaultValue: 'p12',
+        radios: [
+          { value: 'p12', label: 'P12' },
+          { value: 'p8', label: 'P8' },
+        ],
+      },
+      text('p8_key_id', 'Key ID', {
+        labelKey: 'appServices.push.field.p8KeyId',
+        required: true,
+        authType: 'p8',
+      }),
+      text('p8_team_id', 'Team ID', {
+        labelKey: 'appServices.push.field.p8TeamId',
+        required: true,
+        authType: 'p8',
+      }),
+      file('p8_key_name', 'appServices.push.field.p8File', 'p8File', {
+        required: true,
+        authType: 'p8',
+        accept: '.p8',
+        maxSize: 16 * 1024,
+      }),
+      file('cert_path', 'appServices.push.field.certFile', 'file', {
+        required: true,
+        authType: 'p12',
+      }),
       text('cert_pwd', 'Certificate Password', {
         labelKey: 'appServices.push.field.certPassword',
         required: true,
         secret: true,
+        authType: 'p12',
       }),
-      file('voip_cert_path', 'appServices.push.field.voipCertFile', 'voipFile'),
+      file('voip_cert_path', 'appServices.push.field.voipCertFile', 'voipFile', {
+        authType: 'p12',
+      }),
       text('voip_cert_pwd', 'VoIP Certificate Password', {
         labelKey: 'appServices.push.field.voipCertPassword',
         secret: true,
+        authType: 'p12',
       }),
       {
         name: 'is_product',
@@ -387,12 +422,23 @@ export function createPushDraft(setting, item = null) {
   const source = item ? { ...item, ...(item.extra || {}) } : {};
   const draft = {
     original_package: item?.package || '',
+    config_version: item ? item.config_version ?? 1 : undefined,
+    _originalAuthType: item ? item.auth_type || 'p12' : '',
     file: null,
     voipFile: null,
+    p8File: null,
+    has_p8_key: Boolean(item?.has_p8_key),
     _secretPresent: {},
   };
   allDraftFields(setting).forEach((field) => {
     if (field.secret) {
+      if (setting.kind === 'ios') {
+        draft._secretPresent[field.name] = Boolean(
+          source[field.name === 'cert_pwd' ? 'cert_path' : 'voip_cert_path']
+        );
+        draft[field.name] = '';
+        return;
+      }
       const storedValue = source[field.name];
       draft._secretPresent[field.name] = Boolean(storedValue);
       draft[field.name] = storedValue !== PUSH_SECRET_MASK ? storedValue || '' : '';
@@ -415,7 +461,12 @@ export function validatePushDraft(setting, draft, items = []) {
   const errors = {};
   const editing = Boolean(draft.original_package);
   allDraftFields(setting).forEach((field) => {
+    if (!isPushFieldActive(field, draft)) return;
     const value = draft[field.name];
+    if (field.maxSize && draft[field.model]?.size > field.maxSize) {
+      errors[field.name] = 'p8Size';
+      return;
+    }
     if (field.integer && value !== '' && value !== null && value !== undefined) {
       const numberValue = Number(value);
       if (!Number.isInteger(numberValue)) {
@@ -446,11 +497,16 @@ export function validatePushDraft(setting, draft, items = []) {
     if (!field.required) {
       return;
     }
+    if (setting.kind === 'ios' && editing && field.authType === 'p12') {
+      if (field.secret || draft._originalAuthType === 'p12') return;
+      if (field.name === 'cert_path' && (draft.voip_cert_path || draft.voipFile?.name)) return;
+    }
     if (field.secret && editing && draft._secretPresent[field.name]) {
       return;
     }
     if (field.type === 'file') {
-      if (!draft[field.model]?.name && !draft[field.name]) {
+      const saved = field.model === 'p8File' ? draft.has_p8_key : draft[field.name];
+      if (!draft[field.model]?.name && !saved) {
         errors[field.name] = 'required';
       }
       return;
@@ -460,11 +516,29 @@ export function validatePushDraft(setting, draft, items = []) {
     }
   });
 
-  if (draft.voipFile?.name && !draft.voip_cert_pwd && !draft._secretPresent.voip_cert_pwd) {
+  if (
+    draft.auth_type !== 'p8' &&
+    !editing &&
+    draft.voipFile?.name &&
+    !draft.voip_cert_pwd &&
+    !draft._secretPresent.voip_cert_pwd
+  ) {
     errors.voip_cert_pwd = 'required';
   }
 
+  if (setting.kind === 'ios') {
+    if (!['p12', 'p8'].includes(draft.auth_type)) errors.auth_type = 'range';
+    if (![0, 1].includes(draft.is_product)) errors.is_product = 'range';
+    if (draft.auth_type === 'p8') {
+      for (const field of ['p8_key_id', 'p8_team_id']) {
+        if (draft[field] && !/^[A-Z0-9]{10}$/.test(draft[field])) errors[field] = 'appleId';
+      }
+    }
+  }
+
   const packageName = String(draft.package || '').trim();
+  if (setting.kind === 'ios' && !/^[A-Za-z0-9.-]{1,100}$/.test(packageName))
+    errors.package = 'topic';
   const duplicate = items.some(
     (item) => item.package === packageName && item.package !== draft.original_package
   );
@@ -476,6 +550,41 @@ export function validatePushDraft(setting, draft, items = []) {
 
 export function hasPushErrors(errors) {
   return Object.keys(errors).length > 0;
+}
+
+export function isPushFieldActive(field, source) {
+  return !field.authType || field.authType === (source.auth_type || 'p12');
+}
+
+export function p8KeyStatus(source) {
+  if (source.has_p8_key) return 'appServices.push.status.keyStored';
+  return 'appServices.push.status.unset';
+}
+
+export function buildIosPushParams(appKey, draft) {
+  const params = {
+    app_key: appKey,
+    package: draft.package,
+    original_package: draft.original_package,
+    auth_type: draft.auth_type,
+    is_product: draft.is_product,
+    ...(draft.original_package ? { config_version: draft.config_version } : {}),
+  };
+  if (draft.auth_type === 'p8') {
+    Object.assign(params, {
+      p8_key_id: draft.p8_key_id,
+      p8_team_id: draft.p8_team_id,
+      p8File: draft.p8File,
+    });
+  } else {
+    Object.assign(params, {
+      cert_pwd: draft.cert_pwd,
+      voip_cert_pwd: draft.voip_cert_pwd,
+      file: draft.file,
+      voipFile: draft.voipFile,
+    });
+  }
+  return params;
 }
 
 function allDraftFields(setting) {
@@ -583,6 +692,12 @@ export function buildPushTextExtra(setting, draft) {
 export function getPushCardValue(item, field) {
   const source = { ...item, ...(item.extra || {}) };
   const value = readFieldValue(source, field);
+  if (
+    (field.name === 'cert_pwd' && source.cert_path) ||
+    (field.name === 'voip_cert_pwd' && source.voip_cert_path)
+  )
+    return PUSH_SECRET_MASK;
+  if (field.name === 'auth_type') return value || 'p12';
   if (field.secret && value) {
     return PUSH_SECRET_MASK;
   }

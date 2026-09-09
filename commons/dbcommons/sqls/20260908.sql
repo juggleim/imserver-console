@@ -1,0 +1,25 @@
+-- Run console and IM migrations sequentially. Each column is independently idempotent.
+SET @apns_ddl = (SELECT IF(COUNT(*) = 0, 'ALTER TABLE ioscertificates ADD COLUMN auth_type VARCHAR(8) NOT NULL DEFAULT ''p12''', 'SELECT 1') FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ioscertificates' AND COLUMN_NAME = 'auth_type');
+PREPARE apns_stmt FROM @apns_ddl;
+EXECUTE apns_stmt;
+DEALLOCATE PREPARE apns_stmt;
+SET @apns_ddl = (SELECT IF(COUNT(*) = 0, 'ALTER TABLE ioscertificates ADD COLUMN p8_key_id VARCHAR(32) NOT NULL DEFAULT ''''', 'SELECT 1') FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ioscertificates' AND COLUMN_NAME = 'p8_key_id');
+PREPARE apns_stmt FROM @apns_ddl;
+EXECUTE apns_stmt;
+DEALLOCATE PREPARE apns_stmt;
+SET @apns_ddl = (SELECT IF(COUNT(*) = 0, 'ALTER TABLE ioscertificates ADD COLUMN p8_team_id VARCHAR(32) NOT NULL DEFAULT ''''', 'SELECT 1') FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ioscertificates' AND COLUMN_NAME = 'p8_team_id');
+PREPARE apns_stmt FROM @apns_ddl;
+EXECUTE apns_stmt;
+DEALLOCATE PREPARE apns_stmt;
+SET @apns_ddl = (SELECT IF(COUNT(*) = 0, 'ALTER TABLE ioscertificates ADD COLUMN p8_private_key BLOB NULL', 'SELECT 1') FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ioscertificates' AND COLUMN_NAME = 'p8_private_key');
+PREPARE apns_stmt FROM @apns_ddl;
+EXECUTE apns_stmt;
+DEALLOCATE PREPARE apns_stmt;
+SET @apns_ddl = (SELECT IF(COUNT(*) = 0, 'ALTER TABLE ioscertificates ADD COLUMN p8_key_name VARCHAR(255) NOT NULL DEFAULT ''''', 'SELECT 1') FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ioscertificates' AND COLUMN_NAME = 'p8_key_name');
+PREPARE apns_stmt FROM @apns_ddl;
+EXECUTE apns_stmt;
+DEALLOCATE PREPARE apns_stmt;
+SET @apns_ddl = (SELECT IF(COUNT(*) = 0, 'ALTER TABLE ioscertificates ADD COLUMN config_version BIGINT NOT NULL DEFAULT 1', 'SELECT 1') FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ioscertificates' AND COLUMN_NAME = 'config_version');
+PREPARE apns_stmt FROM @apns_ddl;
+EXECUTE apns_stmt;
+DEALLOCATE PREPARE apns_stmt;

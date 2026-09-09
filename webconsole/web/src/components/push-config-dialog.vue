@@ -2,6 +2,7 @@
   import { ref, watch } from 'vue';
   import Dialog from './dialog.vue';
   import { t } from '@/i18n';
+  import { isPushFieldActive, p8KeyStatus } from '@/views/argument/push-config.mjs';
 
   const props = defineProps({
     show: Boolean,
@@ -10,8 +11,9 @@
     draft: Object,
     errors: Object,
     saving: Boolean,
+    conflict: Boolean,
   });
-  const emit = defineEmits(['save', 'hide']);
+  const emit = defineEmits(['save', 'hide', 'reload']);
   const fileInputs = ref({});
   const visibleSecrets = ref({});
   const activeJpushTab = ref(props.setting?.jpushTabs?.[0]?.type || '');
@@ -54,6 +56,9 @@
 
   function errorText(field) {
     const error = props.errors[field.name];
+    if (error === 'p8Size' || error === 'appleId' || error === 'topic') {
+      return t(`appServices.push.validation.${error}`);
+    }
     if (error === 'duplicate') {
       return t('appServices.push.validation.packageDuplicate');
     }
@@ -74,7 +79,11 @@
   }
 
   function baseFields() {
-    return props.setting?.fields?.filter((field) => !field.optionsField) || [];
+    return (
+      props.setting?.fields?.filter(
+        (field) => !field.optionsField && isPushFieldActive(field, props.draft)
+      ) || []
+    );
   }
 
   function optionFields() {
@@ -115,6 +124,9 @@
   }
 
   function fileName(field) {
+    if (field.model === 'p8File' && !props.draft.p8File?.name && !props.draft.has_p8_key) {
+      return t(p8KeyStatus(props.draft));
+    }
     return (
       props.draft[field.model]?.name ||
       props.draft[field.name] ||
@@ -123,7 +135,7 @@
   }
 
   function onSave() {
-    if (!props.saving) {
+    if (!props.saving && !props.conflict) {
       emit('save');
     }
   }
@@ -153,10 +165,43 @@
     @save="onSave"
   >
     <div class="cim-push-dialog-fields" v-if="props.setting && props.draft">
+      <div v-if="props.conflict" role="alert" class="cim-push-field-error">
+        <p>{{ t('appServices.push.feedback.versionConflict') }}</p>
+        <button type="button" class="cim-button" :disabled="props.saving" @click="emit('reload')">
+          {{ t('appServices.push.action.reloadConfig') }}
+        </button>
+      </div>
+      <p class="cim-push-field-hint" v-if="props.setting.kind === 'ios'">
+        {{
+          t(
+            props.draft.auth_type === 'p8'
+              ? 'appServices.push.hint.p8Setup'
+              : 'appServices.push.hint.iosCredentials'
+          )
+        }}
+      </p>
+      <p
+        v-if="props.setting.kind === 'ios' && props.draft.auth_type === 'p8'"
+        class="cim-push-field-hint"
+        role="status"
+      >
+        {{ t(p8KeyStatus(props.draft)) }}
+      </p>
       <div class="cim-push-dialog-field" v-for="field in baseFields()" :key="field.name">
         <label class="cim-push-dialog-label">
           {{ fieldLabel(field) }}
-          <span class="cim-push-required" v-if="field.required">*</span>
+          <span
+            class="cim-push-required"
+            v-if="
+              field.required &&
+              !(
+                props.setting.kind === 'ios' &&
+                props.draft.original_package &&
+                field.authType === 'p12'
+              )
+            "
+            >*</span
+          >
         </label>
 
         <div
@@ -207,6 +252,7 @@
             :ref="(element) => setFileInput(field, element)"
             class="cim-push-upload-input"
             type="file"
+            :accept="field.accept"
             @change="onFile(field, $event)"
           />
           <span class="cim-push-dialog-file-name">{{ fileName(field) }}</span>
