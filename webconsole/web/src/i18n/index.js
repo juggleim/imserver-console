@@ -13,8 +13,8 @@ import {
 export { DEFAULT_LOCALE, FALLBACK_LOCALE };
 
 export const LOCALE_OPTIONS = [
-  { value: 'en-US', label: 'English' },
-  { value: 'zh-CN', label: '简体中文' },
+  { value: 'en-US', labelKey: 'common.language.english' },
+  { value: 'zh-CN', labelKey: 'common.language.simplifiedChinese' },
 ];
 
 const naiveLocaleMap = {
@@ -76,6 +76,7 @@ export function initI18n() {
   state.locale = preference.locale;
   state.source = preference.source;
   state.isReady = true;
+  updateDocumentTitle();
   return state.locale;
 }
 
@@ -89,7 +90,14 @@ export function setLocale(nextLocale) {
   state.lastError = '';
   state.isReady = true;
   storeLocale(locale);
+  updateDocumentTitle();
   return true;
+}
+
+function updateDocumentTitle() {
+  if (typeof document !== 'undefined') {
+    document.title = t('common.documentTitle');
+  }
 }
 
 export function getNaiveLocaleConfig(locale = state.locale) {
@@ -111,7 +119,7 @@ export function t(key, params = {}, fallback = '') {
     return formatMessage(fallback, params);
   }
 
-  return getMessage(FALLBACK_LOCALE, 'common.feedback.missing') || '文案待补充';
+  return getMessage(FALLBACK_LOCALE, 'common.feedback.missing') || '';
 }
 
 export function useI18n() {

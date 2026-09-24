@@ -113,7 +113,7 @@ function search(){
         // let index = utils.find(PLATFORMAS, (item) => { return item.value == platform});
         // let plat = PLATFORMAS[index] || { name: '' }
         // let platformName = plat.name;
-        let statusName = t(`logs.status.${status}`, {}, LOG_PULL_STATUS[status]);
+        let statusName = t(`logs.status.${status}`);
         let startName = format(start, 'yyyy-MM-dd hh:mm:ss');
         let endName = format(end, 'yyyy-MM-dd hh:mm:ss');
         let createName = format(created_time, 'yyyy-MM-dd hh:mm:ss');

@@ -36,6 +36,9 @@ function localizeApiItem(item) {
   if (body && body['//']) {
     body['//'] = translateApiCatalog('prompt', body['//']);
   }
+  if (body && Object.prototype.hasOwnProperty.call(body, 'push_text')) {
+    body.push_text = t('tools.api.bodyExample.pushText');
+  }
   return {
     ...item,
     sourceName: item.name,

@@ -104,7 +104,13 @@
     }
   },
   "service": {
+    "breadcrumb": {
+      "support": "Technical Support",
+      "myTickets": "My Tickets",
+      "createTicket": "Create Ticket"
+    },
     "orderList": {
+      "title": "Support Tickets",
       "table": {
         "orderNo": "Ticket No.",
         "title": "Title",
@@ -117,6 +123,7 @@
       }
     },
     "orderCreate": {
+      "title": "Create Support Ticket",
       "field": {
         "title": "Ticket Title",
         "description": "Issue Description",

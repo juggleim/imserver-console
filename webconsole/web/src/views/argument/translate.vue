@@ -157,7 +157,7 @@ function onEnable(item, index){
           <div class="cim-r3-header-info">
             <div class="cim-r3-avatar" :class="[item.icon + '-avatar']"></div>
             <div class="cim-r3-item-name">
-              {{ item.displayNameKey ? t(item.displayNameKey, {}, item.name) : item.name }}
+              {{ t(item.displayNameKey) }}
             </div>
           </div>
           <div class="cim-r3-header-status">
@@ -167,7 +167,7 @@ function onEnable(item, index){
         </div>
         <ul class="cim-r3-item-contents">
           <li class="cim-rtc-item-content" v-for="child in item.children">
-            <div class="title" v-if="child.type == 'text'">{{ child.displayLabelKey ? t(child.displayLabelKey, {}, child.name) : child.name }}:</div>
+            <div class="title" v-if="child.type == 'text'">{{ t(child.displayLabelKey) }}:</div>
             <div class="value"  v-if="child.type == 'text' && child.value">{{ child.secretValue || child.value }}</div>
             <div class="value unset"  v-if="child.type == 'text' && !child.value">{{ t('translateConfig.status.unset') }}</div>
           </li>

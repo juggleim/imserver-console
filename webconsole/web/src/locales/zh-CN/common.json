@@ -1,4 +1,10 @@
 {
+  "documentTitle": "IM 管理后台",
+  "language": {
+    "label": "语言",
+    "english": "English",
+    "simplifiedChinese": "简体中文"
+  },
   "header": {
     "brand": "管理后台",
     "selectApp": "选择应用",
@@ -32,6 +38,7 @@
     "ban": "封禁",
     "unban": "解禁",
     "nextPage": "下一页",
+    "previousPage": "上一页",
     "settings": "设置"
   },
   "appType": {

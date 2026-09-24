@@ -13,7 +13,7 @@ const props = defineProps({
   },
 });
 
-const { locale, localeOptions, setLocale } = useI18n();
+const { locale, localeOptions, setLocale, t } = useI18n();
 
 function onChange(value) {
   setLocale(value);
@@ -25,8 +25,8 @@ function onChange(value) {
     :class-name="props.className"
     :wrapper-class="props.wrapperClass"
     :model-value="locale"
-    :options="localeOptions"
-    aria-label="Language"
+    :options="localeOptions.map((option) => ({ ...option, label: t(option.labelKey) }))"
+    :aria-label="t('common.language.label')"
     @change="onChange"
   />
 </template>

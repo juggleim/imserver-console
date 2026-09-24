@@ -72,7 +72,7 @@ let usertags = [
           },
           "notification":{
             "title":"title",
-            "push_text":"推送详情内容"
+            "push_text":""
           }
         }
       },

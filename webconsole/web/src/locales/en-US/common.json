@@ -1,4 +1,10 @@
 {
+  "documentTitle": "IM Admin Console",
+  "language": {
+    "label": "Language",
+    "english": "English",
+    "simplifiedChinese": "Simplified Chinese"
+  },
   "header": {
     "brand": "IM Console",
     "selectApp": "Select App",
@@ -32,6 +38,7 @@
     "ban": "Ban",
     "unban": "Unban",
     "nextPage": "Next",
+    "previousPage": "Previous",
     "settings": "Settings"
   },
   "appType": {

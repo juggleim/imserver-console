@@ -86,7 +86,7 @@ watch(useRouterCurrent, (n) => {
     current = utils.clone(defaultApp);
   }
   utils.extend(state, {
-    breadcumbs: titles,
+    breadcumbs: (titles || []).map((key) => t(key)),
     currentApp: current
   });
 });

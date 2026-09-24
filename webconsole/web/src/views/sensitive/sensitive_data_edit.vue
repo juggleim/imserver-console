@@ -24,8 +24,8 @@
   } = router;
 
   const wordTypes = [
-    { label: '过滤', labelKey: 'sensitive.type.filter', value: 1 },
-    { label: '替换（****）', labelKey: 'sensitive.type.replace', value: 2 },
+    { labelKey: 'sensitive.type.filter', value: 1 },
+    { labelKey: 'sensitive.type.replace', value: 2 },
   ];
 
   function newState(state = {}) {
@@ -100,7 +100,7 @@
                   <n-select
                     :placeholder="t('sensitive.placeholder.filterType')"
                     v-model:value="formValue.wordType"
-                    :options="wordTypes.map((item) => ({ ...item, label: t(item.labelKey, {}, item.label) }))"
+                    :options="wordTypes.map((item) => ({ ...item, label: t(item.labelKey) }))"
                   />
                 </n-form-item>
               </n-gi>

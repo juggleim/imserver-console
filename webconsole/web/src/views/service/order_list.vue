@@ -25,7 +25,7 @@ let state = reactive({
 
 </script>
 <template>
-  <PageSection title="工单列表">
+  <PageSection title-key="legacyPages.service.orderList.title">
     <table class="table cim-table">
       <thead>
         <tr>
