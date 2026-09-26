@@ -22,6 +22,15 @@ function onCopy(item){
   context.proxy.$toast({ icon: 'success', text: t('tools.connection.action.copyTime'), duration: 1500 });
 }
 
+function getInfoName(info) {
+  return info.nameKey ? t(info.nameKey) : info.name;
+}
+
+function getInfoValue(info) {
+  const translatedValue = info.valueKey ? ` ${t(info.valueKey)}` : '';
+  return `${info.value || ''}${translatedValue}`;
+}
+
 </script>
 <template>
   <div class="cim-signal-contanier">
@@ -31,7 +40,7 @@ function onCopy(item){
           <div class="cim-signal-time" @click="onCopy(item)">{{ item.timeName }}</div>
           <div class="cim-signal-avatar">
             <span class="cim-signal-icon cicon" :class="['cicon-conn-' + item.type]"></span>
-            <span class="cim-signal-name">{{ item.title }}</span>
+            <span class="cim-signal-name">{{ item.titleKey ? t(item.titleKey) : item.title }}</span>
           </div>
         </div>
         
@@ -39,7 +48,7 @@ function onCopy(item){
           <div class="cim-signal-body">
             <ul class="cim-signal-list">
               <li class="cim-signal-item" v-for="info in item.infos" :key="`${info.name}-${info.value}`" :class="[info.cls ? info.cls : '']">
-                {{ info.name }} {{ info.value }}
+                {{ getInfoName(info) }} {{ getInfoValue(info) }}
               </li>
             </ul>
 

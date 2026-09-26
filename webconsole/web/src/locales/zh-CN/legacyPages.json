@@ -104,7 +104,13 @@
     }
   },
   "service": {
+    "breadcrumb": {
+      "support": "技术支持",
+      "myTickets": "我的工单",
+      "createTicket": "创建工单"
+    },
     "orderList": {
+      "title": "工单列表",
       "table": {
         "orderNo": "工单号",
         "title": "标题",
@@ -117,6 +123,7 @@
       }
     },
     "orderCreate": {
+      "title": "新建工单",
       "field": {
         "title": "工单标题",
         "description": "问题描述",

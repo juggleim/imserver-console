@@ -185,7 +185,7 @@ function getLogTime(log){
 function removeAttrs(log){
   let { code } = log;
 
-  let error = { name: t('tools.connection.status.success'), value: '', cls: 'success' }
+  let error = { nameKey: 'tools.connection.status.success', value: '', cls: 'success' }
   // log fields arrive as strings, error codes are compared as numbers, and a
   // logged code of 0 is the server confirming the signal succeeded
   let logCode = Number(code);
@@ -193,8 +193,13 @@ function removeAttrs(log){
     let index = utils.find(IM_ERRORS, (item) => {
       return utils.isEqual(item.code, logCode);
     });
-    let errorItem = IM_ERRORS[index] || { code: logCode, msg: '' }
-    error = { name: t('tools.connection.status.failed'), value: `: ${errorItem.code} ${errorItem.msg}`, cls: 'warn' }
+    let errorItem = IM_ERRORS[index] || { code: logCode }
+    error = {
+      nameKey: 'tools.connection.status.failed',
+      value: `: ${errorItem.code}`,
+      valueKey: errorItem.key,
+      cls: 'warn'
+    }
   }
 
   let attrs = ['action', 'app_key', 'appkey', 'method', 'session', 'timestamp', 'code', 'real_time', 'service_name'];

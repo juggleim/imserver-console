@@ -20,7 +20,7 @@ let routes = [{
       name: 'AppManader',
       component:  () => import('@/views/app/manager.vue'),
       meta: {
-        titles: ['应用管理', '应用列表'],
+        titles: ['menu.appManagement', 'legacyPages.app.title.list'],
         showHeaderApps: true
       }
     },
@@ -29,7 +29,7 @@ let routes = [{
       name: 'AppImport',
       component:  () => import('@/views/app/import.vue'),
       meta: {
-        titles: ['应用管理', '应用导入'],
+        titles: ['menu.appManagement', 'appDialog.title.import'],
         showHeaderApps: true
       }
     },
@@ -38,7 +38,7 @@ let routes = [{
       name: 'ArguBase',
       component:  () => import('@/views/argument/base.vue'),
       meta: {
-        titles: ['应用管理', '基本信息'],
+        titles: ['menu.appManagement', 'menu.app.baseInfo'],
         showHeaderApps: true
       }
     },
@@ -47,7 +47,7 @@ let routes = [{
       name: 'ArguSwitch',
       component:  () => import('@/views/argument/switch.vue'),
       meta: {
-        titles: ['应用管理', '服务开关'],
+        titles: ['menu.appManagement', 'menu.app.featureConfig'],
         showHeaderApps: true
       }
     },
@@ -56,7 +56,7 @@ let routes = [{
       name: 'ArguCallback',
       component:  () => import('@/views/argument/webhook.vue'),
       meta: {
-        titles: ['应用管理', '回调设置'],
+        titles: ['menu.appManagement', 'menu.app.webhookSettings'],
         showHeaderApps: true
       }
     },
@@ -65,7 +65,7 @@ let routes = [{
       name: 'ArguMessageIntercept',
       component:  () => import('@/views/argument/message_intercept.vue'),
       meta: {
-        titles: ['应用管理', '消息拦截'],
+        titles: ['menu.appManagement', 'menu.app.messageIntercept'],
         showHeaderApps: true
       }
     },
@@ -74,7 +74,7 @@ let routes = [{
       name: 'ArguPush',
       component:  () => import('@/views/argument/push.vue'),
       meta: {
-        titles: ['应用管理', '推送配置'],
+        titles: ['menu.appManagement', 'menu.app.pushSettings'],
         showHeaderApps: true
       }
     },
@@ -83,7 +83,7 @@ let routes = [{
       name: 'ArguStorage',
       component:  () => import('@/views/argument/storage.vue'),
       meta: {
-        titles: ['应用管理', '存储配置'],
+        titles: ['menu.appManagement', 'menu.app.storageSettings'],
         showHeaderApps: true
       }
     },
@@ -92,7 +92,7 @@ let routes = [{
       name: 'ArguTranslte',
       component:  () => import('@/views/argument/translate.vue'),
       meta: {
-        titles: ['应用管理', '翻译配置'],
+        titles: ['menu.appManagement', 'menu.app.translateSettings'],
         showHeaderApps: true
       }
     },
@@ -101,7 +101,7 @@ let routes = [{
       name: 'ArguWorkList',
       component:  () => import('@/views/argument/worklist.vue'),
       meta: {
-        titles: ['应用管理', '工作台'],
+        titles: ['menu.appManagement', 'menu.app.workbenchSettings'],
         showHeaderApps: true
       }
     },
@@ -110,7 +110,7 @@ let routes = [{
       name: 'ArguGroupList',
       component:  () => import('@/views/argument/grouplist.vue'),
       meta: {
-        titles: ['应用管理', '群组管理'],
+        titles: ['menu.appManagement', 'menu.user.groups'],
         showHeaderApps: true
       }
     },
@@ -119,7 +119,7 @@ let routes = [{
       name: 'ArguUserList',
       component:  () => import('@/views/argument/userlist.vue'),
       meta: {
-        titles: ['应用管理', '用户管理'],
+        titles: ['menu.appManagement', 'menu.user.users'],
         showHeaderApps: true
       }
     },
@@ -128,7 +128,7 @@ let routes = [{
       name: 'ArguBotList',
       component:  () => import('@/views/argument/botlist.vue'),
       meta: {
-        titles: ['应用管理', '机器人管理'],
+        titles: ['menu.appManagement', 'menu.user.bots'],
         showHeaderApps: true
       }
     },
@@ -137,7 +137,7 @@ let routes = [{
       name: 'ArguConversationList',
       component:  () => import('@/views/argument/conversationlist.vue'),
       meta: {
-        titles: ['消息管理', '会话列表'],
+        titles: ['menu.message.root', 'menu.message.conversations'],
         showHeaderApps: true
       }
     },
@@ -155,7 +155,7 @@ let routes = [{
       name: 'ArguRTC',
       component:  () => import('@/views/argument/rtc.vue'),
       meta: {
-        titles: ['应用管理', '实时音视频'],
+        titles: ['menu.appManagement', 'menu.app.rtcSettings'],
         showHeaderApps: true
       }
     },
@@ -164,7 +164,7 @@ let routes = [{
       name: 'ArguEmail',
       component:  () => import('@/views/argument/email.vue'),
       meta: {
-        titles: ['应用管理', '邮箱配置'],
+        titles: ['menu.appManagement', 'menu.app.emailSettings'],
         showHeaderApps: true
       }
     },
@@ -173,7 +173,7 @@ let routes = [{
       name: 'ArguSms',
       component:  () => import('@/views/argument/sms.vue'),
       meta: {
-        titles: ['应用管理', '短信配置'],
+        titles: ['menu.appManagement', 'menu.app.smsSettings'],
         showHeaderApps: true
       }
     },
@@ -191,7 +191,7 @@ let routes = [{
       name: 'sensitiveConfig',
       component:  () => import('@/views/sensitive/sensitive.vue'),
       meta: {
-        titles: ['敏感词管理', '敏感词配置'],
+        titles: ['menu.sensitive.root', 'menu.sensitive.config'],
         showHeaderApps: true
       }
     },
@@ -304,7 +304,7 @@ let routes = [{
       name: 'OrderList',
       component:  () => import('@/views/service/order_list.vue'),
       meta: {
-        titles: ['技术支持', '我的工单']
+        titles: ['legacyPages.service.breadcrumb.support', 'legacyPages.service.breadcrumb.myTickets']
       }
     },
     {
@@ -312,7 +312,7 @@ let routes = [{
       name: 'Order',
       component:  () => import('@/views/service/order_create.vue'),
       meta: {
-        titles: ['技术支持', '创建工单']
+        titles: ['legacyPages.service.breadcrumb.support', 'legacyPages.service.breadcrumb.createTicket']
       }
     },
     {
@@ -328,7 +328,7 @@ let routes = [{
       name: 'UserSetting',
       component:  () => import('@/views/user/setting.vue'),
       meta: {
-        titles: ['账户信息', '账户设置']
+        titles: ['menu.account.root', 'menu.account.settings']
       }
     },
     {
@@ -336,7 +336,7 @@ let routes = [{
       name: 'UserEnterprise',
       component:  () => import('@/views/user/enterprise.vue'),
       meta: {
-        titles: ['账户信息', '企业认证']
+        titles: ['menu.account.root', 'tools.enterprise.title']
       }
     },
     {
@@ -344,7 +344,7 @@ let routes = [{
       name: 'UserManader',
       component:  () => import('@/views/user/manager.vue'),
       meta: {
-        titles: ['账户信息', '用户管理']
+        titles: ['menu.account.root', 'menu.account.users']
       }
     },
     {
@@ -352,7 +352,7 @@ let routes = [{
       name: 'UserRole',
       component:  () => import('@/views/user/role.vue'),
       meta: {
-        titles: ['账户信息', '角色管理']
+        titles: ['menu.account.root', 'tools.role.title']
       }
     },
   ],

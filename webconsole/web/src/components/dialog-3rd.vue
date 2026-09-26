@@ -20,7 +20,7 @@ function onSave(){
   for(let i = 0; i < fields.length; i++){
     let filed = fields[i];
     if(utils.isEmpty(filed.value)){
-      let fieldName = filed.displayLabelKey ? t(filed.displayLabelKey, {}, filed.name) : filed.name;
+      let fieldName = t(filed.displayLabelKey);
       return context.proxy.$toast({ icon: 'error', text: t('translateConfig.validation.required', { name: fieldName }) });
     }
     if(filed.type == 'text'){
@@ -58,21 +58,21 @@ watch(() => props.show, () => {
       <div>
         <div class="form-floating">
           <select class="form-select" v-model="state.channelUid" :disabled="true">
-            <option :value="item.uid" v-for="item in props.list" >{{ item.displayNameKey ? t(item.displayNameKey, {}, item.name) : item.name }}</option>
+            <option :value="item.uid" v-for="item in props.list" >{{ t(item.displayNameKey) }}</option>
           </select>
           <label>{{ props.custom }}</label>
         </div>
       </div>
       <div v-for="field in state.fields">
         <div class="form-floating cim-from-must cicon cicon-must" v-if="field.type == 'text' || field.type == 'number'">
-          <input class="form-control" placeholder="placeholder" :type="field.type" v-model="field.value">
-          <label>{{ field.displayLabelKey ? t(field.displayLabelKey, {}, field.name) : field.name }}</label>
+          <input class="form-control" :placeholder="t(field.displayLabelKey)" :type="field.type" v-model="field.value">
+          <label>{{ t(field.displayLabelKey) }}</label>
         </div>
         <div class="form-floating" v-if="field.type == 'select'">
           <select class="form-select" v-model="field.value">
-            <option :value="child.value" v-for="child in field.children" >{{ child.displayLabelKey ? t(child.displayLabelKey, {}, child.label) : child.label }}</option>
+            <option :value="child.value" v-for="child in field.children" >{{ t(child.displayLabelKey) }}</option>
           </select>
-          <label>{{ field.displayLabelKey ? t(field.displayLabelKey, {}, field.name) : field.name }}</label>
+          <label>{{ t(field.displayLabelKey) }}</label>
         </div>
       </div>
       

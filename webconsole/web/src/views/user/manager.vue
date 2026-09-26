@@ -20,8 +20,8 @@ let state = reactive({
   users: [],
   roles: utils.clone(ROLES),
   radios: [
-    { name: 'type', value: USER_STATE.ENABLE, label: 'Enable', labelKey: 'userManager.action.enable' },
-    { name: 'type', value: USER_STATE.DISABLE, label: 'Disable', labelKey: 'userManager.action.disable' },
+    { name: 'type', value: USER_STATE.ENABLE, labelKey: 'userManager.action.enable' },
+    { name: 'type', value: USER_STATE.DISABLE, labelKey: 'userManager.action.disable' },
   ],
   isShowEdit: false,
   user: utils.clone(defaltUser),
@@ -219,7 +219,7 @@ function onBindApp(){
         </div>
         <div class="form-floating">
           <select class="form-select" v-model="state.user.role">
-            <option :value="item.value" v-for="item in state.roles" >{{ item.labelKey ? t(item.labelKey, {}, item.name) : item.name }}</option>
+            <option :value="item.value" v-for="item in state.roles" >{{ t(item.labelKey) }}</option>
           </select>
           <label>{{ t('userManager.field.userRole') }}</label>
         </div>

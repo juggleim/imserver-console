@@ -19,7 +19,7 @@ function onAdd(){
 }
 </script>
 <template>
-  <PageSection title="新建工单">
+  <PageSection title-key="legacyPages.service.orderCreate.title">
     <div class="card-body">
       <div class="tab-content rounded-bottom">
         <div class="tab-pane p-3 active preview">

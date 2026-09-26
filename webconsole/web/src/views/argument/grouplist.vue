@@ -141,8 +141,8 @@ search(true)
       <nav class="cim-navigation">
         <ul class="pagination">
           <!-- <li class="page-item" v-if="state.params.offset > 1" >
-            <a class="page-link" href="#" aria-label="Previous"@click="onPre">
-              <span aria-hidden="true">上一页</span>
+            <a class="page-link" href="#" :aria-label="t('common.action.previousPage')" @click="onPre">
+              <span aria-hidden="true">{{ t('common.action.previousPage') }}</span>
             </a>
           </li> -->
           <li class="page-item">

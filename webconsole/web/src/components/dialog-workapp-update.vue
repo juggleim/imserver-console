@@ -73,10 +73,6 @@ watch(() => props.show, (val) => {
         <input class="form-control" :placeholder="t('appServices.worklist.field.appName')" v-model="state.app_name">
         <label>{{ t('appServices.worklist.field.appName') }}</label>
       </div>
-      <!-- <div class="form-floating cim-from-must cicon cicon-must">
-        <input class="form-control" placeholder="应用图标" v-model="state.app_icon">
-        <label>应用图标</label>
-      </div> -->
       <div class="form-floating cim-from-must cicon cicon-must">
         <input type="file" style="display: none;" @change="onFileSelect" />
         <div class="cicon cim-form-add cim-upload form-control workinfo-avatar">
