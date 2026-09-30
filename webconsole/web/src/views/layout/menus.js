@@ -77,6 +77,7 @@ function MenuFactory() {
             { title: 'menu.analytics.messagePrivate', name: 'AnalysisMessage' },
             { title: 'menu.analytics.messageGroup', name: 'AnalysisGroup' },
             { title: 'menu.analytics.messageChatroom', name: 'AnalysisChatroom' },
+            { title: 'menu.analytics.messageRealtime', name: 'AnalysisMessageRealtime' },
           ],
         },
         {

@@ -33,7 +33,8 @@
     "userDaily": "User Stats [DAU]",
     "messagePrivate": "Message Stats [Direct]",
     "messageGroup": "Message Stats [Group]",
-    "messageChatroom": "Message Stats [Chatroom]"
+    "messageChatroom": "Message Stats [Chatroom]",
+    "messageRealtime": "Message Stats [Realtime]"
   },
   "logs": {
     "root": "Logs",

@@ -34,5 +34,31 @@
     "dayUp": "昨日聊天室上行消息量（条）",
     "dayDown": "昨日聊天室下行消息量（条）",
     "dayDispatch": "昨日聊天室分发消息量（条）"
+  },
+  "realtime": {
+    "enable": "开启实时消息统计",
+    "description": "开启后将采集细粒度消息数据，可按时间范围查看每秒平均消息量。",
+    "legendUp": "上行",
+    "legendDown": "下行",
+    "legendDispatch": "分发",
+    "unitPerSecond": "条/秒",
+    "fetchFailed": "实时消息统计加载失败，请刷新重试",
+    "settingFetchFailed": "实时消息统计设置加载失败",
+    "settingSaveFailed": "实时消息统计设置保存失败",
+    "settingSaveSuccess": "实时消息统计设置已保存",
+    "invalidRange": "请选择有效时间范围，且时间跨度不能超过 3 天",
+    "channel": {
+      "private": "单聊",
+      "group": "群聊",
+      "chatroom": "聊天室"
+    },
+    "range": {
+      "last15Minutes": "最近 15 分钟",
+      "last1Hour": "最近 1 小时",
+      "last6Hours": "最近 6 小时",
+      "last12Hours": "最近 12 小时",
+      "last1Day": "最近 1 天",
+      "last3Days": "最近 3 天"
+    }
   }
 }

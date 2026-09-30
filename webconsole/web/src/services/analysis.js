@@ -13,6 +13,12 @@ let getMessageChat = (params) => {
   let url = `${SERVER_PATH.ANALIYSIS_MESSAGE}?${str}`;
   return request(url, { method: 'GET'});
 };
+let getRealtimeMessageChat = (params) => {
+  let query = new URLSearchParams(params);
+  let str = query.toString();
+  let url = `${SERVER_PATH.ANALIYSIS_MESSAGE_REALTIME}?${str}`;
+  return request(url, { method: 'GET'});
+};
 let getGroupChat = (params) => {
   return request(SERVER_PATH.USER_DISABLE, {
     method: 'GET',
@@ -29,6 +35,7 @@ let getChatroomChat = (params) => {
 export default {
   getUserChat,
   getMessageChat,
+  getRealtimeMessageChat,
   getGroupChat,
   getChatroomChat,
 }

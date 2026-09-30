@@ -33,7 +33,8 @@
     "userDaily": "用户统计【日活】",
     "messagePrivate": "消息统计【单聊】",
     "messageGroup": "消息统计【群聊】",
-    "messageChatroom": "消息统计【聊天室】"
+    "messageChatroom": "消息统计【聊天室】",
+    "messageRealtime": "消息统计【实时】"
   },
   "logs": {
     "root": "日志管理",

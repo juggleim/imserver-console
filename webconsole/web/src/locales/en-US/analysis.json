@@ -34,5 +34,31 @@
     "dayUp": "Yesterday Chatroom Upstream Messages",
     "dayDown": "Yesterday Chatroom Downstream Messages",
     "dayDispatch": "Yesterday Chatroom Dispatch Messages"
+  },
+  "realtime": {
+    "enable": "Enable realtime message statistics",
+    "description": "Collect fine-grained message data and view the average message rate for a selected time range.",
+    "legendUp": "Upstream",
+    "legendDown": "Downstream",
+    "legendDispatch": "Dispatch",
+    "unitPerSecond": "messages/s",
+    "fetchFailed": "Failed to load realtime message statistics. Please refresh and try again",
+    "settingFetchFailed": "Failed to load the realtime message statistics setting",
+    "settingSaveFailed": "Failed to save the realtime message statistics setting",
+    "settingSaveSuccess": "Realtime message statistics setting saved",
+    "invalidRange": "Select a valid time range of no more than 3 days",
+    "channel": {
+      "private": "Direct",
+      "group": "Group",
+      "chatroom": "Chatroom"
+    },
+    "range": {
+      "last15Minutes": "Last 15 minutes",
+      "last1Hour": "Last 1 hour",
+      "last6Hours": "Last 6 hours",
+      "last12Hours": "Last 12 hours",
+      "last1Day": "Last 1 day",
+      "last3Days": "Last 3 days"
+    }
   }
 }
