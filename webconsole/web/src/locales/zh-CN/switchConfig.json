@@ -8,6 +8,7 @@
   "item": {
     "token_effective_minute": "Token 有效时长（小时）",
     "kick_mode": "允许用户多移动端同时登录",
+    "open_e2ee": "端到端加密",
     "security_domains": "安全域名",
     "is_hide_msg_before_join_group": "入群后获取之前的历史消息",
     "not_check_grp_member": "不在群组是否可以获取群消息",

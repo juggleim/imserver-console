@@ -8,6 +8,7 @@
   "item": {
     "token_effective_minute": "Token validity (hours)",
     "kick_mode": "Allow multi-end login on the same device",
+    "open_e2ee": "End-to-end encryption",
     "security_domains": "Security domains",
     "is_hide_msg_before_join_group": "Fetch history sent before joining a group",
     "not_check_grp_member": "Allow non-members to fetch group messages",
