@@ -34,10 +34,13 @@ function onHide(e){
 }
 function updateFileds(channel){
   let fields = utils.map(channel.children, (field) => {
-    if(utils.isEqual(field.key, 'is_used')){
-      field.value = props.channel.isUsed ? R3D_USE_TYPE.ENABLE : R3D_USE_TYPE.DISABLE;
+    let nextField = { ...field };
+    if(utils.isEqual(nextField.key, 'is_used')){
+      nextField.value = props.channel.isUsed ? R3D_USE_TYPE.ENABLE : R3D_USE_TYPE.DISABLE;
+    } else if(utils.isEmpty(nextField.value) && !utils.isEmpty(nextField.defaultValue)){
+      nextField.value = nextField.defaultValue;
     }
-    return field;
+    return nextField;
   });
   utils.extend(state, { fields: utils.clone(fields), channelUid: channel.uid });
 }

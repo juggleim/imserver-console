@@ -18,7 +18,8 @@
   },
   "provider": {
     "baidu": "百度",
-    "smsbao": "短信宝"
+    "smsbao": "短信宝",
+    "aliyun": "阿里云"
   },
   "field": {
     "api_key": "APIKey",
@@ -28,7 +29,13 @@
     "signature_id": "签名 ID",
     "is_used": "是否启用",
     "username": "名称",
-    "password": "密码"
+    "password": "密码",
+    "access_key": "AccessKey ID",
+    "access_secret": "AccessKey Secret",
+    "region_id": "Region ID",
+    "sign_name": "签名名称",
+    "template_code": "模板 Code",
+    "template_code_key": "模板参数 Key"
   },
   "option": {
     "enable": "启用",

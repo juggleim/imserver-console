@@ -348,6 +348,21 @@ export let SMS_CHANNELS = [
       ] },
     ] 
   },
+  { uid: 'aliyun', name: '阿里云', icon: 'ali', isUsed: false,
+    children: [
+      { name: 'AccessKey ID', type: 'text', key: 'access_key', value: '' },
+      { name: 'AccessKey Secret', type: 'text', key: 'access_secret', value: '', secretValue: '**************' },
+      { name: 'Region ID', type: 'text', key: 'region_id', value: '', defaultValue: 'cn-hangzhou' },
+      { name: 'Endpoint', type: 'text', key: 'endpoint', value: '', defaultValue: 'dysmsapi.aliyuncs.com' },
+      { name: '签名名称', type: 'text', key: 'sign_name', value: '' },
+      { name: '模板 Code', type: 'text', key: 'template_code', value: '' },
+      { name: '模板参数 Key', type: 'text', key: 'template_code_key', value: '', defaultValue: 'code' },
+      { name: '是否启用', type: 'select', key: 'is_used', value: R3D_USE_TYPE.DISABLE, children: [
+        { label: '启用', value: R3D_USE_TYPE.ENABLE },
+        { label: '禁用', value: R3D_USE_TYPE.DISABLE },
+      ] },
+    ]
+  },
 ];
 export let USER_ROLE_TYPE = {
   ADMIN: 0,

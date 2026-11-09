@@ -18,7 +18,8 @@
   },
   "provider": {
     "baidu": "Baidu",
-    "smsbao": "SMSBao"
+    "smsbao": "SMSBao",
+    "aliyun": "Alibaba Cloud"
   },
   "field": {
     "api_key": "APIKey",
@@ -28,7 +29,13 @@
     "signature_id": "Signature ID",
     "is_used": "Enabled",
     "username": "Username",
-    "password": "Password"
+    "password": "Password",
+    "access_key": "AccessKey ID",
+    "access_secret": "AccessKey Secret",
+    "region_id": "Region ID",
+    "sign_name": "Signature Name",
+    "template_code": "Template Code",
+    "template_code_key": "Template Parameter Key"
   },
   "option": {
     "enable": "Enable",
